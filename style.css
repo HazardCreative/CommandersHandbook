@@ -1,0 +1,597 @@
+/* general styles */
+[data-role="page"] {
+	display: none;
+}
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url(themes/fonts/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(themes/fonts/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Source Sans Pro Italic'), local('SourceSansPro-It'), url(themes/fonts/M2Jd71oPJhLKp0zdtTvoMzNrcjQuD0pTu1za2FULaMs.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Source Sans Pro Bold Italic'), local('SourceSansPro-BoldIt'), url(themes/fonts/fpTVHK8qsXbIeTHTrnQH6Nog-We9VNve39Jr4Vs_aDc.woff) format('woff');
+}
+
+body {
+	font-family: 'Source Sans Pro', sans-serif;
+	background: #EBE5D6;
+	color: #222;
+}
+.ui-footer .ui-btn-left, .ui-footer .ui-btn-right {
+    margin: 0;
+}
+
+/*
+[data-role=page]>.ui-panel-wrapper>.ui-content {
+	min-height: 100%;
+}
+*/
+
+#nav-panel h2 a {
+	color: #fff;
+	text-decoration: none;
+}
+
+.game-icon {
+	display: inline-block;
+	width: 1.5em;
+	height: 1.5em;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
+}
+
+.item-help {
+	text-decoration: none;
+	border: solid 1px;
+	border-radius: 0.3125em;
+	padding: 0 0.25em;
+	color: #aaa;
+	display: inline-block;
+}
+
+.ui-content {
+	max-width: 60em;
+	margin: 0 auto;
+}
+
+/* .ui-checkbox .inline-jqm-checkbox {
+	display: inline-block;
+} */
+
+/* Home */
+
+#home-title {
+	margin: 0 0 2em;
+	text-align: center;
+}
+
+#home-title img {
+	max-width:100%;
+	height:auto;
+	display:block;
+	margin:0 auto;
+}
+
+#home-title h2 {
+	margin: 0.5em 0 0;
+}
+
+#home-title p {
+	margin: 0;
+}
+
+#main-page .ui-footer a {
+	color: #fff;
+	text-decoration: none;
+}
+
+/* Game setup */
+
+@media (min-width: 30em) {
+	#team-adjust-info {
+		float: left;
+		width: 48%;
+		min-width: 10em;
+	}
+	#team-adjust-data {
+		float: right;
+		width: 48%;
+		min-width: 10em;
+	}
+	#team-adjust-submit {
+		clear: both;
+	}
+}
+
+#game-params {
+	margin-top: 0.5em 0 0.5em 0.5em;
+}
+
+#game-params .ui-select {
+	width: 100%;
+}
+
+#game-params h3, #game-params p {
+	margin: 0;
+}
+
+#game-parameters {
+		max-width: 50em;
+}
+
+.game-params-info {
+	padding-top: 0.25em;
+	clear: both;
+	text-align: center;
+}
+/* Gameplay */
+
+#game-info-panel>div {
+	padding: 0.4em 0.5em;
+}
+
+.gameinfo-total-rounds {
+	white-space: nowrap;
+}
+
+#active-game-teams {
+	margin: 1em 0;
+	clear: both;
+}
+
+.team-info:hover {
+	background: #F1EEE5;
+	cursor: pointer;
+}
+
+.team-name {
+	overflow: hidden;
+}
+
+#active-game-teams .team-name h2 {
+	margin: 0;
+	font-size: 1em;
+	white-space: normal;
+}
+
+.team-score {
+	padding-left: 0.5em;
+	text-align: center;
+	float: right;
+}
+
+.score {
+	display: inline-block;
+	text-align: center;
+	width: 2em;
+	background: #BE1E2D;
+	border-radius: 0.3125em;
+	padding: 0.25em;
+	color: #fff;
+	font-weight: bold;
+	text-shadow: none;
+}
+
+.PPA {
+	color: #666;
+	display: block;
+}
+
+.team-asset-summary {
+	padding-left: 0.5em;
+	text-align: center;
+	float: right;
+	font-weight: bold;
+}
+
+.team-frames {
+	clear: both;
+/*	padding: 0 0 0.4em;
+	margin: 0; */
+	overflow: hidden;
+}
+
+#game-log {
+	height: 10em;
+	overflow-y: scroll;
+}
+
+#final-score {
+	margin: 1em -1em;
+}
+
+#frame-smash h2 {
+	margin-top: 0;
+}
+/* reference */
+
+.ref-table {
+	border-collapse: collapse;
+}
+
+.ref-table th {
+	background: #2a2a2a;
+	color: #fff;
+	text-shadow: none;
+	padding: 0.5em;
+}
+
+.ref-table td {
+	border: solid 1px rgba(0,0,0,0.1);
+	padding: 0.5em;
+}
+
+.ref-hint, .ref-note, .ref-reminder, .ref-calc {
+	border-radius: 0.3125em;
+	background: #2a2a2a;
+	color: #fff;
+	text-shadow: none;
+	padding: 0 0.5em;
+	overflow: hidden;
+	margin: 1em 0;
+}
+
+.ref-calc {
+	font-weight: bold;
+}
+
+/* reference hit chart */
+
+#ref_quick_hit-chart .ui-content div {
+	text-align: center;
+	margin: 0 auto 1em;
+	max-width: 50em;
+}
+
+#ref_quick_hit-chart h2 {
+	margin-top: 0;
+}
+
+#ref_quick_hit-chart img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* systems and dice displays */
+
+[data-sys] {
+	display: inline-block;
+	vertical-align: middle;
+	width: 2em;
+	text-align: center;
+	font-weight: bold;
+	text-shadow: none;
+	border-radius: 0.3125em;
+	box-sizing: border-box;
+	line-height: 2;
+	margin: 0.25em;
+}
+
+[data-sys=w] {
+	background: #f2f2f2;
+	border: solid 0.125em #ccc;
+	line-height: 1.75;
+	color: #000;
+}
+
+[data-sys=rh], [data-sys=rd], [data-sys=ra], [data-sys=rhd], [data-sys=rha], [data-sys=rda] {
+	background: #E03B2C;
+	color: #000;
+}
+
+[data-sys=y] {
+	background: #D3C250;
+	color: #000;
+}
+
+[data-sys=b] {
+	background: #0D4572;
+	color: #fff;
+}
+
+[data-sys=g] {
+	background: #205A2E;
+	color: #fff;
+}
+
+[data-sys=ssr], [data-sys=rhd], [data-sys=rha], [data-sys=rda] {
+	font-size: 0.75em;
+	width: 2.6667em;
+	height: 2.6667em;
+	line-height: 2.6667;
+	border-radius: 0.4167em;
+	margin: 0.3333em;
+}
+
+[data-sys=ssr] {
+	background: #FFD1CD;
+	border: solid 0.1667em #E03B2C;
+	line-height: 2.3333;
+	color: #000;
+}
+
+[data-sys=d] {
+	background: #f2f2f2;
+	color: #000;
+	border: solid 0.1667em #ccc;
+	line-height: 1.6667;
+}
+
+[data-sys=e] {
+	background: #333333;
+	color: #fff;
+}
+
+.disabled[data-sys] {
+	background: #ccc;
+	color: #aaa;
+}
+
+.disabled[data-sys=ssr] {
+	border-color: #aaa;
+}
+
+[data-die] {
+	display: inline-block;
+	width: 2em;
+	text-align: center;
+	font-weight: bold;
+	text-shadow: none;
+	box-sizing: border-box;
+	line-height: 2;
+	margin: 0.25em;
+}
+
+[data-die=w6] {
+	background: #eee;
+	color: #000;
+}
+
+[data-die=r6], [data-die=r8] {
+	background: #E03B2C;
+	color: #000;
+}
+
+[data-die=r8] {
+	border-radius: 0.5em;
+}
+
+[data-die=y6] {
+	background: #D3C250;
+	color: #000;
+}
+
+[data-die=b6] {
+	background: #0D4572;
+	color: #fff;
+}
+
+[data-die=g6], [data-die=g8] {
+	background: #205A2E;
+	color: #fff;
+}
+
+[data-die=g8] {
+	border-radius: 0.5em;
+}
+
+.sys-display {
+	padding: 0;
+	min-height: 2.5em;
+	white-space: normal;
+}
+
+.sys-display.in-list {
+	font-size: 0.75em;
+	float: right;
+	margin: 0;
+}
+
+.sys-display.no-ssr [data-sys=ssr] {
+	display: none;
+}
+
+.lv-wsys-name {
+	float: left;
+}
+
+.roll-display {
+	padding: 0;
+	min-height: 2.5em;
+	white-space: normal;
+}
+
+/* die roller */
+
+#dice-roller p {
+	margin: 0 0 0.4em;
+}
+
+.typebox {
+	width: 45%;
+	float: left;
+}
+
+.rangebox {
+	width: 45%;
+	float: right;
+}
+
+.addbox {
+	clear: both;
+}
+
+#damage-roller table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#damage-roller th {
+	background: #2a2a2a;
+	color: #fff;
+	text-shadow: none;
+	padding: 0.5em;
+	text-align: center;
+}
+
+#damage-roller td {
+	border: solid 1px rgba(0,0,0,0.1);
+	padding: 0.5em;
+	font-size: 2em;
+	font-weight: bold;
+	text-align: center;
+}
+
+#active-systems ul, #active-dice ul {
+	list-style: none;
+	padding: 0 0 0.5em 0.25em;
+	line-height: 1;
+	list-style: none;
+}
+
+#active-systems li {
+	cursor: pointer;
+}
+
+/* loadouts */
+
+span.loadout {
+	font-size: 0.75em;
+	float: right;
+}
+
+span.loadout.inline {
+	float: none;
+}
+
+#loadout-framegraph {
+    max-width: 100%;
+    width: 40em;
+}
+
+/* graph */
+
+.load-table {
+	float: none;
+	margin: 0;
+	white-space: nowrap;
+}
+.framegraph {
+	width: 100%;
+	max-width: 40em;
+	margin: 1em 0;
+}
+.stat-type {
+	width: 2em;
+	font-size: 0.75em;
+}
+.stat-type span {
+	margin: 0;
+}
+th.stat-type .type-label {
+	display: none;
+}
+.stat-graph {
+	text-align: left;
+}
+.stat-std {
+	width: 3em;
+	text-align: right;
+}
+.stat-white1 {
+	width: 3em;
+	text-align: right;
+}
+.stat-white2 {
+	width: 3em;
+	text-align: right;
+}
+.graph-container {
+	position: relative;
+}
+.graphbar {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	box-sizing: border-box;
+	border: solid #aaa 1px;
+}
+.graphbar-1w, .graphbar-2w {
+	opacity: 0.2;
+	height: 60%;
+	top: 20%;
+}
+
+/* companies */
+
+#company-list {
+	padding: 0;
+	list-style: none;
+}
+#companyinfo-graph {
+	max-width: 40em;
+}
+.companygraph {
+	width: 100%;
+}
+.companyinfo-string {
+	list-style: none;
+	padding: 0;
+	float: right;
+}
+.companyinfo-string li {
+	display: inline-block;
+	margin: 0 0.5em;
+}
+.companyinfo-string [data-sys] {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+#company-list .ui-bar-inherit {
+	background-color: #f8f7f1;
+	color: #000;
+	text-shadow: 0 1px 0 #eee;
+}
+/* settings */
+.compact-ui .hide-if-compact-ui {
+	display: none;
+}
+.compact-ui .shrink-if-compact-ui .ui-btn {
+	margin: 0.25em 0;
+}
+.compact-ui .ui-btn-inline {
+    margin-right: 0.25em;
+}
+.compact-ui .ui-controlgroup-controls .ui-btn {
+    margin-right: 0;
+}
+.compact-ui .shrink-if-compact-ui {
+	margin: 0.25em 0;
+}
+
+/* update notice */
+#update-ready {
+	position: absolute;
+	z-index: 5000;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: none;
+}

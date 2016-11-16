@@ -1,0 +1,9 @@
+AddType text/cache-manifest .manifest
+
+<Files cache.manifest>
+	ExpiresActive On
+	ExpiresDefault "access"
+	FileETag None
+	Header unset ETag
+	Header set Cache-Control "no-cache, private"
+</Files>
