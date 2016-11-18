@@ -22,8 +22,8 @@ if (typeof jQuery != 'undefined') {
 	var MAXTEAMS = 5;
 	var MAXFRAMES = 8;
 	var MAXLOADOUTS = 50;
-	var BUILDVERSION = 2016111801;
-	var PUBLICBUILDSTRING = 'v2016.11.18';
+	var BUILDVERSION = 2016111802;
+	var PUBLICBUILDSTRING = 'v2016.11.18a';
 
 	/* ---------------------- */
 	/* App setup */
