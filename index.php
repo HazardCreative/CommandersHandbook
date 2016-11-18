@@ -19,11 +19,6 @@
 	<script src="jq/jquery.mobile-1.4.5.min.js"></script>
 	<link rel="stylesheet" href="style.css" />
 
-	<script src="generics.js"></script>
-	<script src="models.js"></script>
-	<script src="mfzch.js"></script>
-	<script src="behavior.js"></script>
-
 	<meta name="robots" content="noindex,nofollow">
 </head>
 
@@ -78,6 +73,26 @@ $(document).on('pageshow', '[data-role=page], [data-role=dialog]', function (eve
     } catch (err) {}
 });
 */
+
+if (typeof jQuery != 'undefined') {
+<?php include('scripts/generics.js'); ?>
+<?php include('scripts/model-team.js'); ?>
+<?php include('scripts/model-game.js'); ?>
+<?php include('scripts/model-company.js'); ?>
+<?php include('scripts/model-frame.js'); ?>
+<?php include('scripts/model-settings.js'); ?>
+<?php include('scripts/mfzch.js'); ?>
+<?php include('scripts/globals.js'); ?>
+<?php include('scripts/setup.js'); ?>
+<?php include('scripts/behavior-pregame.js'); ?>
+<?php include('scripts/behavior-game.js'); ?>
+<?php include('scripts/behavior-simulator.js'); ?>
+<?php include('scripts/behavior-company.js'); ?>
+<?php include('scripts/behavior-loadouts.js'); ?>
+<?php include('scripts/behavior-settings.js'); ?>
+<?php include('scripts/event-tracking.js'); ?>
+}
+
 </script>
 
 </body>
