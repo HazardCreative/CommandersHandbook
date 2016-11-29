@@ -14,7 +14,8 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        return $this->render('mfzch/mfzch.html.php');
+		$name = 'test';
+        return $this->render('mfzch/mfzch.html.twig', array('name' => $name));
         /* , [
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
         ]); */
