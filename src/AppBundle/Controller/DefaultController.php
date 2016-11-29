@@ -14,10 +14,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-		$name = 'test';
-        return $this->render('mfzch/mfzch.html.twig', array('name' => $name));
-        /* , [
-            'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
-        ]); */
+        return $this->render('mfzch/mfzch.html.twig', array(
+				'buildver' => 2016112900,
+				'buildstring' => 'v2016.11.29',
+//	            'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
+		));
     }
 }
