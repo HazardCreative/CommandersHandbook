@@ -15,8 +15,8 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         return $this->render('mfzch/mfzch.html.twig', array(
-				'buildver' => 2016112900,
-				'buildstring' => 'v2016.11.29',
+				'buildver' => 2016113000,
+				'buildstring' => 'v2016.11.30',
 //	            'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
 		));
     }

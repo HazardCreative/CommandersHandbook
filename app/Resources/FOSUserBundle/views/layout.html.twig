@@ -1,9 +1,14 @@
 {% extends 'main.html.twig' %}
 
 {% block main %}
-
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
 <div data-role="page" id="main-page">
-	<div role="main" class="ui-content">
+	<div role="main" class="ui-content" data-ajax="false">
 		<div>
 			{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
 				{{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
