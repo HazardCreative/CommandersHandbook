@@ -53,4 +53,16 @@ class DefaultController extends Controller
 			'form' => $form->createView()
 		));
 	}
+
+	/**
+	 * @Route("/player-finder", name="player-finder")
+	 */
+	public function playerFinderAction(Request $request) {
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+        $userManager = $this->get('fos_user.user_manager');
+        $users = $userManager->findUsers();
+
+        return $this->render('player-finder.html.twig', array('users' => $users));
+	}
 }

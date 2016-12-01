@@ -3,6 +3,12 @@
 {% block htmlhead %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+
+<script>
+{{ include('mfzch/scripts/model-game.js.twig') }}
+{{ include('mfzch/scripts/model-settings.js.twig') }}
+{{ include('mfzch/scripts/mfzch.js.twig') }}
+</script>
 {% endblock %}
 
 {% block main %}
@@ -14,10 +20,11 @@ if (typeof jQuery != 'undefined') {
 </script>
 <div data-role="page" id="main-page">
 	<div role="main" class="ui-content" data-ajax="false">
+		<h1>Player Finder</h1>
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user.getGeoLatitude() and app.user.getGeoLongitude() %}
+			{% if app.user and app.user.getGeoLatitude() and app.user.getGeoLongitude() %}
 				var mymap = L.map('mapid').setView([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], 13);
 			{% else %}
 				var mymap = L.map('mapid').setView([44, -73], 5);
@@ -33,18 +40,37 @@ if (typeof jQuery != 'undefined') {
 
 			Stamen_Terrain.addTo(mymap);
 
-			mymap.on('click', function(e){
-				alert("You clicked the map at " + e.latlng);
-				$('#edit_profile_geo_latitude').val(e.latlng.lat);
-				$('#edit_profile_geo_longitude').val(e.latlng.lng);
+			var userIcon = L.divIcon({
+				html: mfzch.getIcon('frame', '#be1e2d'),
+				iconSize: [36, 36],
+				iconAnchor: [24, 16],
+				popupAnchor: [0, -12]
 			});
+
+			var group = new L.featureGroup();
+			{% for user in users %}
+				{% if user.getGeoLatitude() and user.getGeoLongitude() %}
+					L.marker([{{ user.getGeoLatitude()|e }}, {{ user.getGeoLongitude()|e }}], {icon: userIcon})
+					.bindPopup('{{ user.username|e }}')
+					.addTo(group);
+				{% endif %}
+			{% endfor %}
+			group.addTo(mymap);
+			mymap.fitBounds(group.getBounds(), {padding: [18, 18]});
 		});
 		</script>
-		<div role="main" class="ui-content" data-ajax="false">
-			{{ form_start(form) }}
-			{{ form_widget(form) }}
-			{{ form_end(form) }}
-		</div>
+		<style>
+			#mapid .frame-icon {
+				width: 3em;
+				height: 3em;
+			}
+			#mapid .leaflet-div-icon {
+				background: transparent;
+				border: none;
+			}
+		</style>
+
+		<a href="{{ path('edit-profile') }}">Edit Profile</a>
 	</div>
 </div>
 {% endblock %}

@@ -20,27 +20,27 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
 	protected $profile_realname;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      */
 	protected $profile_display_email;
 
     /**
-     * @ORM\Column(type="decimal", precision=8, scale=5)
+     * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
      */
 	protected $geo_latitude;
 
     /**
-     * @ORM\Column(type="decimal", precision=8, scale=5)
+     * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
      */
 	protected $geo_longitude;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
 	protected $elite_expires;
 
