@@ -1,0 +1,18 @@
+{% extends 'main.html.twig' %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+		{{ form_start(form) }}
+		{{ form_widget(form) }}
+		{{ form_end(form) }}
+	</div>
+</div>
+
+{% endblock %}

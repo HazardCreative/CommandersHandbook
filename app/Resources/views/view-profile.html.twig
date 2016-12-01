@@ -1,0 +1,26 @@
+{% extends 'main.html.twig' %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+		<h1>Profile for {{ app.user.getUsername()|e }}</h1>
+		<ul>
+			<li>{{ app.user.getRoles()|join(', ')|e }}</li>
+			<li>{{ app.user.getLastLogin()|date("Y-m-d H:i:s")|e }}</li>
+			{% if app.user.getProfileDisplayEmail() %}
+				<li>{{ app.user.getEmail()|e }}</li>
+			{% endif %}
+			<li>Real name: {{ app.user.getProfileRealname()|e }}</li>
+			<li>Location: N{{ app.user.getGeoLatitude()|e }}, W{{ app.user.getGeoLongitude()|e }}</li>
+		</ul>
+		<a href="{{ path('edit-profile') }}">Edit Profile</a>
+	</div>
+</div>
+
+{% endblock %}
