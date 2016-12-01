@@ -19,6 +19,8 @@
 	<link rel="stylesheet" href="/style.css" />
 
 	<meta name="robots" content="noindex,nofollow">
+
+	{% block htmlhead %}{% endblock %}
 </head>
 
 <body>
@@ -29,8 +31,7 @@
 
 <!-- ============================ -->
 
-{% block main %}
-{% endblock %}
+{% block main %}{% endblock %}
 
 <!-- ============================ -->
 

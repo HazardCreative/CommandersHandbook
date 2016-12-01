@@ -1,5 +1,16 @@
 {% extends 'main.html.twig' %}
 
+{% block htmlhead %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+
+<script>
+{{ include('mfzch/scripts/model-game.js.twig') }}
+{{ include('mfzch/scripts/model-settings.js.twig') }}
+{{ include('mfzch/scripts/mfzch.js.twig') }}
+</script>
+{% endblock %}
+
 {% block main %}
 <script>
 if (typeof jQuery != 'undefined') {
@@ -17,10 +28,41 @@ if (typeof jQuery != 'undefined') {
 				<li>{{ app.user.getEmail()|e }}</li>
 			{% endif %}
 			<li>Real name: {{ app.user.getProfileRealname()|e }}</li>
-			<li>Location: N{{ app.user.getGeoLatitude()|e }}, W{{ app.user.getGeoLongitude()|e }}</li>
+			<li>Location: [{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}]</li>
 		</ul>
+		<div id="mapid" style="height: 50vh;"></div>
+		<script>
+		var mymap = L.map('mapid').setView([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], 13);
+
+		var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			subdomains: 'abcd',
+			minZoom: 0,
+			maxZoom: 18,
+			ext: 'png'
+		});
+
+		Stamen_Terrain.addTo(mymap);
+
+		var userIcon = L.divIcon({
+			html: mfzch.getIcon('frame', '#be1e2d'),
+			iconSize: [36, 36]
+		});
+
+		var marker = L.marker([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], {icon: userIcon}).addTo(mymap);
+		</script>
+		<style>
+			#mapid .frame-icon {
+				width: 3em;
+				height: 3em;
+			}
+			#mapid .leaflet-div-icon {
+				background: transparent;
+				border: none;
+			}
+		</style>
+
 		<a href="{{ path('edit-profile') }}">Edit Profile</a>
 	</div>
 </div>
-
 {% endblock %}

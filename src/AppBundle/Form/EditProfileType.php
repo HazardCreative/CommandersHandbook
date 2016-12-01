@@ -5,7 +5,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class EditProfileType extends AbstractType {
@@ -19,10 +19,10 @@ class EditProfileType extends AbstractType {
 				'required' => false,
 				'label' => 'Display E-mail Address'
 			))
-			->add('geo_latitude', NumberType::class, array(
+			->add('geo_latitude', HiddenType::class, array(
 				'required' => false
 			))
-			->add('geo_longitude', NumberType::class, array(
+			->add('geo_longitude', HiddenType::class, array(
 				'required' => false
 			))
 			->add('save', SubmitType::class, array(

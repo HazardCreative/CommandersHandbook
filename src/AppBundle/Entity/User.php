@@ -30,12 +30,12 @@ class User extends BaseUser
 	protected $profile_display_email;
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal", precision=8, scale=5)
      */
 	protected $geo_latitude;
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal", precision=8, scale=5)
      */
 	protected $geo_longitude;
 
