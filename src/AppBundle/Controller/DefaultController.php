@@ -61,4 +61,17 @@ class DefaultController extends Controller
 
         return $this->render('player-finder.html.twig', array('users' => $users));
 	}
+
+	/**
+	 * @Route("/patreon-test", name="patreon-test")
+	 */
+	public function patreonTestAction(Request $request) {
+        $userManager = $this->get('fos_user.user_manager');
+        $users = $userManager->findUsers();
+
+        return $this->render('patreon-test.html.php', array(
+			'users' => $users,
+			'code' => $request->query->get('code')
+		));
+	}
 }

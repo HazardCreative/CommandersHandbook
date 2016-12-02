@@ -17,3 +17,9 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+    
+    # Patreon API info
+    patreon_client_id:     ~
+    patreon_client_secret: ~
+    patreon_creator_id:    ~
+    patreon_access_token:    ~
