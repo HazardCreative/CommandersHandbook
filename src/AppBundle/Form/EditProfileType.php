@@ -15,9 +15,13 @@ class EditProfileType extends AbstractType {
 			->add('profile_realname', TextType::class, array(
 				'required' => false
 			))
+			->add('profile_is_public', CheckboxType::class, array(
+				'required' => false,
+				'label' => 'Include me in player community'
+			))
 			->add('profile_display_email', CheckboxType::class, array(
 				'required' => false,
-				'label' => 'Display E-mail Address'
+				'label' => 'Allow other users to see my E-mail address'
 			))
 			->add('geo_latitude', HiddenType::class, array(
 				'required' => false

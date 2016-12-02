@@ -15,8 +15,6 @@ class DefaultController extends Controller
 	 */
 	public function indexAction(Request $request) {
 		return $this->render('mfzch/mfzch.html.twig', array(
-		'buildver' => 2016113000,
-		'buildstring' => 'v2016.11.30',
 //		'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
 		));
 	}
@@ -58,8 +56,6 @@ class DefaultController extends Controller
 	 * @Route("/player-finder", name="player-finder")
 	 */
 	public function playerFinderAction(Request $request) {
-		$user = $this->get('security.token_storage')->getToken()->getUser();
-
         $userManager = $this->get('fos_user.user_manager');
         $users = $userManager->findUsers();
 

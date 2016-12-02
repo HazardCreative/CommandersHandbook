@@ -17,10 +17,10 @@ if (typeof jQuery != 'undefined') {
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user.getGeoLatitude() and app.user.getGeoLongitude() %}
-				var mymap = L.map('mapid').setView([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], 13);
+			{% if app.user.geo_latitude and app.user.geo_longitude %}
+				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 10);
 			{% else %}
-				var mymap = L.map('mapid').setView([44, -73], 5);
+				var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
 			{% endif %}
 
 			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
@@ -32,6 +32,7 @@ if (typeof jQuery != 'undefined') {
 			});
 
 			Stamen_Terrain.addTo(mymap);
+			L.control.scale().addTo(mymap);
 
 			mymap.on('click', function(e){
 				alert("You clicked the map at " + e.latlng);

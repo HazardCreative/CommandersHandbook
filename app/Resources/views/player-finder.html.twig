@@ -5,9 +5,7 @@
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
 
 <script>
-{{ include('mfzch/scripts/model-game.js.twig') }}
-{{ include('mfzch/scripts/model-settings.js.twig') }}
-{{ include('mfzch/scripts/mfzch.js.twig') }}
+{{ include('mfzch/scripts/generics.js.twig') }}
 </script>
 {% endblock %}
 
@@ -24,8 +22,8 @@ if (typeof jQuery != 'undefined') {
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user and app.user.getGeoLatitude() and app.user.getGeoLongitude() %}
-				var mymap = L.map('mapid').setView([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], 13);
+			{% if app.user and app.user.geo_latitude and app.user.geo_longitude %}
+				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 7);
 			{% else %}
 				var mymap = L.map('mapid').setView([44, -73], 5);
 			{% endif %}
@@ -39,9 +37,10 @@ if (typeof jQuery != 'undefined') {
 			});
 
 			Stamen_Terrain.addTo(mymap);
+			L.control.scale().addTo(mymap);
 
 			var userIcon = L.divIcon({
-				html: mfzch.getIcon('frame', '#be1e2d'),
+				html: getIcon('frame', '#be1e2d'),
 				iconSize: [36, 36],
 				iconAnchor: [24, 16],
 				popupAnchor: [0, -12]
@@ -49,14 +48,18 @@ if (typeof jQuery != 'undefined') {
 
 			var group = new L.featureGroup();
 			{% for user in users %}
-				{% if user.getGeoLatitude() and user.getGeoLongitude() %}
-					L.marker([{{ user.getGeoLatitude()|e }}, {{ user.getGeoLongitude()|e }}], {icon: userIcon})
+				{% if user.profile_is_public and user.geo_latitude and user.geo_longitude %}
+					L.marker([{{ user.geo_latitude|e }}, {{ user.geo_longitude|e }}], {icon: userIcon})
 					.bindPopup('{{ user.username|e }}')
 					.addTo(group);
 				{% endif %}
 			{% endfor %}
 			group.addTo(mymap);
+
+			/*
+			// fit all
 			mymap.fitBounds(group.getBounds(), {padding: [18, 18]});
+			*/
 		});
 		</script>
 		<style>
@@ -69,8 +72,6 @@ if (typeof jQuery != 'undefined') {
 				border: none;
 			}
 		</style>
-
-		<a href="{{ path('edit-profile') }}">Edit Profile</a>
 	</div>
 </div>
 {% endblock %}

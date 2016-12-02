@@ -20,23 +20,27 @@ if (typeof jQuery != 'undefined') {
 </script>
 <div data-role="page" id="main-page">
 	<div role="main" class="ui-content" data-ajax="false">
-		<h1>Profile for {{ app.user.getUsername()|e }}</h1>
+		<h1>Profile for {{ app.user.username|e }}</h1>
 		<ul>
+			<li>Real name: {{ app.user.profile_realname|e }}</li>
+			<li>{{ app.user.email|e }}</li>
 			<li>{{ app.user.getRoles()|join(', ')|e }}</li>
-			<li>{{ app.user.getLastLogin()|date("Y-m-d H:i:s")|e }}</li>
-			{% if app.user.getProfileDisplayEmail() %}
-				<li>{{ app.user.getEmail()|e }}</li>
+			{% if date(app.user.elite_expires) > date() %}
+				<li>Elite User through {{ app.user.elite_expires|date("Y-m-d H:i:s") }} </li>
+			{% else %}
+				<li>Regular User</li>
 			{% endif %}
-			<li>Real name: {{ app.user.getProfileRealname()|e }}</li>
-			<li>Location: [{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}]</li>
+			<li>Last login: {{ app.user.lastLogin()|date("Y-m-d H:i:s") }}</li>
+			<li>Display Profile: {% if app.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
+			<li>Display E-mail: {% if app.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
 		</ul>
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user.getGeoLatitude() and app.user.getGeoLongitude() %}
-				var mymap = L.map('mapid').setView([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], 13);
+			{% if app.user.geo_latitude and app.user.geo_longitude %}
+				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 7);
 			{% else %}
-				var mymap = L.map('mapid').setView([44, -73], 5);
+				var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
 			{% endif %}
 
 			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
@@ -48,13 +52,14 @@ if (typeof jQuery != 'undefined') {
 			});
 
 			Stamen_Terrain.addTo(mymap);
+			L.control.scale().addTo(mymap);
 
 			var userIcon = L.divIcon({
-				html: mfzch.getIcon('frame', '#be1e2d'),
+				html: getIcon('frame', '#be1e2d'),
 				iconSize: [36, 36]
 			});
 
-			var marker = L.marker([{{ app.user.getGeoLatitude()|e }}, {{ app.user.getGeoLongitude()|e }}], {icon: userIcon}).addTo(mymap);
+			var marker = L.marker([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], {icon: userIcon}).addTo(mymap);
 		});
 		</script>
 		<style>
@@ -67,6 +72,7 @@ if (typeof jQuery != 'undefined') {
 				border: none;
 			}
 		</style>
+		{# dump(app.user) #}
 
 		<a href="{{ path('edit-profile') }}">Edit Profile</a>
 	</div>

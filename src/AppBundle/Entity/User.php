@@ -22,27 +22,32 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-	protected $profile_realname;
+	public $profile_realname;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean", options={"default" : 0})
      */
-	protected $profile_display_email;
+	public $profile_is_public;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+	public $profile_display_email;
 
     /**
      * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
      */
-	protected $geo_latitude;
+	public $geo_latitude;
 
     /**
      * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
      */
-	protected $geo_longitude;
+	public $geo_longitude;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-	protected $elite_expires;
+	public $elite_expires;
 
     public function __construct()
     {
@@ -168,5 +173,29 @@ class User extends BaseUser
     public function getEliteExpires()
     {
         return $this->elite_expires;
+    }
+
+    /**
+     * Set profileIsPublic
+     *
+     * @param boolean $profileIsPublic
+     *
+     * @return User
+     */
+    public function setProfileIsPublic($profileIsPublic)
+    {
+        $this->profile_is_public = $profileIsPublic;
+
+        return $this;
+    }
+
+    /**
+     * Get profileIsPublic
+     *
+     * @return boolean
+     */
+    public function getProfileIsPublic()
+    {
+        return $this->profile_is_public;
     }
 }
