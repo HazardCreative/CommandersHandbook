@@ -223,7 +223,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 		} else {
 			mfzch.game.round++;
 
-			$('#ddc-current-team').html(mfzch.getIcon('company', mfzch.game.teams[0].color, 'game-icon') + mfzch.game.teams[0].name);
+			$('#ddc-current-team').html(getIcon('company', mfzch.game.teams[0].color, 'game-icon') + mfzch.game.teams[0].name);
 			$('#ddc-count').attr('data-team-index', 0);
 
 			$('#ddc-count').popup('option', 'afterclose', function(){
@@ -235,7 +235,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 						if (teamIndex < mfzch.game.teams.length-1) {
 							$('.gameinfo-doomsday-counter').html(mfzch.game.doomsday);
 							teamIndex++;
-							$('#ddc-current-team').html(mfzch.getIcon('company', mfzch.game.teams[teamIndex].color, 'game-icon') + mfzch.game.teams[teamIndex].name);
+							$('#ddc-current-team').html(getIcon('company', mfzch.game.teams[teamIndex].color, 'game-icon') + mfzch.game.teams[teamIndex].name);
 							$('#ddc-count').attr('data-team-index', teamIndex);
 							$('#ddc-count').popup('open');
 						} else {
@@ -309,7 +309,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 
 			$('#company-smash-index').val(companyid);
 			$('#frame-smash-index').val(frameid);
-			$('#frame-smash-name').html(mfzch.getIcon('frame', mfzch.game.teams[companyid].color, 'game-icon') + mfzch.game.teams[companyid].cFrames[frameid].name);
+			$('#frame-smash-name').html(getIcon('frame', mfzch.game.teams[companyid].color, 'game-icon') + mfzch.game.teams[companyid].cFrames[frameid].name);
 			$('#frame-smash-systems').html(mfzch.game.teams[companyid].cFrames[frameid].getSystemDisplay(false, true));
 
 			// Tracking level 30+

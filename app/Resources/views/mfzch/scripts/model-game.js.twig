@@ -87,10 +87,10 @@ gameModel.prototype = {
 			$('#def-tie-list').empty();
 
 			for (var i = 0; i < tiedForDef; i++) {
-				$('#def-tie-list').append('<li>' + mfzch.getIcon('company', this.teams[i].color, 'game-icon') + this.teams[i].name + '</li>')
+				$('#def-tie-list').append('<li>' + getIcon('company', this.teams[i].color, 'game-icon') + this.teams[i].name + '</li>')
 			}
 
-			$('.team-dupe-winner').html(mfzch.getIcon('company', this.teams[0].color, 'game-icon') + this.teams[0].name);
+			$('.team-dupe-winner').html(getIcon('company', this.teams[0].color, 'game-icon') + this.teams[0].name);
 
 			return true;
 		} else {
@@ -272,7 +272,7 @@ gameModel.prototype = {
 
 		var finalScore = '';
 		for (var i in this.teams) {
-			finalScore += '<li>' + mfzch.getIcon('company', this.teams[i].color, 'game-icon') + this.teams[i].gScore + ' - ' + this.teams[i].name + '</li>';
+			finalScore += '<li>' + getIcon('company', this.teams[i].color, 'game-icon') + this.teams[i].gScore + ' - ' + this.teams[i].name + '</li>';
 		}
 		$('#final-score').html(finalScore);
 		$('#final-score').listview('refresh');
