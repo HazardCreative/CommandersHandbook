@@ -1,0 +1,10 @@
+{% extends 'main.html.twig' %}
+
+{% block main %}
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+		<p><a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Bounce to Patreon API check</a></p>
+		{{ dump(patreon_data) }}
+	</div>
+</div>
+{% endblock %}
