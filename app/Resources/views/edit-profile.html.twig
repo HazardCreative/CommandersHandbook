@@ -1,8 +1,8 @@
 {% extends 'main.html.twig' %}
 
 {% block htmlhead %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
 {% endblock %}
 
 {% block main %}
@@ -22,6 +22,8 @@ if (typeof jQuery != 'undefined') {
 			{% else %}
 				var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
 			{% endif %}
+
+			mymap.attributionControl.setPrefix('');
 
 			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
 				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',

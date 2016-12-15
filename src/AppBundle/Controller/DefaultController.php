@@ -13,17 +13,26 @@ class DefaultController extends Controller
 	/**
 	 * @Route("/", name="homepage")
 	 */
-	public function indexAction(Request $request) {
-		return $this->render('mfzch/mfzch.html.twig', array(
-//		'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
-		));
+	public function indexAction() {
+		return $this->render('mfzch/mfzch.html.twig');
+	}
+
+	/**
+	 * @Route("/view-profile/{username}", name="view-profile-public")
+	 */
+	public function viewPublicProfileAction($username) {
+		$userManager = $this->get('fos_user.user_manager');
+		$user = $userManager->findUserByUsername($username);
+
+		return $this->render('view-public-profile.html.twig',
+			array('user' => $user));
 	}
 
 	/**
 	 * @Route("/view-profile", name="view-profile")
 	 */
-	public function viewProfileAction(Request $request) {
-		$user = $this->get('security.token_storage')->getToken()->getUser();
+	public function viewProfileAction() {
+		// $user = $this->get('security.token_storage')->getToken()->getUser();
 		return $this->render('view-profile.html.twig');
 	}
 

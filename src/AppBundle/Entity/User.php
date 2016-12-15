@@ -25,14 +25,14 @@ class User extends BaseUser
 	public $profile_realname;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
+     * @ORM\Column(type="boolean")
      */
-	public $profile_is_public;
+	public $profile_is_public = false;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
+     * @ORM\Column(type="boolean")
      */
-	public $profile_display_email;
+	public $profile_display_email = false;
 
     /**
      * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
@@ -48,6 +48,16 @@ class User extends BaseUser
      * @ORM\Column(type="datetime", nullable=true)
      */
 	public $elite_expires;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true, unique=true)
+     */
+	public $patreon_id;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+	public $patreon_data;
 
     public function __construct()
     {
@@ -197,5 +207,53 @@ class User extends BaseUser
     public function getProfileIsPublic()
     {
         return $this->profile_is_public;
+    }
+
+    /**
+     * Set patreonId
+     *
+     * @param integer $patreonId
+     *
+     * @return User
+     */
+    public function setPatreonId($patreonId)
+    {
+        $this->patreon_id = $patreonId;
+
+        return $this;
+    }
+
+    /**
+     * Get patreonId
+     *
+     * @return integer
+     */
+    public function getPatreonId()
+    {
+        return $this->patreon_id;
+    }
+
+    /**
+     * Set patreonData
+     *
+     * @param array $patreonData
+     *
+     * @return User
+     */
+    public function setPatreonData($patreonData)
+    {
+        $this->patreon_data = $patreonData;
+
+        return $this;
+    }
+
+    /**
+     * Get patreonData
+     *
+     * @return array
+     */
+    public function getPatreonData()
+    {
+        return $this->patreon_data;
     }
 }

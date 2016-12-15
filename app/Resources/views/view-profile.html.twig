@@ -1,13 +1,11 @@
 {% extends 'main.html.twig' %}
 
 {% block htmlhead %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
 
 <script>
-{{ include('mfzch/scripts/model-game.js.twig') }}
-{{ include('mfzch/scripts/model-settings.js.twig') }}
-{{ include('mfzch/scripts/mfzch.js.twig') }}
+{{ include('mfzch/scripts/generics.js.twig') }}
 </script>
 {% endblock %}
 
@@ -20,61 +18,68 @@ if (typeof jQuery != 'undefined') {
 </script>
 <div data-role="page" id="main-page">
 	<div role="main" class="ui-content" data-ajax="false">
-		<h1>Profile for {{ app.user.username|e }}</h1>
-		<ul>
-			<li>Real name: {{ app.user.profile_realname|e }}</li>
-			<li>{{ app.user.email|e }}</li>
-			<li>{{ app.user.getRoles()|join(', ')|e }}</li>
-			{% if date(app.user.elite_expires) > date() %}
-				<li>Elite User through {{ app.user.elite_expires|date("Y-m-d H:i:s") }} </li>
-			{% else %}
-				<li>Regular User</li>
-			{% endif %}
-			<li>Last login: {{ app.user.lastLogin()|date("Y-m-d H:i:s") }}</li>
-			<li>Display Profile: {% if app.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
-			<li>Display E-mail: {% if app.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
-		</ul>
-		<div id="mapid" style="height: 50vh;"></div>
-		<script>
-		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user.geo_latitude and app.user.geo_longitude %}
-				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 7);
-			{% else %}
-				var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
-			{% endif %}
+		{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+			<h1>Profile for {{ app.user.username|e }}</h1>
+			<ul>
+				<li>Real name: {{ app.user.profile_realname|e }}</li>
+				<li>{{ app.user.email|e }}</li>
+				<li>{{ app.user.getRoles()|join(', ')|e }}</li>
+				{% if date(app.user.elite_expires) > date() %}
+					<li>Elite User through {{ app.user.elite_expires|date("Y-m-d H:i:s") }} </li>
+				{% else %}
+					<li>Regular User</li>
+				{% endif %}
+				<li>Last login: {{ app.user.lastLogin()|date("Y-m-d H:i:s") }}</li>
+				<li>Display Profile: {% if app.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
+				<li>Display E-mail: {% if app.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
+			</ul>
+			<a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Connect Patreon Account</a>
+			<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
+			<script>
+			$(document).on("pagecontainershow", function(event, ui) {
+				{% if app.user.geo_latitude and app.user.geo_longitude %}
+					var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 7);
+				{% else %}
+					var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
+				{% endif %}
 
-			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
-				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-				subdomains: 'abcd',
-				minZoom: 0,
-				maxZoom: 18,
-				ext: 'png'
+				mymap.attributionControl.setPrefix('');
+
+				var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+					attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+					subdomains: 'abcd',
+					minZoom: 0,
+					maxZoom: 18,
+					ext: 'png'
+				});
+
+				Stamen_Terrain.addTo(mymap);
+				L.control.scale().addTo(mymap);
+
+				var userIcon = L.divIcon({
+					html: getIcon('frame', '#be1e2d'),
+					iconSize: [36, 36]
+				});
+
+				var marker = L.marker([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], {icon: userIcon}).addTo(mymap);
 			});
+			</script>
+			<style>
+				#mapid .frame-icon {
+					width: 3em;
+					height: 3em;
+				}
+				#mapid .leaflet-div-icon {
+					background: transparent;
+					border: none;
+				}
+			</style>
+			{# dump(app.user) #}
 
-			Stamen_Terrain.addTo(mymap);
-			L.control.scale().addTo(mymap);
-
-			var userIcon = L.divIcon({
-				html: getIcon('frame', '#be1e2d'),
-				iconSize: [36, 36]
-			});
-
-			var marker = L.marker([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], {icon: userIcon}).addTo(mymap);
-		});
-		</script>
-		<style>
-			#mapid .frame-icon {
-				width: 3em;
-				height: 3em;
-			}
-			#mapid .leaflet-div-icon {
-				background: transparent;
-				border: none;
-			}
-		</style>
-		{# dump(app.user) #}
-
-		<a href="{{ path('edit-profile') }}">Edit Profile</a>
+			<a href="{{ path('edit-profile') }}">Edit Profile</a>
+		{% else %}
+			<h1>Not logged in</h1>
+		{% endif %}
 	</div>
 </div>
 {% endblock %}

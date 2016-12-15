@@ -1,8 +1,8 @@
 {% extends 'main.html.twig' %}
 
 {% block htmlhead %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
 
 <script>
 {{ include('mfzch/scripts/generics.js.twig') }}
@@ -28,6 +28,8 @@ if (typeof jQuery != 'undefined') {
 				var mymap = L.map('mapid').setView([44, -73], 5);
 			{% endif %}
 
+			mymap.attributionControl.setPrefix('');
+
 			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
 				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 				subdomains: 'abcd',
@@ -50,7 +52,7 @@ if (typeof jQuery != 'undefined') {
 			{% for user in users %}
 				{% if user.profile_is_public and user.geo_latitude and user.geo_longitude %}
 					L.marker([{{ user.geo_latitude|e }}, {{ user.geo_longitude|e }}], {icon: userIcon})
-					.bindPopup('{{ user.username|e }}')
+					.bindPopup('<a href="{{ url('view-profile') }}/{{ user.username|e }}">{{ user.username|e }}</a>')
 					.addTo(group);
 				{% endif %}
 			{% endfor %}
