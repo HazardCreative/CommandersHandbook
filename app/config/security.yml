@@ -37,3 +37,4 @@ security:
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/edit-profile, role: ROLE_USER }
         - { path: ^/view-profile$, role: ROLE_USER }
+        - { path: ^/patreon-test, role: ROLE_USER }

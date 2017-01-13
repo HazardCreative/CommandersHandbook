@@ -45,16 +45,6 @@ class PatreonConnect {
 			$patreon_data['campaign_and_patrons_response'] = $api_client->fetch_campaign_and_patrons();
 			$patreon_data['campaign_response'] = $api_client->fetch_campaign();
 //			$pledges_response = $api_client->fetch_page_of_pledges($campaign_id, 10);
-
-			$user = $this->get('security.token_storage')->getToken()->getUser();
-			$user->setPatreonId($patreon_data['user_response']['id']);
-			$user->setPatreonData($patreon_data);
-
-			// write to DB
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($user);
-			$em->flush();
-
 		} else {
 			// connect failed
 			$patreon_data['result'] = false;

@@ -8,8 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Form\EditProfileType;
 
-class DefaultController extends Controller
-{
+class DefaultController extends Controller {
 	/**
 	 * @Route("/", name="homepage")
 	 */
