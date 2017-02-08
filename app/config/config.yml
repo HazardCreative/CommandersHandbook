@@ -42,8 +42,8 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
-        buildver: 2016113000
-        buildstring: v2016.11.30
+        buildver: 2017020800
+        buildstring: v2017.02.08
         patreon_client_id: "%patreon_client_id%"
 
 # Doctrine Configuration

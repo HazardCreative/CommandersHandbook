@@ -17,6 +17,13 @@ class DefaultController extends Controller {
 	}
 
 	/**
+	 * @Route("/command-network", name="command-home")
+	 */
+	public function commandNetworkAction() {
+		return $this->render('mfzch/pages/command-home.html.twig');
+	}
+
+	/**
 	 * @Route("/view-profile/{username}", name="view-profile-public")
 	 */
 	public function viewPublicProfileAction($username) {

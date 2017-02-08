@@ -20,10 +20,11 @@ if (typeof jQuery != 'undefined') {
 	<div role="main" class="ui-content" data-ajax="false">
 		{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 			<h1>Profile for {{ app.user.username|e }}</h1>
+			<p><a href="{{ path('edit-profile') }}">Edit Profile</a></p>
+
 			<ul>
 				<li>Real name: {{ app.user.profile_realname|e }}</li>
 				<li>{{ app.user.email|e }}</li>
-				<li>{{ app.user.getRoles()|join(', ')|e }}</li>
 				{% if date(app.user.elite_expires) > date() %}
 					<li>Elite User through {{ app.user.elite_expires|date("Y-m-d H:i:s") }} </li>
 				{% else %}
@@ -32,9 +33,15 @@ if (typeof jQuery != 'undefined') {
 				<li>Last login: {{ app.user.lastLogin()|date("Y-m-d H:i:s") }}</li>
 				<li>Display Profile: {% if app.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
 				<li>Display E-mail: {% if app.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
+				<li>Patreon ID: {% if app.user.patreon_id %}{{ app.user.patreon_id }} &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Update Patreon Account</a>{% else %}None &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Connect Patreon Account</a>{% endif %}</li>
+				<li>Location:<br />
+					<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
+				</li>
 			</ul>
-			<a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Connect Patreon Account</a>
-			<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
+
+			{# dump(app.user) #}
+			{# {{ app.user.getRoles()|join(', ')|e }} #}
+
 			<script>
 			$(document).on("pagecontainershow", function(event, ui) {
 				{% if app.user.geo_latitude and app.user.geo_longitude %}
@@ -74,9 +81,7 @@ if (typeof jQuery != 'undefined') {
 					border: none;
 				}
 			</style>
-			{# dump(app.user) #}
 
-			<a href="{{ path('edit-profile') }}">Edit Profile</a>
 		{% else %}
 			<h1>Not logged in</h1>
 		{% endif %}

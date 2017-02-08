@@ -14,6 +14,7 @@ if (typeof jQuery != 'undefined') {
 </script>
 <div data-role="page" id="main-page">
 	<div role="main" class="ui-content" data-ajax="false">
+		<p>Click to set location</p>
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
@@ -37,7 +38,7 @@ if (typeof jQuery != 'undefined') {
 			L.control.scale().addTo(mymap);
 
 			mymap.on('click', function(e){
-				alert("You clicked the map at " + e.latlng);
+				alert("Setting location to " + e.latlng);
 				$('#edit_profile_geo_latitude').val(e.latlng.lat);
 				$('#edit_profile_geo_longitude').val(e.latlng.lng);
 			});

@@ -1,0 +1,42 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
+
+<script>
+{{ include('mfzch/scripts/generics.js.twig') }}
+</script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+
+		{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+			<h1>Commander's Network</h1>
+			<p>Logged in as {{ app.user.getUsername()|e }} | <a href="{{ path('fos_user_security_logout') }}" rel="external">Logout</a></p>
+
+			<ul>
+				<li><a href="{{ path('view-profile') }}">My Profile</a></li>
+				<li><a href="{{ path('player-finder') }}">Find Commanders</a></li>
+
+				<li><a href="">Game finder</a></li>
+
+				<li><a href="">Browse Companies</a></li>
+			</ul>
+		{% else %}
+			<p>The commander's network requires users to log in.</p>
+			<p>Registration is free and open to all.</p>
+
+			<p><a href="{{ path('fos_user_security_login') }}" rel="external">Log in</a> or <a href="{{ path('fos_user_registration_register') }}" rel="external">Register</a></p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
