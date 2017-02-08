@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="framecompany")
+ * @ORM\HasLifecycleCallbacks
  */
 class FrameCompany {
     /**
@@ -21,6 +22,11 @@ class FrameCompany {
      * @ORM\Column(type="string")
      */
 	protected $title;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+	protected $description;
 
     /**
      * @ORM\Column(type="string")
@@ -40,11 +46,22 @@ class FrameCompany {
     /**
      * @ORM\Column(type="datetime")
      */
-	protected $date_created = date('Y-m-d h:i:s');
+	protected $date_created;
+	// change to ... options={"default": 0}
 
     /**
      * @ORM\Column(type="datetime")
      */
-	protected $date_modified = date('Y-m-d h:i:s');
+	protected $date_modified;
+	// change to ... options={"default": 0}
+
+    /**
+     * @ORM\PrePersist
+     */
+	public function onPrePersistSetDefaultDates() {
+		$current = new \DateTime();
+		$this->date_created = $current;
+		$this->date_modified = $current;
+	}
 
 }

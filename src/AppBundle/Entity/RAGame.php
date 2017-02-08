@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="gamedata")
+ * @ORM\HasLifecycleCallbacks
  */
 class RAGame {
 	const STATUS_OPEN = 0;
@@ -35,6 +36,11 @@ class RAGame {
     /**
      * @ORM\Column(type="string")
      */
+	protected $description;
+
+    /**
+     * @ORM\Column(type="string")
+     */
 	protected $owner;
 
     /**
@@ -48,22 +54,22 @@ class RAGame {
 	protected $log;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="smallint")
      */
 	protected $status = STATUS_OPEN;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="smallint")
      */
 	protected $setup_type = SETUP_OPEN;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="smallint")
      */
 	protected $access_view = VIEW_PRIVATE;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="smallint")
      */
 	protected $access_control = CONTROL_SELF;
 
@@ -80,12 +86,23 @@ class RAGame {
     /**
      * @ORM\Column(type="datetime")
      */
-	protected $date_created = date('Y-m-d h:i:s');
+	protected $date_created;
+	// change to ... options={"default": 0}
 
     /**
      * @ORM\Column(type="datetime")
      */
-	protected $date_modified = date('Y-m-d h:i:s');
+	protected $date_modified;
+	// change to ... options={"default": 0}
+
+    /**
+     * @ORM\PrePersist
+     */
+	public function onPrePersistSetDefaultDates() {
+		$current = new \DateTime();
+		$this->date_created = $current;
+		$this->date_modified = $current;
+	}
 
 	/*
 	game/blorf/372
