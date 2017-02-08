@@ -20,6 +20,8 @@ class PatreonController extends Controller {
 		$user->setPatreonData($pc_data['patreon_data']);
 		if ($pc_data['patreon_data']['user_response']['data']['id']) {
 			$user->setPatreonId($pc_data['patreon_data']['user_response']['data']['id']);
+			$user->setPatreonTokens($pc_data['patreon_data']['tokens']);
+			$user->setPatreonPledges($pc_data['patreon_data']['pledge']);
 		}
 
 		// write to DB

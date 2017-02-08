@@ -42,8 +42,22 @@ class PatreonConnect {
 
 			$api_client = new \Patreon\API($access_token);
 			$patreon_data['user_response'] = $api_client->fetch_user();
-			$patreon_data['campaign_and_patrons_response'] = $api_client->fetch_campaign_and_patrons();
-			$patreon_data['campaign_response'] = $api_client->fetch_campaign();
+
+
+			$patron = $patreon_data['user_response']['data'];
+			$included = $patreon_data['user_response']['included'];
+			$pledge = null;
+			if ($included != null) {
+			  foreach ($included as $obj) {
+				if ($obj["type"] == "pledge" && $obj["relationships"]["creator"]["data"]["id"] == $creator_id) {
+				  $pledge = $obj;
+				  break;
+				}
+			  }
+			}
+
+//			$patreon_data['campaign_and_patrons_response'] = $api_client->fetch_campaign_and_patrons();
+//			$patreon_data['campaign_response'] = $api_client->fetch_campaign();
 //			$pledges_response = $api_client->fetch_page_of_pledges($campaign_id, 10);
 		} else {
 			// connect failed
@@ -53,6 +67,7 @@ class PatreonConnect {
 		$data = array();
 		$data['redirect_url'] = $this->redirect_url;
 		$data['patreon_data'] = $patreon_data;
+		$data['patreon_data']['pledge'] = $pledge;
 
 		return $data;
 	}
