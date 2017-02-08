@@ -56,6 +56,16 @@ class User extends BaseUser {
     /**
      * @ORM\Column(type="array", nullable=true)
      */
+	public $patreon_tokens;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+	public $patreon_pledges;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
 	public $patreon_data;
 
     public function __construct()
@@ -233,6 +243,54 @@ class User extends BaseUser {
     }
 
     /**
+     * Set patreonTokens
+     *
+     * @param integer $patreonTokens
+     *
+     * @return User
+     */
+    public function setPatreonTokens($patreonTokens)
+    {
+        $this->patreon_tokens = $patreonTokens;
+
+        return $this;
+    }
+
+    /**
+     * Get patreonTokens
+     *
+     * @return integer
+     */
+    public function getPatreonTokens()
+    {
+        return $this->patreon_tokens;
+    }
+
+    /**
+     * Set patreonPledges
+     *
+     * @param integer $patreonPledges
+     *
+     * @return User
+     */
+    public function setPatreonPledges($patreonPledges)
+    {
+        $this->patreon_pledges = $patreonPledges;
+
+        return $this;
+    }
+
+    /**
+     * Get patreonPledges
+     *
+     * @return integer
+     */
+    public function getPatreonPledges()
+    {
+        return $this->patreon_pledges;
+    }
+
+    /**
      * Set patreonData
      *
      * @param array $patreonData
@@ -255,4 +313,5 @@ class User extends BaseUser {
     {
         return $this->patreon_data;
     }
+
 }
