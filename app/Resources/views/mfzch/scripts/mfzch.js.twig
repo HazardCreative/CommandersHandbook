@@ -6,6 +6,9 @@ var mfzch = {
 	loadouts: [],
 	settings: new settingsModel(),
 	frameNow: 1,
+	offlinemodified: true,
+
+	/* Parse saved game data */
 	gameDataToGameModel: function (loadedData) {
 		var restoredGame = new gameModel;
 		for (var i in loadedData) {
@@ -35,7 +38,6 @@ var mfzch = {
 			}
 		}
 		return restoredGame;
-
 	},
 	JSONtoGameModel: function (loadJSON) {
 		return restoredGame = this.gameDataToGameModel(JSON.parse(loadJSON));
@@ -44,6 +46,24 @@ var mfzch = {
 	/* Load and Save */
 
 	saveData: function(data, location, storeRaw) {
+		this.offlinemodified = true;
+		if (isOnline()) {
+			var postdata = new Object();
+
+			postdata[location] = JSON.stringify(data);
+
+			$.post('/save-data', postdata)
+			.done(function(result) {
+				mfzch.offlinemodified = false;
+				/* ***** THIS SEEMS LIKE A REALLY BAD IDEA? ***** */
+				for (var i in data) {
+					if (data[i].id === false) {
+						data[i].id = result[i].id;
+					}
+				}
+			});
+		}
+
 		if (!supportsLocalStorage()) { return false; }
 		if (storeRaw) {
 			localStorage[location] = data;
@@ -53,6 +73,20 @@ var mfzch = {
 		return 'done';
 	},
 	restoreData: function(location, dataType) {
+		/*
+		if (isOnline()) {
+			// decide if local data is newer...
+
+			var postdata = new Object();
+			postdata['type'] = dataType;
+
+			$.post('/load-data', postdata)
+			.done(function(result) {
+				// what?
+			});
+		}
+		*/
+
 		if (supportsLocalStorage() && localStorage[location]) {
 			var loadedData = JSON.parse(localStorage[location]);
 
@@ -126,6 +160,13 @@ var mfzch = {
 				return false;
 			}
 		}
+	},
+	syncAll: function() {
+		// also games
+		mfzch.companies = mfzch.restoreData('mfz.companies', 'companies');
+		// mfzch.loadouts = mfzch.restoreData('mfz.loadouts', 'loadouts');
+		// mfzch.settings = mfzch.restoreData('mfz.settings', 'settings');
+		return true; // only if all sync OK?
 	},
 
 	/* undo/redo */
