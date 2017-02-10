@@ -34,44 +34,44 @@ class RAGame {
 	protected $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
 	protected $description;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="integer")
      */
 	protected $owner;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
 	protected $json_data;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
 	protected $log;
 
     /**
      * @ORM\Column(type="smallint")
      */
-	protected $status = STATUS_OPEN;
+	protected $status = self::STATUS_OPEN;
 
     /**
      * @ORM\Column(type="smallint")
      */
-	protected $setup_type = SETUP_OPEN;
+	protected $setup_type = self::SETUP_OPEN;
 
     /**
      * @ORM\Column(type="smallint")
      */
-	protected $access_view = VIEW_PRIVATE;
+	protected $access_view = self::VIEW_PRIVATE;
 
     /**
      * @ORM\Column(type="smallint")
      */
-	protected $access_control = CONTROL_SELF;
+	protected $access_control = self::CONTROL_SELF;
 
     /**
      * @ORM\Column(type="array", nullable=true)
