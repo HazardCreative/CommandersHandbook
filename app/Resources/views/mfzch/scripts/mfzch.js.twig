@@ -55,9 +55,8 @@ var mfzch = {
 			$.post('/save-data', postdata)
 			.done(function(result) {
 				mfzch.offlinemodified = false;
-				/* ***** THIS SEEMS LIKE A REALLY BAD IDEA? ***** */
 				for (var i in data) {
-					if (data[i].id === false) {
+					if (data[i].id === false && result[i].id) {
 						data[i].id = result[i].id;
 					}
 				}
