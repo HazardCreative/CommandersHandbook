@@ -6,7 +6,7 @@ mfzch.companies = mfzch.restoreData('mfz.companies', 'companies');
 mfzch.loadouts = mfzch.restoreData('mfz.loadouts', 'loadouts');
 mfzch.settings = mfzch.restoreData('mfz.settings', 'settings');
 
-if(mfzch.settings.saveVersion == 2) { // legacy game format (2014.09.19)
+if(mfzch.settings.saveVersion <= 2) { // legacy game format (2014.09.19)
 	mfzch.game = new gameModel();
 	mfzch.settings.saveVersion = 3;
 	mfzch.saveData(mfzch.settings, 'mfz.settings');

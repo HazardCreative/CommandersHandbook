@@ -1,0 +1,24 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<script>
+{{ include('mfzch/scripts/generics.js.twig') }}
+</script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+		<h1>Manage Conflicts</h1>
+
+		<p>Own games</p>
+		{{ dump(games) }}
+	</div>
+</div>
+{% endblock %}
