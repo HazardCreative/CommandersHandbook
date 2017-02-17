@@ -47,21 +47,6 @@ var mfzch = {
 
 	saveData: function(data, location, storeRaw) {
 		this.offlinemodified = true;
-		if (isOnline()) {
-			var postdata = new Object();
-
-			postdata[location] = JSON.stringify(data);
-
-			$.post('/save-data', postdata)
-			.done(function(result) {
-				mfzch.offlinemodified = false;
-				for (var i in data) {
-					if (data[i].id === false && result[i].id) {
-						data[i].id = result[i].id;
-					}
-				}
-			});
-		}
 
 		if (!supportsLocalStorage()) { return false; }
 		if (storeRaw) {
@@ -69,23 +54,9 @@ var mfzch = {
 		} else {
 			localStorage[location] = JSON.stringify(data);
 		}
-		return 'done';
+		return true;
 	},
 	restoreData: function(location, dataType) {
-		/*
-		if (isOnline()) {
-			// decide if local data is newer...
-
-			var postdata = new Object();
-			postdata['type'] = dataType;
-
-			$.post('/load-data', postdata)
-			.done(function(result) {
-				// what?
-			});
-		}
-		*/
-
 		if (supportsLocalStorage() && localStorage[location]) {
 			var loadedData = JSON.parse(localStorage[location]);
 
@@ -160,12 +131,102 @@ var mfzch = {
 			}
 		}
 	},
-	syncAll: function() {
-		// also games
-		mfzch.companies = mfzch.restoreData('mfz.companies', 'companies');
-		// mfzch.loadouts = mfzch.restoreData('mfz.loadouts', 'loadouts');
-		// mfzch.settings = mfzch.restoreData('mfz.settings', 'settings');
-		return true; // only if all sync OK?
+
+	/* Server load/save */
+
+	saveServerData: function(data, location, storeRaw) {
+		if (isOnline()) {
+			var postdata = new Object();
+
+			postdata[location] = JSON.stringify(data);
+
+			$.post('/save-data', postdata)
+			.done(function(result) {
+				mfzch.offlinemodified = false;
+				for (var i in data) {
+					if (data[i].name == result[i].name) {
+						if (data[i].id === false && result[i].id) {
+							data[i].id = result[i].id;
+						}
+						if (data[i].servermodified) {
+							data[i].servermodified = result[i].servermodified;
+						}
+					}
+				}
+			});
+		} else {
+			return false;
+		}
+	},
+	loadServerData: function(dataType) {
+		if (isOnline()) {
+			var postdata = new Object();
+			postdata['type'] = dataType;
+
+			$.post('/load-data', postdata)
+			.done(function(result) {
+				// success
+				for (var i in result) {
+					if (result[i].type == 'company') {
+						for (var c in result[i].data) {
+							console.log(result[i].data[c].name);
+							var found = false;
+							for (var ec in mfzch.companies) {
+								if (mfzch.companies[ec].id == result[i].data[c].id) {
+									var found = true;
+
+									mfzch.companies[ec].id = result[i].data[c].id;
+									mfzch.companies[ec].name = result[i].data[c].name;
+									mfzch.companies[ec].description = result[i].data[c].description;
+									mfzch.companies[ec].shared = result[i].data[c].shared;
+									mfzch.companies[ec].color = result[i].data[c].color;
+
+									var restoredFrames = [];
+									for (var rf in result[i].data[c].frames) {
+										restoredFrames[rf] = new frameModel;
+										for (var frame in result[i].data[c].frames[rf]) {
+											restoredFrames[rf][frame] = result[i].data[c].frames[rf][frame];
+										}
+									}
+
+									mfzch.companies[ec].frames = restoredFrames;
+									mfzch.companies[ec].servermodified = result[i].data[c].servermodified;
+									// mfzch.companies[ec].nonstandard
+									// mfzch.companies[ec]. = result[i].data[c].created;
+								}
+							}
+
+							if (!found) {
+								// create if ID does not exist
+								var company = new companyModel();
+
+								company.id = result[i].data[c].id;
+								company.name = result[i].data[c].name;
+								company.description = result[i].data[c].description;
+								company.shared = result[i].data[c].shared;
+								company.color = result[i].data[c].color;
+
+								var restoredFrames = [];
+								for (var rf in result[i].data[c].frames) {
+									restoredFrames[rf] = new frameModel;
+									for (var frame in result[i].data[c].frames[rf]) {
+										restoredFrames[rf][frame] = result[i].data[c].frames[rf][frame];
+									}
+								}
+								company.frames = restoredFrames;
+
+								company.servermodified = result[i].data[c].servermodified;
+								// company.nonstandard
+								// company. = result[i].data[c].created;
+
+								mfzch.companies.push(company);
+							}
+						}
+					}
+					mfzch.updateCompanyList();
+				}
+			});
+		}
 	},
 
 	/* undo/redo */

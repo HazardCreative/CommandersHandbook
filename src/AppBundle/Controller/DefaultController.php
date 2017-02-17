@@ -141,11 +141,11 @@ class DefaultController extends Controller {
 					}
 
 					$company->setTitle($incoming->name);
-	//				$company->setDescription();
+					$company->setDescription($incoming->description);
 					$company->setOwner($user->getId());
 					$company->setHexcolor($incoming->color);
 					$company->setFrames($incoming->frames);
-	//				$company->setIsShared();
+					$company->setIsShared($incoming->shared);
 					$company->setDateModified(new \DateTime());
 
 					try {
@@ -153,7 +153,11 @@ class DefaultController extends Controller {
 						$em->persist($company);
 						$em->flush();
 
-						$result[] = ['id' => $company->getId()];
+						$result[] = array(
+							'id' => $company->getId(),
+							'name' => $company->getTitle(),
+							'servermodified' => $company->getDateModified(),
+						);
 					} catch (Exception $e) {
 						$success_check = false;
 					}
@@ -180,25 +184,32 @@ class DefaultController extends Controller {
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$user = $this->get('security.token_storage')->getToken()->getUser();
 
+				// if type = ...
+
 				$companies_repo = $this->getDoctrine()
 					->getRepository('AppBundle:FrameCompany');
 
 				$companies = $companies_repo->findByOwner($user->getId());
 
-				$output = [];
+				$output = array();
+
+				$response = array(
+					'type' => 'company',
+				);
 				foreach ($companies as $company) {
-					$o = [];
-					$o['id'] = $company->getId();
-					$o['name'] = $company->getTitle();
-					$o['description'] = $company->getDescription();
-					$o['owner'] = $user->getUsername();
-					$o['color'] = $company->getHexcolor();
-					$o['frames'] = $company->getFrames();
-					$o['shared'] = $company->getIsShared();
-					$o['created'] = $company->getDateCreated();
-					$o['modified'] = $company->getDateModified();
-					$output[] = $o;
+					$c = array();
+					$c['id'] = $company->getId();
+					$c['name'] = $company->getTitle();
+					$c['description'] = $company->getDescription();
+					$c['owner'] = $user->getUsername();
+					$c['color'] = $company->getHexcolor();
+					$c['frames'] = $company->getFrames();
+					$c['shared'] = $company->getIsShared();
+					$c['created'] = $company->getDateCreated();
+					$c['servermodified'] = $company->getDateModified();
+					$response['data'][] = $c;
 				}
+				$output[] = $response;
 
 				return new JsonResponse($output);
 

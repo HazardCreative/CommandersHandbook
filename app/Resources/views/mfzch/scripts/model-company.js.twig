@@ -1,9 +1,12 @@
 function companyModel() {
 	this.id = false;
 	this.name = 'Unnamed Company';
+	this.description = '';
+	this.shared = false;
 	this.color = '#880000';
 	this.frames = [];
 	this.nonstandard = false;
+	this.servermodified = false;
 }
 
 companyModel.prototype = {
