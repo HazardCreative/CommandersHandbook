@@ -17,7 +17,11 @@ $(document).on('submit', 'form', function(event){ // kill all HTML form submits
 });
 
 $(document).ready(function(){
-	window.applicationCache.update();
+	try {
+		window.applicationCache.update();
+	} catch (err) {
+		// fail silent
+	}
 	$('#version').html(PUBLICBUILDSTRING);
 
 	if(mfzch.settings.buildVersion < BUILDVERSION) {
