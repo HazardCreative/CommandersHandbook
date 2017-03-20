@@ -165,40 +165,42 @@ class DefaultController extends Controller {
 	//		var_dump($_REQUEST); die();
 
 			$result = [];
-			if ($_REQUEST['mfz_companies']) {
-				$data = json_decode($_REQUEST['mfz_companies']);
+			if ($_REQUEST['company']) {
+				$data = json_decode($_REQUEST['company']);
 
 				$companies_repo = $this->getDoctrine()
 					->getRepository('AppBundle:FrameCompany');
 
 				foreach($data as $incoming) {
+					if ($incoming->clientmodified) {
 
-					if (!$dbresult = $companies_repo->findById($incoming->id)) {
-						$company = new FrameCompany();
-					} else {
-						$company = $dbresult[0];
-					}
+						if (!$dbresult = $companies_repo->findById($incoming->id)) {
+							$company = new FrameCompany();
+						} else {
+							$company = $dbresult[0];
+						}
 
-					$company->setTitle($incoming->name);
-					$company->setDescription($incoming->description);
-					$company->setOwner($user->getId());
-					$company->setHexcolor($incoming->color);
-					$company->setFrames($incoming->frames);
-					$company->setIsShared($incoming->shared);
-					$company->setDateModified(new \DateTime());
+						$company->setTitle($incoming->name);
+						$company->setDescription($incoming->description);
+						$company->setOwner($user->getId());
+						$company->setHexcolor($incoming->color);
+						$company->setFrames($incoming->frames);
+						$company->setIsShared($incoming->shared);
+						$company->setDateModified(new \DateTime());
 
-					try {
-						$em = $this->getDoctrine()->getManager();
-						$em->persist($company);
-						$em->flush();
+						try {
+							$em = $this->getDoctrine()->getManager();
+							$em->persist($company);
+							$em->flush();
 
-						$result[] = array(
-							'id' => $company->getId(),
-							'name' => $company->getTitle(),
-							'servermodified' => $company->getDateModified(),
-						);
-					} catch (Exception $e) {
-						$success_check = false;
+							$result[] = array(
+								'id' => $company->getId(),
+								'name' => $company->getTitle(),
+								'servermodified' => $company->getDateModified(),
+							);
+						} catch (Exception $e) {
+							$success_check = false;
+						}
 					}
 				}
 			}
@@ -256,4 +258,61 @@ class DefaultController extends Controller {
 			return new Response('Auth Failure', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
 		}
 	}
+
+	/**
+	 * @Route("/delete-data", name="delete-data")
+	 */
+	public function deleteDataAction() {
+		$success_check = true;
+
+		$auth_checker = $this->get('security.authorization_checker');
+
+		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+			$user = $this->get('security.token_storage')->getToken()->getUser();
+
+			$result = [];
+			if ($_REQUEST['company']) {
+				$del_id = json_decode($_REQUEST['company']);
+
+				$companies_repo = $this->getDoctrine()
+					->getRepository('AppBundle:FrameCompany');
+
+				if ($dbresult = $companies_repo->findById($del_id)) {
+					$company = $dbresult[0];
+
+					if ($company->getOwner() == $user->getUsername()) {
+						try {
+							$em = $this->getDoctrine()->getManager();
+
+							$em->remove($company);
+							$em->flush();
+
+							$result[] = array(
+								'id' => $company->getId(),
+								'name' => $company->getTitle(),
+								'servermodified' => $company->getDateModified(),
+							);
+						} catch (Exception $e) {
+							$success_check = false;
+						}
+					} else {
+						$success_check = false;
+					}
+				}
+
+			}
+
+			if ($success_check) {
+				return new Response('', Response::HTTP_OK); // 200
+			} else {
+				return new Response('', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+			}
+		} else {
+			return new Response('Auth Failure', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+		}
+	}
+
+
+
+
 }
