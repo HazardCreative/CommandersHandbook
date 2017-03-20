@@ -41,7 +41,6 @@ class DefaultController extends Controller {
 	 * @Route("/view-profile", name="view-profile")
 	 */
 	public function viewProfileAction() {
-		// $user = $this->get('security.token_storage')->getToken()->getUser();
 		return $this->render('view-profile.html.twig');
 	}
 
@@ -74,10 +73,50 @@ class DefaultController extends Controller {
 	 * @Route("/player-finder", name="player-finder")
 	 */
 	public function playerFinderAction(Request $request) {
-        $userManager = $this->get('fos_user.user_manager');
-        $users = $userManager->findUsers();
+        return $this->render('player-finder.html.twig');
+	}
 
-        return $this->render('player-finder.html.twig', array('users' => $users));
+	/**
+	 * @Route("/get-players", name="get-players")
+	 */
+	public function getPlayersAction(Request $request) {
+
+		if ($_REQUEST['data']) {
+			$data = json_decode($_REQUEST['data']);
+
+			// Get closest
+			$user = $this->get('security.token_storage')->getToken()->getUser();
+
+			$query = $this->getDoctrine()->getEntityManager()
+				->createQuery(
+					'SELECT u FROM AppBundle:User u
+					WHERE u.geo_latitude > :latmin
+					AND u.geo_latitude < :latmax
+					AND u.geo_longitude > :longmin
+					AND u.geo_longitude < :longmax
+					AND u.profile_is_public = true'
+				)->setParameter('latmin', $data->lat -1)
+				->setParameter('latmax', $data->lat +1)
+				->setParameter('longmin', $data->lng -1)
+				->setParameter('longmax', $data->lng +1);
+
+			$queryResult = $query->getResult();
+
+			$userOutput = [];
+			foreach ($queryResult as $userObj) {
+				$thisUser['username'] = $userObj->getUsername();
+				$thisUser['geo_latitude'] = $userObj->getGeoLatitude();
+				$thisUser['geo_longitude'] = $userObj->getGeoLongitude();
+				$thisUser['link'] = $this->generateUrl('view-profile-public', array('username' => $userObj->getUsername()));
+
+				$userOutput[] = $thisUser;
+			}
+
+			return new JsonResponse($userOutput);
+
+		} else {
+			return new Response('', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+		}
 	}
 
 	/**

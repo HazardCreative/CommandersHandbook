@@ -19,13 +19,14 @@ if (typeof jQuery != 'undefined') {
 <div data-role="page" id="main-page">
 	<div role="main" class="ui-content" data-ajax="false">
 		<h1>Player Finder</h1>
+		<p>Players in your area</p>
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
 			{% if app.user and app.user.geo_latitude and app.user.geo_longitude %}
-				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 7);
+				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 11);
 			{% else %}
-				var mymap = L.map('mapid').setView([44, -73], 5);
+				var mymap = L.map('mapid').setView([42.6, -72.6], 9);
 			{% endif %}
 
 			mymap.attributionControl.setPrefix('');
@@ -33,7 +34,7 @@ if (typeof jQuery != 'undefined') {
 			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
 				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 				subdomains: 'abcd',
-				minZoom: 0,
+				minZoom: 8,
 				maxZoom: 18,
 				ext: 'png'
 			});
@@ -48,20 +49,39 @@ if (typeof jQuery != 'undefined') {
 				popupAnchor: [0, -12]
 			});
 
-			var group = new L.featureGroup();
-			{% for user in users %}
-				{% if user.profile_is_public and user.geo_latitude and user.geo_longitude %}
-					L.marker([{{ user.geo_latitude|e }}, {{ user.geo_longitude|e }}], {icon: userIcon})
-					.bindPopup('<a href="{{ url('view-profile') }}/{{ user.username|e }}">{{ user.username|e }}</a>')
-					.addTo(group);
-				{% endif %}
-			{% endfor %}
-			group.addTo(mymap);
+			function getNewPlayers() {
+				var mapObj = new Object();
+				mapObj['data'] = JSON.stringify(mymap.getCenter());
+				$.get('/get-players', mapObj)
+				.done(function(result){
+					group.remove();
 
-			/*
-			// fit all
-			mymap.fitBounds(group.getBounds(), {padding: [18, 18]});
-			*/
+					group = new L.featureGroup();
+
+					for (var point in result) {
+						L.marker([ result[point].geo_latitude , result[point].geo_longitude ], {icon: userIcon})
+						.bindPopup('<a href="' + result[point].link + '">' + result[point].username + '</a>')
+						.addTo(group);
+					}
+
+					group.addTo(mymap);
+
+					lastLoad = mymap.getCenter();
+				});
+			}
+
+			var lastLoad = mymap.getCenter();
+
+			function reloadPoints(e) {
+				// 111322m apporx distance between latitudes
+				if (lastLoad.distanceTo(mymap.getCenter()) > 50000) {
+					getNewPlayers();
+				};
+			}
+
+			var group = new L.featureGroup();
+			getNewPlayers();
+			mymap.on('moveend', reloadPoints);
 		});
 		</script>
 		<style>
