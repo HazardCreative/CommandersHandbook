@@ -6,24 +6,10 @@
 
 	<div role="main" class="ui-content">
 		<form>
+			<h2>Standard options</h2>
 			<div class="ui-field-contain">
 				<label for="settings-enablesplits">Enable Split Systems:</label>
 				<select name="settings-enablesplits" id="settings-enablesplits" data-role="slider">
-					<option value="off">Off</option>
-					<option value="on">On</option>
-				</select>
-			</div>
-			<!-- *** -->
-			<div class="ui-field-contain">
-				<label for="settings-enableenvironmental">Enable Environmental Systems (beta):</label>
-				<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="slider">
-					<option value="off">Off</option>
-					<option value="on">On</option>
-				</select>
-			</div>
-			<div class="ui-field-contain">
-				<label for="settings-nonthematic">Non-Thematic Navigation:</label>
-				<select name="settings-nonthematic" id="settings-nonthematic" data-role="slider">
 					<option value="off">Off</option>
 					<option value="on">On</option>
 				</select>
@@ -46,6 +32,17 @@
 				</fieldset>
 			</div>
 			-->
+
+			<h2>Elite options</h2>
+			{% if is_granted('IS_AUTHENTICATED_FULLY')
+		and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
+				<div class="ui-field-contain">
+					<label for="settings-activesync">Server Synchronization:</label>
+					<select name="settings-activesync" id="settings-activesync" data-role="slider">
+						<option value="off">Off</option>
+						<option value="on">On</option>
+					</select>
+				</div>
 				<div class="ui-field-contain">
 					<label for="settings-enableenvironmental">Enable Environmental Systems (beta):</label>
 					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="slider">
@@ -53,8 +50,24 @@
 						<option value="on">On</option>
 					</select>
 				</div>
+			{% else %}
+				<div class="ui-field-contain">
+					<label for="settings-activesync">Server Synchronization:</label>
+					<select name="settings-activesync" id="settings-activesync" data-role="slider" disabled="disabled">
+						<option value="off">Off</option>
+					</select>
+				</div>
+				<div class="ui-field-contain">
+					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
+					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="slider" disabled="disabled">
+						<option value="off">Off</option>
+					</select>
+				</div>
+
+			{% endif %}
+
+			<h2>Usage</h2>
 			<div class="ui-field-contain">
-				<h3>Usage</h3>
 				<ul id="settings-usage">
 					<li>-</li>
 				</ul>
