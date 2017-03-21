@@ -1,5 +1,9 @@
 {% extends 'main.html.twig' %}
 
+{% block htmlhead %}
+	<script src="{{ asset('jq/jquery-visibility.min.js') }}"></script>
+{% endblock %}
+
 {% block main %}
 {{ include('mfzch/pages/title.html.twig') }}
 {{ include('mfzch/pages/license.html.twig') }}
@@ -23,6 +27,7 @@
 {{ include('mfzch/scripts/model-company.js.twig') }}
 {{ include('mfzch/scripts/model-frame.js.twig') }}
 {{ include('mfzch/scripts/model-settings.js.twig') }}
+{{ include('mfzch/scripts/model-appstate.js.twig') }}
 {{ include('mfzch/scripts/mfzch.js.twig') }}
 {{ include('mfzch/scripts/globals.js.twig') }}
 {{ include('mfzch/scripts/setup.js.twig') }}

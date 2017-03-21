@@ -414,7 +414,7 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 	}
 });
 
-$(window).focus(function(){
+$(document).on('show', function() {
 	if (window.location.hash == "#company-analysis") {
 		mfzch.syncServerData('companies');
 	}
