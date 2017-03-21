@@ -29,15 +29,6 @@ $(document).on('pagecreate', '#settings', function(event){
 		mfzch.saveData('settings');
 	});
 
-	$(document).on('change', 'input[name=settings-attackgraph]', function(){
-		if ($(this).val() == 'on') {
-			mfzch.settings.altAttackGraphType = true;
-		} else {
-			mfzch.settings.altAttackGraphType = false;
-		}
-		mfzch.saveData('settings');
-	});
-
 	$(document).on('change', '#settings-activesync', function(){
 		if ($(this).val() == 'on') {
 			mfzch.settings.activeSync = true;
@@ -57,14 +48,6 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		}
 		$('#settings-enablesplits').slider('refresh');
 
-		/* *** */
-		if (mfzch.settings.enableEnvironmental) {
-			$('#settings-enableenvironmental').val('on');
-		} else {
-			$('#settings-enableenvironmental').val('off');
-		}
-		$('#settings-enableenvironmental').slider('refresh');
-
 		if (mfzch.settings.compactUI) {
 			$('#settings-compactui').val('on');
 		} else {
@@ -72,19 +55,24 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		}
 		$('#settings-compactui').slider('refresh');
 
-		if (mfzch.settings.altAttackGraphType) {
-			$('#settings-attackgraph-2').prop('checked', true);
-		} else {
-			$('#settings-attackgraph-1').prop('checked', true);
-		}
-		$('input[name=settings-attackgraph]').checkboxradio('refresh');
+		{% if is_granted('IS_AUTHENTICATED_FULLY')
+			and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
 
-		if (mfzch.settings.activeSync) {
-			$('#settings-activesync').val('on');
-		} else {
-			$('#settings-activesync').val('off');
-		}
-		$('#settings-activesync').slider('refresh');
+			if (mfzch.settings.activeSync) {
+				$('#settings-activesync').val('on');
+			} else {
+				$('#settings-activesync').val('off');
+			}
+			$('#settings-activesync').slider('refresh');
+
+			if (mfzch.settings.enableEnvironmental) {
+				$('#settings-enableenvironmental').val('on');
+			} else {
+				$('#settings-enableenvironmental').val('off');
+			}
+			$('#settings-enableenvironmental').slider('refresh');
+
+		{% endif %}
 
 		$('#settings-usage').empty();
 
