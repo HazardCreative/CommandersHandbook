@@ -2,11 +2,9 @@ function appStateModel() {
 	{% if is_granted('IS_AUTHENTICATED_FULLY')
 		and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
 
-		this.activeSync = true;
 		this.isElite = true;
 		this.eliteExpires = '{{ app.user.elite_expires|date("Y-m-d H:i:s") }}';
 	{% else %}
-		this.activeSync = false;
 		this.isElite = false;
 	{% endif %}
 };

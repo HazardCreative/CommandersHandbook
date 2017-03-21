@@ -37,6 +37,15 @@ $(document).on('pagecreate', '#settings', function(event){
 		}
 		mfzch.saveData('settings');
 	});
+
+	$(document).on('change', '#settings-activesync', function(){
+		if ($(this).val() == 'on') {
+			mfzch.settings.activeSync = true;
+		} else {
+			mfzch.settings.activeSync = false;
+		}
+		mfzch.saveData('settings');
+	});
 });
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){
@@ -69,6 +78,13 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 			$('#settings-attackgraph-1').prop('checked', true);
 		}
 		$('input[name=settings-attackgraph]').checkboxradio('refresh');
+
+		if (mfzch.settings.activeSync) {
+			$('#settings-activesync').val('on');
+		} else {
+			$('#settings-activesync').val('off');
+		}
+		$('#settings-activesync').slider('refresh');
 
 		$('#settings-usage').empty();
 

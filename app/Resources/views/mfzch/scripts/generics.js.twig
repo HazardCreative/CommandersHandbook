@@ -145,14 +145,12 @@ function getIcon(iconType, color, cssClass) {
 }
 
 function isOnline() {
-	if (mfzch.appState.activeSync) {
-		if (window.location.hostname == '127.0.0.1') {
-			return true;
-		}
+	if (window.location.hostname == '127.0.0.1') {
+		return true;
+	}
 
-		if (navigator.onLine) {
-			return hostReachable();
-		}
+	if (navigator.onLine) {
+		return hostReachable();
 	}
 
 	return false;

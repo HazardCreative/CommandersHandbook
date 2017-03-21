@@ -196,7 +196,7 @@ var mfzch = {
 	//			|| dataType == 'loadouts'
 	//			|| dataType == 'settings'
 			) {
-				if (isOnline()) {
+				if (mfzch.settings.activeSync && isOnline()) {
 					var postdata = new Object();
 
 					var data = this[dataType]
@@ -239,7 +239,7 @@ var mfzch = {
 				return false;
 			}
 
-			if (isOnline()) {
+			if (mfzch.settings.activeSync && isOnline()) {
 				var postdata = new Object();
 				postdata['type'] = dataType;
 
