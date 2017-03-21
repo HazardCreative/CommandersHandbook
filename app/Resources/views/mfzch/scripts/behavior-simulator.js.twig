@@ -2,33 +2,33 @@ $(document).on('pagecreate', '#dice-roller', function(event){
 	$(document).on('click', '#dice-roller .add-sys', function(){
 		mfzch.frameSet[mfzch.frameNow].addSystem($(this).attr('data-sys-type'));
 		mfzch.updateSystemDisplay(mfzch.frameSet[mfzch.frameNow]);
-		mfzch.saveData(mfzch.frameSet, 'mfz.diceSim');
+		mfzch.saveData('frameSet');
 	});
 
 	$(document).on('click', '#dice-roller .reset-sys', function(){
 		mfzch.frameSet[mfzch.frameNow] = new frameModel();
 		mfzch.frameSet[mfzch.frameNow].activeRange = $('#sys-range').val();
 		mfzch.updateSystemDisplay(mfzch.frameSet[mfzch.frameNow]);
-		mfzch.saveData(mfzch.frameSet, 'mfz.diceSim');
+		mfzch.saveData('frameSet');
 	});
 
 	$(document).on('click', '#active-systems li', function(){
 		mfzch.frameSet[mfzch.frameNow].removeSystem($(this).attr('data-sys'));
 		mfzch.updateSystemDisplay(mfzch.frameSet[mfzch.frameNow]);
-		mfzch.saveData(mfzch.frameSet, 'mfz.diceSim');
+		mfzch.saveData('frameSet');
 	});
 
 	$(document).on('change', '#sys-range', function(){
 		mfzch.frameSet[mfzch.frameNow].activeRange = $('#sys-range').val();
 		mfzch.frameSet[mfzch.frameNow].rollResult = false;
 		mfzch.updateSystemDisplay(mfzch.frameSet[mfzch.frameNow]);
-		mfzch.saveData(mfzch.frameSet, 'mfz.diceSim');
+		mfzch.saveData('frameSet');
 	});
 
 	$(document).on('click', '#dice-roller .roll-all', function(){
 		mfzch.frameSet[mfzch.frameNow].rollAll();
 		$('#active-dice').html(mfzch.frameSet[mfzch.frameNow].getRollDisplay());
-		mfzch.saveData(mfzch.frameSet, 'mfz.diceSim');
+		mfzch.saveData('frameSet');
 		try {
 			ga('send', 'event', 'Simulator', 'Action', 'Roll Frame', mfzch.frameNow, false);
 		} catch (err) {}

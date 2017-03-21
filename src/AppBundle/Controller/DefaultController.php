@@ -161,55 +161,61 @@ class DefaultController extends Controller {
 
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$user = $this->get('security.token_storage')->getToken()->getUser();
+			if (new \DateTime("now") < $user->getEliteExpires()) {
 
-	//		var_dump($_REQUEST); die();
+				$result = [];
+				if ($_REQUEST['companies']) {
+					$data = json_decode($_REQUEST['companies']);
 
-			$result = [];
-			if ($_REQUEST['company']) {
-				$data = json_decode($_REQUEST['company']);
+					$companies_repo = $this->getDoctrine()
+						->getRepository('AppBundle:FrameCompany');
 
-				$companies_repo = $this->getDoctrine()
-					->getRepository('AppBundle:FrameCompany');
-
-				foreach($data as $incoming) {
-					if ($incoming->clientmodified) {
-
+					foreach($data as $incoming) {
 						if (!$dbresult = $companies_repo->findById($incoming->id)) {
 							$company = new FrameCompany();
 						} else {
 							$company = $dbresult[0];
 						}
 
-						$company->setTitle($incoming->name);
-						$company->setDescription($incoming->description);
-						$company->setOwner($user->getId());
-						$company->setHexcolor($incoming->color);
-						$company->setFrames($incoming->frames);
-						$company->setIsShared($incoming->shared);
-						$company->setDateModified(new \DateTime());
+						if ($incoming->clientmodified) {
+							$company->setTitle($incoming->name);
+							$company->setDescription($incoming->description);
+							$company->setOwner($user->getId());
+							$company->setHexcolor($incoming->color);
+							$company->setFrames($incoming->frames);
+							$company->setIsShared($incoming->shared);
+							$company->setDateModified(new \DateTime());
 
-						try {
-							$em = $this->getDoctrine()->getManager();
-							$em->persist($company);
-							$em->flush();
+							try {
+								$em = $this->getDoctrine()->getManager();
+								$em->persist($company);
+								$em->flush();
 
+								$result[] = array(
+									'id' => $company->getId(),
+									'name' => $company->getTitle(),
+									'servermodified' => $company->getDateModified(),
+								);
+							} catch (Exception $e) {
+								$success_check = false;
+							}
+						} else {
 							$result[] = array(
 								'id' => $company->getId(),
 								'name' => $company->getTitle(),
 								'servermodified' => $company->getDateModified(),
 							);
-						} catch (Exception $e) {
-							$success_check = false;
 						}
 					}
 				}
-			}
 
-			if ($success_check) {
-				return new JsonResponse($result);
-//				return new Response('', Response::HTTP_OK); // 200
+				if ($success_check) {
+					return new JsonResponse($result);
+				} else {
+					return new Response('Data Error', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+				}
 			} else {
-				return new Response('', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+				return new Response('Non-elite', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
 			}
 		} else {
 			return new Response('Auth Failure', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
@@ -225,6 +231,7 @@ class DefaultController extends Controller {
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$user = $this->get('security.token_storage')->getToken()->getUser();
 
+			if (new \DateTime("now") < $user->getEliteExpires()) {
 				// if type = ...
 
 				$companies_repo = $this->getDoctrine()
@@ -253,7 +260,9 @@ class DefaultController extends Controller {
 				$output[] = $response;
 
 				return new JsonResponse($output);
-
+			} else {
+				return new Response('Non-elite', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+			}
 		} else {
 			return new Response('Auth Failure', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
 		}
@@ -270,42 +279,46 @@ class DefaultController extends Controller {
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$user = $this->get('security.token_storage')->getToken()->getUser();
 
-			$result = [];
-			if ($_REQUEST['company']) {
-				$del_id = json_decode($_REQUEST['company']);
+			if (new \DateTime("now") < $user->getEliteExpires()) {
+				$result = [];
+				if ($_REQUEST['companies']) {
+					$del_id = json_decode($_REQUEST['companies']);
 
-				$companies_repo = $this->getDoctrine()
-					->getRepository('AppBundle:FrameCompany');
+					$companies_repo = $this->getDoctrine()
+						->getRepository('AppBundle:FrameCompany');
 
-				if ($dbresult = $companies_repo->findById($del_id)) {
-					$company = $dbresult[0];
+					if ($dbresult = $companies_repo->findById($del_id)) {
+						$company = $dbresult[0];
 
-					if ($company->getOwner() == $user->getUsername()) {
-						try {
-							$em = $this->getDoctrine()->getManager();
+						if ($company->getOwner() == $user->getUsername()) {
+							try {
+								$em = $this->getDoctrine()->getManager();
 
-							$em->remove($company);
-							$em->flush();
+								$em->remove($company);
+								$em->flush();
 
-							$result[] = array(
-								'id' => $company->getId(),
-								'name' => $company->getTitle(),
-								'servermodified' => $company->getDateModified(),
-							);
-						} catch (Exception $e) {
+								$result[] = array(
+									'id' => $company->getId(),
+									'name' => $company->getTitle(),
+									'servermodified' => $company->getDateModified(),
+								);
+							} catch (Exception $e) {
+								$success_check = false;
+							}
+						} else {
 							$success_check = false;
 						}
-					} else {
-						$success_check = false;
 					}
+
 				}
 
-			}
-
-			if ($success_check) {
-				return new Response('', Response::HTTP_OK); // 200
+				if ($success_check) {
+					return new Response('', Response::HTTP_OK); // 200
+				} else {
+					return new Response('Data Error', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+				}
 			} else {
-				return new Response('', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
+				return new Response('Non-elite', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
 			}
 		} else {
 			return new Response('Auth Failure', Response::HTTP_INTERNAL_SERVER_ERROR); // 500

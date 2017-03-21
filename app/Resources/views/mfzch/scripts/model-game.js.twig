@@ -166,10 +166,10 @@ gameModel.prototype = {
 		mfzch.undo.currentState = 0;
 		mfzch.undo.validStates = 0;
 
-		mfzch.saveData(this, 'mfz.game');
+		mfzch.saveData('game');
 
 		mfzch.settings.gameEndedOnce = false;
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	},
 	checkUnclaimedIsPossible: function () {
 		if (this.teams.length < 3) {
@@ -264,7 +264,7 @@ gameModel.prototype = {
 
 			} catch (err) {}
 			mfzch.settings.gameEndedOnce = true;
-			mfzch.saveData(mfzch.settings, 'mfz.settings');
+			mfzch.saveData('settings');
 		}
 		this.gameEnded = true;
 		this.logEvent('Game over');
@@ -280,7 +280,7 @@ gameModel.prototype = {
 
 		$('#game-end').popup('open');
 		$('#end-round').hide();
-		mfzch.saveData(this, 'mfz.game');
+		mfzch.saveData('game');
 	},
 	logEvent: function(eventText) {
 		this.log += timeStamp() + ' - ' + eventText + '\n';

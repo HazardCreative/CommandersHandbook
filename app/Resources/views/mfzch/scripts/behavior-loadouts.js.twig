@@ -30,7 +30,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 			if (mfzch.companies[companyid].frames.length < MAXFRAMES) {
 				load.name = uniqueName(load.name, buildNameArray(mfzch.companies[companyid].frames))
 				mfzch.companies[companyid].frames.push(load);
-				mfzch.saveData(mfzch.companies, 'mfz.companies');
+				mfzch.saveData('companies');
 
 				try {
 					ga('send', 'event', 'Loadouts', 'Action', 'Add Frame', 0, false);
@@ -46,7 +46,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 
 			company.frames.push(load);
 			mfzch.companies.push(company);
-			mfzch.saveData(mfzch.companies, 'mfz.companies');
+			mfzch.saveData('companies');
 
 			try {
 				ga('send', 'event', 'Loadouts', 'Action', 'Add Company', 0, false);
@@ -68,7 +68,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		load.name = uniqueName('Custom Loadout', nameArray);
 
 		mfzch.loadouts.push(load);
-		mfzch.saveData(mfzch.loadouts, 'mfz.loadouts');
+		mfzch.saveData('loadouts');
 
 		mfzch.updateLoadoutList();
 
@@ -90,7 +90,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		var loadid = $(this).parent().attr('data-load-id');
 
 		mfzch.loadouts.splice(loadid, 1);
-		mfzch.saveData(mfzch.loadouts, 'mfz.loadouts');
+		mfzch.saveData('loadouts');
 
 		$('#loadouts-custom [data-load-id=' + loadid + ']').slideUp(function(){
 			mfzch.updateLoadoutList();
@@ -119,7 +119,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		$('#loadout-systems').html(mfzch.loadouts[loadid].getSystemDisplay(false, false));
 		$('#loadout-graph').html(mfzch.loadouts[loadid].createFrameGraph(false));
 		mfzch.updateLoadoutList();
-		mfzch.saveData(mfzch.loadouts, 'mfz.loadouts');
+		mfzch.saveData('loadouts');
 	});
 
 	// loadout reset systems
@@ -133,7 +133,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		$('#loadout-systems').html(mfzch.loadouts[loadid].getSystemDisplay(false, false));
 		$('#loadout-graph').html(mfzch.loadouts[loadid].createFrameGraph(false));
 		mfzch.updateLoadoutList();
-		mfzch.saveData(mfzch.loadouts, 'mfz.loadouts');
+		mfzch.saveData('loadouts');
 	});
 
 	// loadout remove system
@@ -145,7 +145,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		$('#loadout-systems').html(mfzch.loadouts[loadid].getSystemDisplay(false, false));
 		$('#loadout-graph').html(mfzch.loadouts[loadid].createFrameGraph(false));
 		mfzch.updateLoadoutList();
-		mfzch.saveData(mfzch.loadouts, 'mfz.loadouts');
+		mfzch.saveData('loadouts');
 	});
 
 	// loadout update name
@@ -156,7 +156,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		mfzch.loadouts[loadid].name = $('<div/>').text(bork).html();
 
 		mfzch.updateLoadoutList();
-		mfzch.saveData(mfzch.loadouts, 'mfz.loadouts');
+		mfzch.saveData('loadouts');
 	});
 
 	$(document).on('click', '#loadout-submit', function(){
@@ -170,7 +170,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 			} else {
 				mfzch.settings.showLoadoutGraph = false;
 			}
-			mfzch.saveData(mfzch.settings, 'mfz.settings');
+			mfzch.saveData('settings');
 		});
 	});
 

@@ -5,6 +5,7 @@ var mfzch = {
 	companies: [],
 	loadouts: [],
 	settings: new settingsModel(),
+	appState: new appStateModel(),
 	frameNow: 1,
 	offlinemodified: true,
 
@@ -45,23 +46,65 @@ var mfzch = {
 
 	/* Load and Save */
 
-	saveData: function(data, location, storeRaw) {
-		this.offlinemodified = true;
-
-		if (!supportsLocalStorage()) { return false; }
-		if (storeRaw) {
-			localStorage[location] = data;
+	saveData: function(dataType) {
+		if (
+			dataType == 'game'
+			|| dataType == 'templateGame'
+			|| dataType == 'frameSet'
+			|| dataType == 'companies'
+			|| dataType == 'loadouts'
+			|| dataType == 'settings'
+		) {
+			return this.saveLocalData(dataType) && this.syncServerData(dataType);
 		} else {
-			localStorage[location] = JSON.stringify(data);
+			return false;
 		}
-
-		if (location = 'mfz.companies') {
-			this.saveServerData('company');
-		}
-
-		return true;
 	},
-	restoreData: function(location, dataType) {
+
+	/* Local data save/restore */
+
+	saveLocalData: function(dataType) {
+		if (!this.hasOwnProperty(dataType)) {
+			return false;
+		}
+
+		var location = 'mfz.' + dataType;
+		var data = this[dataType];
+
+		if (
+			dataType == 'game'
+			|| dataType == 'templateGame'
+			|| dataType == 'frameSet'
+			|| dataType == 'companies'
+			|| dataType == 'loadouts'
+			|| dataType == 'settings'
+		) {
+			this.offlinemodified = true;
+
+			if (!supportsLocalStorage()) { return false; }
+			if (dataType == 'templateGame') {
+				localStorage[location] = data;
+			} else {
+				localStorage[location] = JSON.stringify(data);
+			}
+
+			if (dataType = 'companies') {
+				this.saveServerData(dataType);
+			}
+
+			return true;
+		} else {
+			return false;
+		}
+	},
+	restoreLocalData: function(dataType) {
+		if (!this.hasOwnProperty(dataType)) {
+			return false;
+		}
+
+		var location = 'mfz.' + dataType;
+		var data = this[dataType];
+
 		if (supportsLocalStorage() && localStorage[location]) {
 			var loadedData = JSON.parse(localStorage[location]);
 
@@ -69,7 +112,7 @@ var mfzch = {
 				return restoredGame = mfzch.gameDataToGameModel(loadedData);
 			} else if (dataType == 'templateGame') {
 				return localStorage[location];
-			} else if (dataType == 'sim') {
+			} else if (dataType == 'frameSet') {
 				var restoredSim = [];
 				for (var i in loadedData) {
 					restoredSim[i] = new frameModel;
@@ -120,7 +163,7 @@ var mfzch = {
 				return new gameModel();
 			} else if (dataType == 'templateGame') {
 				return '';
-			} else if (dataType == 'sim') {
+			} else if (dataType == 'frameSet') {
 				var protoSim = [];
 				protoSim[1] = new frameModel();
 				protoSim[2] = new frameModel();
@@ -137,34 +180,52 @@ var mfzch = {
 		}
 	},
 
-	/* Server load/save */
+	/* Server save/restore */
 
 	saveServerData: function(dataType) {
-		if (isOnline()) {
-			var postdata = new Object();
+		if (this.appState.isElite) {
+			if (!this.hasOwnProperty(dataType)) {
+				return false;
+			}
 
-			var data = '';
+			if (
+	//			|| dataType == 'game'
+	//			|| dataType == 'templateGame'
+	//			|| dataType == 'frameSet'
+				dataType == 'companies'
+	//			|| dataType == 'loadouts'
+	//			|| dataType == 'settings'
+			) {
+				if (isOnline()) {
+					var postdata = new Object();
 
-			if (dataType == 'company') {
-				data = mfzch.companies;
-			} /* *** other data types */
+					var data = this[dataType]
 
-			if (data) {
-				postdata[dataType] = JSON.stringify(data);
+					if (data) {
+						postdata[dataType] = JSON.stringify(data);
 
-				$.post('/save-data', postdata)
-				.done(function(result) {
-					this.offlinemodified = false;
-					for (var i in data) {
-						if (data[i].name == result[i].name) {
-							if (data[i].id === false && result[i].id) {
-								data[i].id = result[i].id;
+						$.post('/save-data', postdata)
+						.done(function(result) {
+							this.offlinemodified = false;
+							for (var i in data) {
+								if (result[i]) {
+									if (data[i].name == result[i].name) {
+										if (data[i].id === false && result[i].id) {
+											data[i].id = result[i].id;
+										}
+										data[i].servermodified = result[i].servermodified;
+										data[i].clientmodified = false;
+									}
+								}
 							}
-							data[i].servermodified = result[i].servermodified;
-							data[i].clientmodified = false;
-						}
+						});
+						return true;
+					} else {
+						return false;
 					}
-				});
+				} else {
+					return false;
+				}
 			} else {
 				return false;
 			}
@@ -172,108 +233,118 @@ var mfzch = {
 			return false;
 		}
 	},
-	loadServerData: function(dataType) {
-		if (isOnline()) {
-			var postdata = new Object();
-			postdata['type'] = dataType;
+	restoreServerData: function(dataType) {
+		if (this.appState.isElite) {
+			if (!this.hasOwnProperty(dataType)) {
+				return false;
+			}
 
-			$.post('/load-data', postdata)
-			.done(function(result) {
-				// success
+			if (isOnline()) {
+				var postdata = new Object();
+				postdata['type'] = dataType;
 
-				for (var i in result) {
-					if (result[i].type == 'company') {
+				$.post('/load-data', postdata)
+				.done(function(result) {
+					// success
 
-						var companyMap = {};
-						for (var l=0; l < mfzch.companies.length; l++) {
-							companyMap[ mfzch.companies[l]['id'] ] = true;
-						}
+					for (var i in result) {
+						if (result[i].type == 'companies') {
 
-						for (var c in result[i].data) {
-							if (!companyMap.hasOwnProperty(result[i].data[c].id)) {
-								// No match with server means item was deleted locally
-								var delData = new Object();
+							var companyMap = {};
+							for (var l=0; l < mfzch.companies.length; l++) {
+								companyMap[ mfzch.companies[l]['id'] ] = true;
+							}
 
-								delData['company'] = result[i].data[c].id;
-								$.post('/delete-data', delData);
-							} else {
-								var found = false;
-								for (var ec in mfzch.companies) {
-									if (mfzch.companies[ec].id == result[i].data[c].id) {
-										var found = true;
+							for (var c in result[i].data) {
+								if (!companyMap.hasOwnProperty(result[i].data[c].id)) {
+									// No match with server means item was deleted locally
+									var delData = new Object();
 
-										var useServer = true;
+									delData['companies'] = result[i].data[c].id;
+									$.post('/delete-data', delData);
+								} else {
+									var found = false;
+									for (var ec in mfzch.companies) {
+										if (mfzch.companies[ec].id == result[i].data[c].id) {
+											var found = true;
 
-										if (mfzch.companies[ec].clientmodified) {
-											if (result[i].data[c].servermodified <= mfzch.companies[ec].servermodified) {
-												useServer = false;
-											}
-										}
+											var useServer = true;
 
-										if (useServer) {
-											mfzch.companies[ec].id = result[i].data[c].id;
-											mfzch.companies[ec].name = result[i].data[c].name;
-											mfzch.companies[ec].description = result[i].data[c].description;
-											mfzch.companies[ec].shared = result[i].data[c].shared;
-											mfzch.companies[ec].color = result[i].data[c].color;
-
-											var restoredFrames = [];
-											for (var rf in result[i].data[c].frames) {
-												restoredFrames[rf] = new frameModel;
-												for (var frame in result[i].data[c].frames[rf]) {
-													restoredFrames[rf][frame] = result[i].data[c].frames[rf][frame];
+											if (mfzch.companies[ec].clientmodified) {
+												if (result[i].data[c].servermodified <= mfzch.companies[ec].servermodified) {
+													useServer = false;
 												}
 											}
 
-											mfzch.companies[ec].frames = restoredFrames;
-											mfzch.companies[ec].servermodified = result[i].data[c].servermodified;
-											// mfzch.companies[ec].nonstandard ***
-											mfzch.companies[ec].clientmodified = false;
+											if (useServer) {
+												mfzch.companies[ec].id = result[i].data[c].id;
+												mfzch.companies[ec].name = result[i].data[c].name;
+												mfzch.companies[ec].description = result[i].data[c].description;
+												mfzch.companies[ec].shared = result[i].data[c].shared;
+												mfzch.companies[ec].color = result[i].data[c].color;
 
-										} else {
-											// save client to server now
-											this.saveServerData(this.companies, 'mfz.companies');
+												var restoredFrames = [];
+												for (var rf in result[i].data[c].frames) {
+													restoredFrames[rf] = new frameModel;
+													for (var frame in result[i].data[c].frames[rf]) {
+														restoredFrames[rf][frame] = result[i].data[c].frames[rf][frame];
+													}
+												}
+
+												mfzch.companies[ec].frames = restoredFrames;
+												mfzch.companies[ec].servermodified = result[i].data[c].servermodified;
+												// mfzch.companies[ec].nonstandard ***
+												mfzch.companies[ec].clientmodified = false;
+
+											} else {
+												// save client to server now
+												this.saveServerData(this.companies, 'mfz.companies');
+											}
 										}
 									}
-								}
 
-								if (!found) {
-									// create if ID does not exist
-									var company = new companyModel();
+									if (!found) {
+										// create if ID does not exist
+										var company = new companyModel();
 
-									company.id = result[i].data[c].id;
-									company.name = result[i].data[c].name;
-									company.description = result[i].data[c].description;
-									company.shared = result[i].data[c].shared;
-									company.color = result[i].data[c].color;
+										company.id = result[i].data[c].id;
+										company.name = result[i].data[c].name;
+										company.description = result[i].data[c].description;
+										company.shared = result[i].data[c].shared;
+										company.color = result[i].data[c].color;
 
-									var restoredFrames = [];
-									for (var rf in result[i].data[c].frames) {
-										restoredFrames[rf] = new frameModel;
-										for (var frame in result[i].data[c].frames[rf]) {
-											restoredFrames[rf][frame] = result[i].data[c].frames[rf][frame];
+										var restoredFrames = [];
+										for (var rf in result[i].data[c].frames) {
+											restoredFrames[rf] = new frameModel;
+											for (var frame in result[i].data[c].frames[rf]) {
+												restoredFrames[rf][frame] = result[i].data[c].frames[rf][frame];
+											}
 										}
+										company.frames = restoredFrames;
+
+										company.servermodified = result[i].data[c].servermodified;
+										// company.nonstandard ***
+										company.clientmodified = false;
+
+										mfzch.companies.push(company);
 									}
-									company.frames = restoredFrames;
-
-									company.servermodified = result[i].data[c].servermodified;
-									// company.nonstandard ***
-									company.clientmodified = false;
-
-									mfzch.companies.push(company);
 								}
 							}
 						}
+						mfzch.updateCompanyList();
 					}
-					mfzch.updateCompanyList();
-				}
-			});
+				});
+				return true;
+			}
+			return false;
+		} else {
+			return false;
 		}
 	},
 	syncServerData: function(dataType) {
-		saveServerData(dataType);
-		loadServerData(dataType);
+		return this.saveServerData(dataType) && this.restoreServerData(dataType);
 	},
+
 	/* undo/redo */
 
 	undo: {
@@ -715,7 +786,7 @@ var mfzch = {
 		}
 
 		this.game.teams.push(team);
-		mfzch.saveData(this.game, 'mfz.game');
+		mfzch.saveLocalData('game');
 
 		$('#company-track-added').popup('open');
 		try {

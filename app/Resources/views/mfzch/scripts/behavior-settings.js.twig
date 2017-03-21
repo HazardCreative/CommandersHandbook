@@ -5,7 +5,7 @@ $(document).on('pagecreate', '#settings', function(event){
 		} else {
 			mfzch.settings.enableSplitSystems = false;
 		}
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	});
 
 	/* *** */
@@ -15,7 +15,7 @@ $(document).on('pagecreate', '#settings', function(event){
 		} else {
 			mfzch.settings.enableEnvironmental = false;
 		}
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	});
 
 	$(document).on('change', '#settings-compactui', function(){
@@ -26,7 +26,7 @@ $(document).on('pagecreate', '#settings', function(event){
 			mfzch.settings.compactUI = false;
 			$('body').removeClass('compact-ui');
 		}
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	});
 
 	$(document).on('change', 'input[name=settings-attackgraph]', function(){
@@ -35,7 +35,7 @@ $(document).on('pagecreate', '#settings', function(event){
 		} else {
 			mfzch.settings.altAttackGraphType = false;
 		}
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	});
 });
 

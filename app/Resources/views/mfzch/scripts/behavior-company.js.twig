@@ -1,17 +1,15 @@
-$(document).on('pageinit', function() {
+$(document).on('pagecreate', '#company-analysis', function(event){
 	$('#company-adjust').off().on({
 		popupafterclose: function() {
-			mfzch.saveData(mfzch.companies, 'mfz.companies');
+			mfzch.saveData('companies');
 		}
 	});
 	$('#frame-adjust').off().on({
 		popupafterclose: function() {
-			mfzch.saveData(mfzch.companies, 'mfz.companies');
+			mfzch.saveData('companies');
 		}
 	});
-});
 
-$(document).on('pagecreate', '#company-analysis', function(event){
 	// add company
 	$(document).on('click', '#company-add', function(){
 		var company = new companyModel();
@@ -105,6 +103,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		var company = mfzch.companies[companyid];
 
 		company.name = $('#company-name').val();
+		company.clientmodified = true;
 		mfzch.updateCompanyList();
 	});
 
@@ -113,6 +112,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		var company = mfzch.companies[companyid];
 
 		company.color = $('#company-color').val();
+		company.clientmodified = true;
 		mfzch.updateCompanyList();
 	});
 
@@ -127,6 +127,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 
 		$('#company-name').val(company.name);
 		$('#company-color').val(company.color);
+		company.clientmodified = true;
 		mfzch.updateCompanyList();
 	});
 
@@ -139,7 +140,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '.company-delete', function(){
 		var companyid = $(this).parent().parent().parent().attr('data-companyid');
 		mfzch.companies.splice(companyid, 1);
-		mfzch.saveData(mfzch.companies, 'mfz.companies');
+		mfzch.saveData('companies');
 		$('#company-list [data-companyid=' + companyid + ']').fadeOut(function (){
 			mfzch.updateCompanyList();
 		});
@@ -148,10 +149,12 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	// add frame
 	$(document).on('click', '#company-analysis .frame-add', function(){
 		var companyid = $(this).parent().parent().parent().attr('data-companyid');
+		var company = mfzch.companies[companyid];
 		var frame = new frameModel();
 		frame.name = uniqueName('Frame', buildNameArray(mfzch.companies[companyid].frames));
 
-		mfzch.companies[companyid].frames.push(frame);
+		company.frames.push(frame);
+		company.clientmodified = true;
 
 		mfzch.updateCompanyList();
 
@@ -173,9 +176,11 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '#company-analysis .frame-del', function(){
 		var companyid = $(this).parent().parent().parent().attr('data-companyid');
 		var frameid = $(this).parent().attr('data-frameid');
+		var company = mfzch.companies[companyid];
 
-		mfzch.companies[companyid].frames.splice(frameid, 1);
-		mfzch.saveData(mfzch.companies, 'mfz.companies');
+		company.frames.splice(frameid, 1);
+		company.clientmodified = true;
+		mfzch.saveData('companies');
 
 		$('#company-list [data-companyid=' + companyid + '] [data-frameid=' + frameid + ']').slideUp(function(){
 			mfzch.updateCompanyList();
@@ -187,14 +192,13 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '.frame-manage', function(){
 		var companyid = $(this).parent().parent().parent().attr('data-companyid');
 		var frameid = $(this).parent().attr('data-frameid');
-
 		var company = mfzch.companies[companyid];
 
 		$('#company-index').val(companyid);
 		$('#frame-index').val(frameid);
-		$('#frame-name').val(mfzch.companies[companyid].frames[frameid].name);
-		$('#frame-systems').html(mfzch.companies[companyid].frames[frameid].getSystemDisplay(false, true));
-		$('#frame-graph').html(mfzch.companies[companyid].frames[frameid].createFrameGraph(false));
+		$('#frame-name').val(company.frames[frameid].name);
+		$('#frame-systems').html(company.frames[frameid].getSystemDisplay(false, true));
+		$('#frame-graph').html(company.frames[frameid].createFrameGraph(false));
 	});
 
 	$(document).on('focus', '#frame-name', function(){
@@ -205,10 +209,12 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '#company-analysis a.add-sys', function(){
 		var companyid = $('#company-index').val();
 		var frameid = $('#frame-index').val();
+		var company = mfzch.companies[companyid];
 
-		mfzch.companies[companyid].frames[frameid].addSystem($(this).attr('data-sys-type'));
-		$('#frame-systems').html(mfzch.companies[companyid].frames[frameid].getSystemDisplay(false, true));
-		$('#frame-graph').html(mfzch.companies[companyid].frames[frameid].createFrameGraph(false));
+		company.clientmodified = true;
+		company.frames[frameid].addSystem($(this).attr('data-sys-type'));
+		$('#frame-systems').html(company.frames[frameid].getSystemDisplay(false, true));
+		$('#frame-graph').html(company.frames[frameid].createFrameGraph(false));
 		mfzch.updateCompanyList();
 	});
 
@@ -216,12 +222,14 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '#company-analysis a.reset-sys', function(){
 		var companyid = $('#company-index').val();
 		var frameid = $('#frame-index').val();
+		var company = mfzch.companies[companyid];
 
-		mfzch.companies[companyid].frames[frameid] = new frameModel();
+		company.clientmodified = true;
+		company.frames[frameid] = new frameModel();
 		var bork = $('#frame-name').val();
-		mfzch.companies[companyid].frames[frameid].name = $('<div/>').text(bork).html();
-		$('#frame-systems').html(mfzch.companies[companyid].frames[frameid].getSystemDisplay(false, true));
-		$('#frame-graph').html(mfzch.companies[companyid].frames[frameid].createFrameGraph(false));
+		company.frames[frameid].name = $('<div/>').text(bork).html();
+		$('#frame-systems').html(company.frames[frameid].getSystemDisplay(false, true));
+		$('#frame-graph').html(company.frames[frameid].createFrameGraph(false));
 		mfzch.updateCompanyList();
 	});
 
@@ -229,20 +237,24 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '#frame-systems li', function(){
 		var companyid = $('#company-index').val();
 		var frameid = $('#frame-index').val();
+		var company = mfzch.companies[companyid];
 
-		mfzch.companies[companyid].frames[frameid].removeSystem($(this).attr('data-sys'));
+		company.clientmodified = true;
+		company.frames[frameid].removeSystem($(this).attr('data-sys'));
 
-		$('#frame-systems').html(mfzch.companies[companyid].frames[frameid].getSystemDisplay(false, true));
-		$('#frame-graph').html(mfzch.companies[companyid].frames[frameid].createFrameGraph(false));
+		$('#frame-systems').html(company.frames[frameid].getSystemDisplay(false, true));
+		$('#frame-graph').html(company.frames[frameid].createFrameGraph(false));
 		mfzch.updateCompanyList();
 	});
 
 	$(document).on('change', '#frame-name', function(){
 		var companyid = $('#company-index').val();
 		var frameid = $('#frame-index').val();
+		var company = mfzch.companies[companyid];
 
-		var bork = $('#frame-name').val();
-		mfzch.companies[companyid].frames[frameid].name = $('<div/>').text(bork).html();
+		company.clientmodified = true;
+		var frameName = $('#frame-name').val();
+		company.frames[frameid].name = $('<div/>').text(frameName).html();
 
 		mfzch.updateCompanyList();
 	});
@@ -304,7 +316,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '#company-end-game', function(){
 		mfzch.game.inProgress = false;
 		mfzch.game.restoreFromTemplate();
-		mfzch.saveData(mfzch.game, 'mfz.game');
+		mfzch.saveData('game');
 		$('#company-track-gameinprogress').popup('option', 'afteropen', function(){
 			$('#company-track-gameinprogress').popup('option', 'afterclose', '');
 		});
@@ -324,7 +336,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	$(document).on('click', '#company-full-list li', function(){
 		var teamid = $(this).attr('data-id');
 		mfzch.game.teams.splice(teamid, 1);
-		mfzch.saveData(mfzch.game, 'mfz.game');
+		mfzch.saveData('game');
 
 		$('#company-full-add').show();
 		$('#company-full-list').html(mfzch.getTeamListForUnitStrucutre()).listview('refresh');
@@ -360,6 +372,8 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 			destCompany.frames.push(frame);
 		})
 
+		destCompany.clientmodified = true;
+
 		mfzch.companies.push(destCompany);
 
 		mfzch.updateCompanyList();
@@ -378,13 +392,14 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 			mfzch.settings.showUnitGraphs = false;
 			$('.company-graph-in-list').stop().slideUp();
 		}
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	});
 
 });
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){
 	if (ui.toPage[0].id == 'company-analysis') {
+		mfzch.syncServerData('companies');
 		mfzch.updateCompanyList();
 
 		if (mfzch.settings.showUnitGraphs) {
@@ -396,5 +411,11 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		}
 		$('#settings-showunitgraphs').slider('refresh');
 
+	}
+});
+
+$(window).focus(function(){
+	if (window.location.hash == "#company-analysis") {
+		mfzch.syncServerData('companies');
 	}
 });

@@ -9,7 +9,7 @@ $(document).on('pagecreate', '#team_setup', function(event){
 		team.color = teamDesc[1];
 
 		mfzch.game.teams.push(team);
-		mfzch.saveData(mfzch.game, 'mfz.game');
+		mfzch.saveData('game');
 
 		mfzch.updateTeamList(mfzch.game);
 		mfzch.updateSetupParameters(mfzch.game);
@@ -38,7 +38,7 @@ $(document).on('pagecreate', '#team_setup', function(event){
 	$(document).on('click', '.team-del', function(){
 		var teamid = $(this).parent().attr('data-teamid');
 		mfzch.game.teams.splice(teamid, 1);
-		mfzch.saveData(mfzch.game, 'mfz.game');
+		mfzch.saveData('game');
 
 		$('#teams [data-teamid=' + teamid + ']').slideUp(function(){
 			mfzch.updateTeamList(mfzch.game);
@@ -102,7 +102,7 @@ $(document).on('pagecreate', '#team_setup', function(event){
 			mfzch.game.teams[teamid].cProfile = false;
 		}
 
-		mfzch.saveData(mfzch.game, 'mfz.game');
+		mfzch.saveData('game');
 		mfzch.updateTeamList(mfzch.game);
 		mfzch.updateSetupParameters(mfzch.game);
 
@@ -145,7 +145,7 @@ $(document).on('pagecreate', '#team_setup', function(event){
 				} catch (err) {}
 
 			} else {
-				mfzch.saveData(mfzch.game, 'mfz.game');
+				mfzch.saveData('game');
 
 				if (mfzch.game.trackingLevel >= 20) {
 					for (var i in mfzch.game.teams) {

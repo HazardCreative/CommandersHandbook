@@ -1,15 +1,17 @@
 // main vars
-mfzch.game = mfzch.restoreData('mfz.game', 'game');
-mfzch.templateGame = mfzch.restoreData('mfz.templateGame', 'templateGame');
-mfzch.frameSet = mfzch.restoreData('mfz.diceSim', 'sim');
-mfzch.companies = mfzch.restoreData('mfz.companies', 'companies');
-mfzch.loadouts = mfzch.restoreData('mfz.loadouts', 'loadouts');
-mfzch.settings = mfzch.restoreData('mfz.settings', 'settings');
+mfzch.game = mfzch.restoreLocalData('game');
+mfzch.templateGame = mfzch.restoreLocalData('templateGame');
+mfzch.frameSet = mfzch.restoreLocalData('frameSet');
+mfzch.companies = mfzch.restoreLocalData('companies');
+mfzch.loadouts = mfzch.restoreLocalData('loadouts');
+mfzch.settings = mfzch.restoreLocalData('settings');
+
+mfzch.syncServerData('companies');
 
 if(mfzch.settings.saveVersion <= 2) { // legacy game format (2014.09.19)
 	mfzch.game = new gameModel();
 	mfzch.settings.saveVersion = 3;
-	mfzch.saveData(mfzch.settings, 'mfz.settings');
+	mfzch.saveData('settings');
 }
 
 $(document).on('submit', 'form', function(event){ // kill all HTML form submits
@@ -37,7 +39,7 @@ $(document).ready(function(){
 		}
 
 		mfzch.settings.buildVersion = BUILDVERSION;
-		mfzch.saveData(mfzch.settings, 'mfz.settings');
+		mfzch.saveData('settings');
 	} else {
 		try {
 			ga('send', 'event', 'App', 'Run', BUILDVERSION, 1, true);
