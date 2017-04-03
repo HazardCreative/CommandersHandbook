@@ -8,8 +8,7 @@
 			{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
 				<p>Logged in as {{ app.user.getUsername()|e }} | <a href="{{ path('fos_user_security_logout') }}" rel="external">Logout</a></p>
 			{% else %}
-				<p>Unauthenticated<br />
-				<a href="{{ path('fos_user_security_login') }}" rel="external">Log in</a> or <a href="{{ path('fos_user_registration_register') }}" rel="external">Register</a></p>
+				<p><a href="{{ path('fos_user_security_login') }}" rel="external">Log in</a> or <a href="{{ path('fos_user_registration_register') }}" rel="external">Register</a></p>
 			{% endif %}
 		</div>
 		<div id="main-nav">

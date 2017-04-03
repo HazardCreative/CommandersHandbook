@@ -104,9 +104,9 @@ body {
 
 @media (min-width: 30em) {
 	#team-adjust-info {
-		float: left;
-		width: 48%;
-		min-width: 10em;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
 	}
 	#team-adjust-data {
 		float: right;
@@ -399,7 +399,7 @@ body {
 .sys-display.in-list {
 	font-size: 0.75em;
 	float: right;
-	margin: 0;
+	margin: 0 0 0 1em;
 }
 
 .sys-display.no-ssr [data-sys=ssr] {

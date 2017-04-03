@@ -23,7 +23,7 @@ function frameModel() {
 
 frameModel.prototype = {
 	totalSystems: function() {
-		return n = this.rh + this.rd + this.ra + this.b + this.y + this.g + this.rhd + this.rha + this.rda + this.e; // ***
+		return n = this.rh + this.rd + this.ra + this.b + this.y + this.g + this.rhd + this.rha + this.rda + this.e;
 	},
 
 	getSystemDisplay: function(useRange, showWhite, cssClass) {
@@ -99,7 +99,7 @@ frameModel.prototype = {
 		for (var i = 0; i < this.g; i++) {
 			sysDisplay += '<li data-sys="g">G</li>';
 		}
-		for (var i = 0; i < this.e; i++) { /* *** */
+		for (var i = 0; i < this.e; i++) {
 			sysDisplay += '<li data-sys="e">E</li>';
 		}
 
