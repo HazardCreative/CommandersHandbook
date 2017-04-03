@@ -6,7 +6,7 @@ mfzch.companies = mfzch.restoreLocalData('companies');
 mfzch.loadouts = mfzch.restoreLocalData('loadouts');
 mfzch.settings = mfzch.restoreLocalData('settings');
 
-mfzch.syncServerData('companies');
+mfzch.syncServerData('all');
 
 if(mfzch.settings.saveVersion <= 2) { // legacy game format (2014.09.19)
 	mfzch.game = new gameModel();

@@ -19,8 +19,7 @@ var mfzch = {
 					restoredGame[i][j] = new teamModel;
 
 					for (var k in loadedData[i][j]) {
-						if (k == 'cFrames'
-							&& loadedData[i][j]['cProfile']) {
+						if (k == 'cFrames') {
 							restoredGame[i][j][k] = [];
 							for (var l in loadedData[i][j][k]) {
 								restoredGame[i][j][k][l] = new frameModel();
@@ -190,8 +189,6 @@ var mfzch = {
 
 			if (
 	//			|| dataType == 'game'
-	//			|| dataType == 'templateGame'
-	//			|| dataType == 'frameSet'
 				dataType == 'companies'
 	//			|| dataType == 'loadouts'
 	//			|| dataType == 'settings'
@@ -340,7 +337,15 @@ var mfzch = {
 		}
 	},
 	syncServerData: function(dataType) {
-		return this.saveServerData(dataType) && this.restoreServerData(dataType);
+		if (dataType == 'all') {
+		//	&& this.saveServerData('game') && this.restoreServerData('game')
+			return this.saveServerData('companies') && this.restoreServerData('companies')
+		//	&& this.saveServerData('loadouts') && this.restoreServerData('loadouts')
+		//	&& this.saveServerData('settings') && this.restoreServerData('settings')
+			;
+		} else {
+			return this.saveServerData(dataType) && this.restoreServerData(dataType);
+		}
 	},
 
 	/* undo/redo */
@@ -563,7 +568,6 @@ var mfzch = {
 		} else {
 			output += 'game';
 		}
-		+ thisGame.minFrames + '&#8211;' + thisGame.maxFrames + ' frames.';
 
 		output += ', each company must have '+ thisGame.minFrames;
 

@@ -31,6 +31,7 @@ $(document).on('pagecreate', '#settings', function(event){
 	$(document).on('change', '#settings-activesync', function(){
 		if ($(this).val() == 'on') {
 			mfzch.settings.activeSync = true;
+			mfzch.syncServerData('all');
 		} else {
 			mfzch.settings.activeSync = false;
 		}
