@@ -417,8 +417,14 @@ var mfzch = {
 		var nav = '<ul data-role="listview" data-inset="true" class="nav-listview">'
 		+ '<li><a href="#game-tracking" id="battle-link">Battle Tracking</a></li>'
 		+ '<li><a href="#dice-roller">Frame Simulator</a></li>'
-		+ '<li><a href="#rules-reference">Rules of Engagement</a></li>'
-		+ '<li><a href="#loadouts">Frame Loadouts</a></li>'
+		+ '<li><a href="#rules-reference">Rules of Engagement</a></li>';
+
+		{% if is_granted('IS_AUTHENTICATED_FULLY')
+		and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
+			nav += '<li><a href="#tactics-and-strategy">Tactics and Strategy</a></li>';
+		{% endif %}
+
+		nav += '<li><a href="#loadouts">Frame Loadouts</a></li>'
 		+ '<li><a href="#company-analysis">Company Structure</a></li>'
 		+ '<li><a href="command-network">Commander\'s Network</a></li>'
 		+ '</ul>';

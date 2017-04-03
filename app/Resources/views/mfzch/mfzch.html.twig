@@ -15,6 +15,10 @@
 {{ include('mfzch/pages/dice-roller.html.twig') }}
 {{ include('mfzch/pages/damage-roller.html.twig') }}
 {{ include('mfzch/pages/rules-reference.html.twig') }}
+{% if is_granted('IS_AUTHENTICATED_FULLY')
+	and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
+	{{ include('mfzch/pages/strategy.html.twig') }}
+{% endif %}
 {{ include('mfzch/pages/company-analysis.html.twig') }}
 {{ include('mfzch/pages/graph-key.html.twig') }}
 {{ include('mfzch/pages/graph-key-c.html.twig') }}
