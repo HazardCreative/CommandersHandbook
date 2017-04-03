@@ -410,8 +410,8 @@ var mfzch = {
 
 	buildNav: function() {
 		var nav = '<ul data-role="listview" data-inset="true" class="nav-listview">'
-		+ '<li><a href="#team_setup">Asset Tracking</a></li>'
-		+ '<li><a href="#dice-roller">Simulator</a></li>'
+		+ '<li><a href="#game-tracking" id="battle-link">Battle Tracking</a></li>'
+		+ '<li><a href="#dice-roller">Frame Simulator</a></li>'
 		+ '<li><a href="#rules-reference">Rules of Engagement</a></li>'
 		+ '<li><a href="#loadouts">Frame Loadouts</a></li>'
 		+ '<li><a href="#company-analysis">Company Structure</a></li>'
@@ -435,80 +435,181 @@ var mfzch = {
 		$('#team-systems').attr('max', $('#team-frames').val()*4 ).slider( "refresh" );
 	},
 	updateTeamList: function(thisGame) {
-
 		$('#teams').empty();
 
+		var newteam = '';
+
 		for (var i in thisGame.teams) {
-			var newteam = '<li id="team_'+ i +'" data-teamid="' + i + '">'
-			+ '<a href="#team-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="team-manage">'
-			+ '<h2>' + thisGame.teams[i].name +'</h2><div class="team-display-info">'
-			+ getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].gFrames + ' ' + getIcon('system', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].sSystems
-			+ '</div>';
+			var checkSetup = thisGame.checkSetup(thisGame.teams[i]);
+			newteam += '<li id="team_'+ i +'" data-teamid="' + i + '"';
 
-			if (thisGame.teams[i].cProfile == true) {
-				newteam += '<span class="ui-li-count';
-				if (thisGame.teams[i].cNonstandard == true) {
-					newteam += ' ui-body-c';
+			if (!checkSetup.passing) {
+				newteam += ' data-theme="c"';
+			}
+
+			if (thisGame.blindSetup) {
+				newteam += ' data-icon="delete">';
+				newteam += '<a href="#" class="team-del"><h2>' + getIcon('frame', thisGame.teams[i].color, 'game-icon') +  ' ' + thisGame.teams[i].name + '</h2>';
+			} else {
+				newteam += '>';
+				newteam += '<a href="#team-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="team-manage">';
+				newteam += '<h2>' + thisGame.teams[i].name + '</h2>';
+
+				if (thisGame.trackingLevel <= 10) {
+					newteam += '<div class="team-display-info">' + getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].gFrames + ' ' + getIcon('system', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].sSystems + '</div>';
+				} else {
+					var totalSystems = thisGame.teams[i].totalSystems();
+
+					newteam += '<div class="team-display-info">' + getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].cFrames.length + ' ' + getIcon('system', thisGame.teams[i].color, 'game-icon') + totalSystems + '</div>';
 				}
-				newteam += '">SU</span>';
+
+				if (!checkSetup.passing) {
+					newteam += '<ul class="reason">';
+					for (var r in checkSetup.reason) {
+						newteam += '<li>' + checkSetup.reason[r] + '</li>';
+					}
+					newteam += '</ul>';
+				}
+
 			}
 
-			newteam += '</a><a href="#" class="team-del">Delete</a></li>'
-			$('#teams').append(newteam);
-		}
+			newteam += '</a>';
 
-		if (thisGame.teams.length > 1) {
-			if (!$('#game-start-li').length) {
-				$('#game-params').append('<li id="game-start-li"><a href="#" id="game-start" class="ui-btn ui-btn-b ui-icon-carat-r ui-btn-icon-right">Deploy Companies</a></li>');
+			if (!thisGame.blindSetup) {
+				newteam += '<a href="#" class="team-del">Delete</a></li>';
 			}
-		} else {
-			$('#game-start-li').remove();
-		}
-		$('#game-params').listview('refresh');
-
-		if (thisGame.teams.length < MAXTEAMS) {
-			$('#teams').append('<li><a href="#" id="team-add" class="ui-btn ui-btn-a ui-icon-plus ui-btn-icon-left">Add Company</a></li>');
 		}
 
+		if (thisGame.teams.length < thisGame.intendedPlayers) {
+			newteam += '<li><a href="#" id="team-add" class="ui-btn ui-btn-b ui-icon-plus ui-btn-icon-left">Add Company</a></li>';
+		}
+
+		$('#teams').append(newteam);
 		$('#teams').listview('refresh');
+	},
+	updateTeamFrameList: function(thisGame, team, jqobj) {
+		jqobj.empty();
+		var frames = team.cFrames
+		var teamlist = '';
+
+		for (var i in frames) {
+			teamlist += '<li id="team_frame_'+ i +'" data-frameid="' + i + '">';
+			teamlist += '<a href="#team-adjust-frame" data-rel="popup" data-position-to="window" data-transition="pop" class="team-frame-manage">';
+			teamlist += frames[i].name;
+			teamlist += frames[i].getSystemDisplay(false, false, 'in-list');
+			teamlist += '</a>';
+			teamlist += '<a href="#" class="team-frame-del">Delete</a></li>'
+		}
+
+		if (team.cFrames.length < thisGame.maxFrames) {
+			teamlist += '<li><a href="#" id="team-frame-add" class="ui-btn ui-btn-b ui-icon-plus ui-btn-icon-left">Add Frame</a></li>';
+		}
+
+		jqobj.append(teamlist);
+		jqobj.listview('refresh');
 	},
 	updateSetupParameters: function(thisGame) {
 		thisGame.updateParameters();
 
-		// create text
-		var longText = 'For a '+ thisGame.teams.length +'-player ';
-		if (thisGame.gameType == 'Battle') {
-			var longText = longText + 'Battle';
-		} else if (thisGame.gameType == 'Skirmish') {
-			var longText = longText + 'Skirmish';
-		} else {
-			var longText = longText + 'game';
+		if (thisGame.gameType == 'Battle'
+			|| thisGame.gameType == 'Skirmish') {
+			$('#gp-framesPerPlayer').rangeslider('disable');
+			$('#gp-stationsPerPlayer').slider('disable');
+			$('#gp-doomsday').slider('disable');
+			$('#gp-unclaimedStations').slider('disable');
+			$('#gp-unclaimedStations').attr('max', 1);
+			if(thisGame.intendedPlayers == 4) {
+				$('#gp-unclaimedStations').slider('enable');
+			}
+		} else if (thisGame.gameType == 'Demo') {
+			$('#gp-framesPerPlayer').rangeslider('disable');
+			$('#gp-stationsPerPlayer').slider('disable');
+			$('#gp-doomsday').slider('disable');
+			$('#gp-unclaimedStations').slider('disable');
+			$('#gp-unclaimedStations').attr('max', 1);
+		} else { // Free Play
+			$('#gp-framesPerPlayer').rangeslider('enable');
+			$('#gp-stationsPerPlayer').slider('enable');
+			$('#gp-doomsday').slider('enable');
+			$('#gp-unclaimedStations').slider('enable');
+			$('#gp-unclaimedStations').attr('max', MAXUNCLAIMEDSTATIONS);
 		}
-		var longText = longText + ', each company must have '
+
+		$('#gp-framesPerPlayerMin').val(thisGame.minFrames);
+		$('#gp-framesPerPlayerMax').val(thisGame.maxFrames);
+		$('#gp-stationsPerPlayer').val(thisGame.stationsPerPlayer);
+		$('#gp-doomsday').val(thisGame.doomsday);
+		$('#gp-unclaimedStations').val(thisGame.unclaimedStations);
+
+		$('#gp-framesPerPlayer').rangeslider('refresh');
+		$('#gp-stationsPerPlayer').slider('refresh');
+		$('#gp-doomsday').slider('refresh');
+		$('#gp-unclaimedStations').slider('refresh');
+
+		$('#game-players-amount').slider('refresh');
+		$('#game-type-switch').selectmenu('refresh');
+	},
+	outputSetupParameters: function(thisGame) {
+		var output = 'For this ' + thisGame.intendedPlayers + '-player ';
+
+		if (thisGame.gameType == 'Battle') {
+			output += 'battle';
+		} else if (thisGame.gameType == 'Skirmish') {
+			output += 'skirmish';
+		} else if (thisGame.gameType == 'Demo') {
+			output += 'demo game';
+		} else if (thisGame.gameType == 'Custom') {
+			output += 'custom game';
+		} else {
+			output += 'game';
+		}
 		+ thisGame.minFrames + '&#8211;' + thisGame.maxFrames + ' frames.';
 
-		// update HTML
-		$('.max_frames').html(thisGame.maxFrames);
-		$('.min_frames').html(thisGame.minFrames);
-		$('.stations_per_player').html(thisGame.stationsPerPlayer);
-		$('.param_longtext').html(longText);
-		$('#game-type-switch').selectmenu('refresh');
-		$('#game-tracking-level').selectmenu('refresh');
+		output += ', each company must have '+ thisGame.minFrames;
 
-		if (thisGame.gameType == 'Demo/Free') {
-			$('.stations_per_player').html('0&#8211;9');
-		}
 
-		// check for all profiled companies
-		$('#game-tracking-level').selectmenu('enable');
-		for (var i in this.game.teams) {
-			if (!this.game.teams[i].cProfile) {
-				$('#game-tracking-level').val(10);
-				$('#game-tracking-level').selectmenu('refresh').selectmenu('disable');
-				break;
+		if (thisGame.minFrames == thisGame.maxFrames) {
+			if (thisGame.minFrames == 1) {
+				output += ' frame';
+			} else {
+				output += ' frames';
+
 			}
+		} else {
+			output += '&#8211;' + thisGame.maxFrames + ' frames';
 		}
 
+		output += ' and ' + thisGame.stationsPerPlayer;
+
+		if (thisGame.stationsPerPlayer == 1) {
+			output += ' station.';
+		} else {
+			output += ' stations.';
+		}
+
+		if (thisGame.unclaimedStations) {
+			output += '<br />' + thisGame.unclaimedStations + ' additional unclaimed';
+			if (thisGame.unclaimedStations == 1) {
+				output += ' station is';
+			} else {
+				output += ' stations are';
+			}
+			output += ' needed.';
+		}
+
+		output += '<br />';
+		if (thisGame.trackingLevel == 10) {
+			output += 'Simple';
+		} else if (thisGame.trackingLevel == 20) {
+			output += 'Detailed';
+		} else if (thisGame.trackingLevel == 30) {
+			output += 'Complete';
+		} else {
+			output += 'ERROR';
+		}
+		output += ' tracking will be used.'
+
+		$('.game-params-text').html(output);
 	},
 	randomTeamName: function() {
 		var list1 = ['Advanced', 'Ahu', 'Aleph', 'Alpha', 'Amritsar', 'Assault', 'Astromax', 'Beta', 'Bhadal', 'Blood', 'Boussht', 'Burned Moon', 'Callisto', 'Celiel', 'Ceres', 'Chabbing', 'Chet\'s', 'Chrome', 'Crimson', 'Deadeye', 'Deimos', 'Deku', 'Doomed', 'Dragon-slaying', 'Earth', 'Ekmer', 'Elite', 'Endymion', 'Enniot City', 'Enorn Two', 'Europa', 'Ferocious', 'Free Colony', 'Freedom', 'Gamma', 'Ganymede', 'Gemmel', 'Guerrilla', 'Guild', 'Gursk', 'Heavy', 'Gen. Hezeraiah\'s', 'Horrible', 'Hurdy-gurdy', 'Hutching', 'Hyperion', 'Ijad', 'Invincible', 'Io', 'Jakarta', 'Jovian', 'Junker', 'Kigali', 'Kush', 'Labor', 'Leda', 'Lunar', 'Luzon', 'Martian', 'Mechanical', 'Midnight', 'Mieze', 'Millennium', 'Momozono\'s', 'Nanking', 'Newport Station', 'Northern Republic', 'Omega', 'Omicron', 'Orbital', 'Outback', 'Pathetic', 'Peach', 'Peloto', 'Phobos', 'Phoenix', 'Poshet', 'Prototype', 'Quall', 'Queslett', 'Ragged', 'Ransoll', 'Rock', 'Rookie', 'Rusty', 'Salvage', 'Selene', 'Scrap', 'Shebehu', 'Shiny', 'Shock', 'Sigma', 'Sol', 'Solar Union', 'Southport', 'Space', 'Spice', 'Steel', 'Stone', 'Strongarm', 'Support', 'TEM', 'Titan', 'TTA', 'TTM', 'Terran', 'Test', 'Thunder', 'Tien Shan', 'Transit Gate', 'Twankus Prime', 'UMFL', 'United', 'Venusian', 'Veteran', 'Wandering', 'Weeping Widow', 'Worthless'];
@@ -541,8 +642,7 @@ var mfzch = {
 
 			teamrow += '<div class="team-name"><h2>' + thisGame.teams[i].name + '</h2></div></li>';
 
-			if (thisGame.trackingLevel >= 20
-				&& thisGame.teams[i].cProfile) {
+			if (thisGame.trackingLevel >= 20) {
 
 				for (var j in thisGame.teams[i].cFrames) {
 					teamrow += '<li class="team-frame';
@@ -580,6 +680,116 @@ var mfzch = {
 			$('#active-game-teams').append(teamrow);
 			$('#active-game-teams').find('.team-box').listview();
 		}
+	},
+	updateReadyStatus: function(thisGame) {
+		var result = thisGame.checkSetup();
+
+		if (result.passing) {
+			$('#game-ready-status').html('<a href="#" id="confirm-companies" class="ui-btn ui-btn-b ui-icon-carat-r ui-btn-icon-right ui-corner-all">Confirm Companies</a>');
+		} else {
+			if (result.reason.length) {
+				var response = '<ul>';
+				for (var i in result.reason) {
+					response += '<li>' + result.reason[i] + '</li>';
+				}
+				response += '</ul>';
+
+				$('#game-ready-status').html('<div class="ui-body ui-body-a ui-corner-all">' + response + '</div>');
+			} else {
+				$('#game-ready-status').html('');
+			}
+		}
+	},
+	updateTieChoices: function(thisGame, teamid, totalTied) {
+		$('#def-tie-teams').empty();
+		for (var i = 0; i < mfzch.game.teams.length; i++) {
+			var teamrow = '<li>';
+
+			teamrow += '<div class="team-score"><div class="score">' + thisGame.teams[i].gScore + '</div>';
+			teamrow += '<small class="PPA">' + thisGame.teams[i].gPPA + ' PPA</small></div>';
+
+			teamrow += '<div class="team-asset-summary">' + getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].gFrames + '<br />';
+			teamrow += getIcon('system', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].sSystems + '</div>';
+
+			teamrow += '<div class="team-name"><h2>' + thisGame.teams[i].name + '</h2></div></li>';
+
+			$('#def-tie-teams').append(teamrow);
+		}
+		$('#def-tie-teams').listview('refresh');
+
+		$('.def-tie-choice-team').html(getIcon('company', thisGame.teams[teamid].color, 'game-icon') + thisGame.teams[teamid].name);
+
+		var actions = thisGame.tiedForDefenseActions(teamid, totalTied);
+
+		$('#def-tie-choice').empty();
+
+		for (var i in actions) {
+			if (actions[i] == 'add-frame') {
+				$('#def-tie-choice').append('<li data-icon="plus"><a href="#tie-frame-add" data-rel="popup">Add a frame</a></li>');
+			} else if (actions[i] == 'remove-frame') {
+				$('#def-tie-choice').append('<li data-icon="minus"><a href="#tie-frame-remove" data-rel="popup">Remove a frame</a></li>');
+			} else if (actions[i] == 'defer') {
+				$('#def-tie-choice').append('<li data-icon="forbidden"><a href="#" id="tie-defer">Defer choice to next company</a></li>');
+			}
+		}
+
+		$('#def-tie-choice').listview('refresh');
+		$('#def-team-choice-index').val(teamid);
+
+	},
+	determineTieChoices: function(thisGame) {
+		var teamid = parseInt($('#def-team-choice-index').val());
+
+		var numTied = mfzch.game.tiedForDefense();
+
+		var nextTeam = teamid + 1;
+		if (nextTeam >= numTied) {
+			nextTeam = 0;
+		}
+
+		var teamName = thisGame.teams[nextTeam].name;
+
+		thisGame.setPPA();
+		thisGame.updateScores();
+		thisGame.sortByScore();
+
+		numTied = mfzch.game.tiedForDefense();
+
+		if (numTied > 1){
+			teamid = thisGame.findTeamByName(teamName);
+
+			mfzch.updateTieChoices(thisGame, teamid, numTied)
+		} else {
+			// tie is resolved; move on
+			if (mfzch.game.gameType == "Battle"
+				|| mfzch.game.gameType == "Skirmish") {
+
+				mfzch.game.status = 3;
+				mfzch.saveData('game');
+
+				$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-deployment", { changeHash: false } );
+			} else {
+				mfzch.game.status = 4;
+				mfzch.saveData('game');
+
+				$( ":mobile-pagecontainer" ).pagecontainer( "change", "#active-game", { changeHash: false } );
+			}
+		}
+	},
+	updateTieFrameList: function(thisGame, team, jqobj) {
+		jqobj.empty();
+		var frames = team.cFrames
+		var teamlist = '';
+
+		for (var i in frames) {
+			teamlist += '<a href=""><li data-frameid="' + i + '">';
+			teamlist += frames[i].name;
+			teamlist += frames[i].getSystemDisplay(false, false, 'in-list');
+			teamlist += '</a></li>'
+		}
+
+		jqobj.append(teamlist);
+		jqobj.listview('refresh');
 	},
 	updateSystemDisplay: function(thisFrame) {
 		// system display
@@ -644,7 +854,7 @@ var mfzch = {
 			return false;
 		}
 	},
-	getCompanyListForLoadouts: function(){
+	getShortCompanyList: function(){
 		var output = '';
 		for (var i in this.companies) {
 			if (this.companies[i].frames.length < MAXFRAMES) {
@@ -672,14 +882,6 @@ var mfzch = {
 
 		$('#loadouts-custom').html(loadoutList);
 		$('#loadouts-custom>ul').listview();
-	},
-	getTeamListForUnitStrucutre: function (){
-		var output = '';
-		for (var i in this.game.teams) {
-			output += '<li data-id="' + i + '" data-icon="minus"><a href="#">' + getIcon('company', this.game.teams[i].color, 'game-icon', true) + this.game.teams[i].name + '<span class="ui-li-count">' + this.game.teams[i].gFrames + '/' + this.game.teams[i].sSystems + '</span></a></li>';
-		}
-		return output;
-
 	},
 	updateCompanyList: function() {
 		$('#company-list').empty();
@@ -768,8 +970,6 @@ var mfzch = {
 
 		var team = new teamModel();
 		team.name = uniqueName(this.companies[companyid].name, buildNameArray(this.game.teams));
-		team.cProfile = true;
-		team.cNonstandard = this.companies[companyid].nonstandard;
 
 		team.color = this.companies[companyid].color;
 		team.gFrames = this.companies[companyid].frames.length;
