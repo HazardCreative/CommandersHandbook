@@ -1,7 +1,7 @@
 $(document).on('pagecreate', '#active-game', function(event){
 	// open team actions
 	$(document).on('click', '.team-info', function(){
-		if (!mfzch.game.gameEnded) {
+		if (!mfzch.game.status >= 5) {
 			var teamid = $(this).parent().parent().attr('data-team-index');
 			$('#team-action').attr('data-team-index', teamid).popup('option', 'afterclose', '');
 
@@ -290,10 +290,10 @@ $(document).on('pagecreate', '#active-game', function(event){
 	});
 
 	$(document).on('click', '#newgame-yes', function(){
-		mfzch.game.inProgress = false;
+		mfzch.game.status = 0;
 		mfzch.game.restoreFromTemplate();
 		mfzch.saveData('game');
-		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#team_setup", { changeHash: false } );
+		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
 	});
 
 	$(document).on('click', '#newgame-no', function(){
@@ -303,7 +303,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 	// Tracking level 20+
 	// manage frame
 	$(document).on('click', '.frame-smash', function(){
-		if (!mfzch.game.gameEnded) {
+		if (mfzch.game.status < 5) {
 			var companyid = $(this).parent().parent().parent().attr('data-team-index');
 			var frameid = $(this).parent().attr('data-frameid');
 
@@ -489,13 +489,12 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 			mfzch.updateActiveTeams(mfzch.game);
 			mfzch.updateGameInfo(mfzch.game);
 
-			if (!mfzch.game.inProgress) {
+			if (mfzch.game.status < 5) {
 				mfzch.templateGame = JSON.stringify(mfzch.game);
 
 				mfzch.game.logEvent('Start Game');
 				mfzch.game.logParameters();
 				mfzch.game.logScores();
-				mfzch.game.inProgress = true; // ***
 				mfzch.saveData('game');
 				mfzch.saveData('templateGame');
 

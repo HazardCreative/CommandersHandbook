@@ -4,7 +4,6 @@ function gameModel() {
 	this.round = 0;
 	this.gameType = 'Battle';
 	this.log = '';
-	this.inProgress = false;
 	this.gameEnded = false;
 	this.maxFrames = 0;
 	this.minFrames = 0;
@@ -13,6 +12,16 @@ function gameModel() {
 	this.teams = [];
 	this.trackingLevel = 10;
 	this.startTime = new Date();
+
+	this.status = 0;
+	/*
+	0 = choose parameters
+	1 = enter teams
+	2 = resolve ties
+	3 = deployment
+	4 = in progress
+	5 = has ended
+	*/
 };
 
 gameModel.prototype = {
@@ -155,9 +164,8 @@ gameModel.prototype = {
 
 		// reset game parameters
 		this.unclaimedStations = 0;
-		this.inProgress = false;
-		this.gameEnded = false;
 		this.doomsday = 11;
+		this.status = 1;
 		this.round = 1;
 		this.log = '';
 		this.startTime = new Date();
@@ -266,7 +274,7 @@ gameModel.prototype = {
 			mfzch.settings.gameEndedOnce = true;
 			mfzch.saveData('settings');
 		}
-		this.gameEnded = true;
+		this.status = 5;
 		this.logEvent('Game over');
 		this.logScores();
 		mfzch.updateGameInfo(this);
