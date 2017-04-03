@@ -56,18 +56,15 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		} else {
 			$('#company-notice').empty();
 			// move this section to company model, probably ***
-			company.nonstandard = false;
 
 			// frame number check
 			if (company.frames.length > MAXBTFRAMES[2] || company.frames.length < MINSKFRAMES[5]) {
 				$('#company-notice').append('<p>A standard game requires 3&#8211;8 frames.</p>');
-				company.nonstandard = true;
 				$('#company-notice').show();
 			}
 			// SSR check
 			if (company.totalSSRs() != 3) {
 				$('#company-notice').append('<p>A standard game requires 3 SSRs.</p>');
-				company.nonstandard = true;
 				$('#company-notice').show();
 			}
 			// frame naming check
