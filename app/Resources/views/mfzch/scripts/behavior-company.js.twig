@@ -295,65 +295,6 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#dice-roller");
 	});
 
-	$(document).on('click', '#company-track-assets', function(){
-		$('#company-adjust').popup('option', 'afteropen', function(){
-			$('#company-adjust').popup('option', 'afterclose', '');
-		});
-		$('#company-adjust').popup('option', 'afterclose', function(){
-			if (mfzch.game.inProgress) {
-				$('#company-track-gameinprogress').popup('open');
-			} else if (mfzch.game.teams.length >= MAXTEAMS) {
-				$('#company-full-add').hide();
-				$('#company-full-list').html(mfzch.getTeamListForUnitStrucutre()).listview('refresh');
-				$('#company-track-teamsfull').popup('open');
-			} else {
-				mfzch.addCompanyToAsset();
-			}
-		});
-		$('#company-adjust').popup('close');
-	});
-
-	$(document).on('click', '#company-end-game', function(){
-		mfzch.game.inProgress = false;
-		mfzch.game.restoreFromTemplate();
-		mfzch.saveData('game');
-		$('#company-track-gameinprogress').popup('option', 'afteropen', function(){
-			$('#company-track-gameinprogress').popup('option', 'afterclose', '');
-		});
-		$('#company-track-gameinprogress').popup('option', 'afterclose', function(){
-			if (mfzch.game.teams.length >= MAXTEAMS) {
-				$('#company-full-add').hide();
-				$('#company-full-list').html(mfzch.getTeamListForUnitStrucutre()).listview('refresh');
-				$('#company-track-teamsfull').popup('open');
-			} else {
-				mfzch.addCompanyToAsset();
-			}
-		});
-
-		$('#company-track-gameinprogress').popup('close');
-	});
-
-	$(document).on('click', '#company-full-list li', function(){
-		var teamid = $(this).attr('data-id');
-		mfzch.game.teams.splice(teamid, 1);
-		mfzch.saveData('game');
-
-		$('#company-full-add').show();
-		$('#company-full-list').html(mfzch.getTeamListForUnitStrucutre()).listview('refresh');
-	});
-
-	$(document).on('click', '#company-full-add', function(){
-		$('#company-track-teamsfull').popup('option', 'afteropen', function(){
-			$('#company-track-teamsfull').popup('option', 'afterclose', '');
-		});
-		$('#company-track-teamsfull').popup('option', 'afterclose', function(){
-			var companyid = $('#companyinfo-name').attr('data-company-id');
-
-			mfzch.addCompanyToAsset();
-		});
-		$('#company-track-teamsfull').popup('close');
-	});
-
 	$(document).on('click', '#company-duplicate', function(){
 		var srcCompanyIndex = $('#company-index').val();
 

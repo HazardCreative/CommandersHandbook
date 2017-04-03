@@ -46,7 +46,6 @@
 			<div id="company-adjust-submit">
 				<button id="company-submit" class="ui-btn ui-corner-all ui-btn-inline">Back</button>
 				<button id="company-regen" class="ui-btn ui-corner-all ui-btn-inline">Generate</button>
-				<button id="company-track-assets" class="ui-btn ui-corner-all ui-btn-inline">Add to Asset Tracker</button>
 				<button id="company-duplicate" class="ui-btn ui-corner-all ui-btn-inline">Duplicate</button>
 			</div>
 		</div>
@@ -99,46 +98,6 @@
 			</div>
 
 			<div id="frame-graph" class="ui-body ui-body-a ui-corner-all"></div>
-		</div>
-	</div>
-
-	<div data-role="popup" id="company-track-gameinprogress" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false">
-		<div data-role="header">
-			<h1>Game In Progress</h1>
-		</div>
-
-		<div role="main" class="ui-content">
-			<p>Companies cannot be added to the Asset Tracker while there is a game in progress. You must end the current game before adding companies.</p>
-
-			<p>Starting a new game will abandon the current game. Scores and the game log will no longer be available.</p>
-
-			<p><a href="#" data-rel="back" class="ui-btn ui-corner-all">Back</a> <a href="#" id="company-end-game" class="ui-btn ui-btn-a ui-corner-all ui-btn-icon-left ui-icon-alert">End Game</a></p>
-		</div>
-	</div>
-
-	<div data-role="popup" id="company-track-teamsfull" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false">
-		<div data-role="header">
-			<h1>Game Full</h1>
-		</div>
-
-		<div role="main" class="ui-content">
-			<p>This company cannot be added to the Asset Tracker because the Asset Tracker is full. You must remove a company from the Asset Tracker before adding another.</p>
-
-			<ul id="company-full-list" data-role="listview" data-inset="true"><li>-</li></ul>
-
-			<p><a href="#" data-rel="back" class="ui-btn ui-corner-all">Back</a> <a href="#" id="company-full-add" class="ui-btn ui-btn-a ui-corner-all">Add Company</a></p>
-		</div>
-	</div>
-
-	<div data-role="popup" id="company-track-added" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false">
-		<div data-role="header">
-			<h1>Company Added</h1>
-		</div>
-
-		<div role="main" class="ui-content">
-			<p>A copy of this company has been added to the Asset Tracker.</p>
-
-			<p><a href="#" data-rel="back" class="ui-btn ui-corner-all">Back</a></p>
 		</div>
 	</div>
 </div>
