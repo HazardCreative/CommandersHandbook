@@ -2,6 +2,8 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 	if (ui.toPage[0].id == 'game-tracking') {
 		if (mfzch.game.status >= 4){
 			$( ":mobile-pagecontainer" ).pagecontainer( "change", "#active-game", { changeHash: false } );
+		} else if (mfzch.game.status >= 3){
+			$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-deployment", { changeHash: false } );
 		} else if (mfzch.game.status >= 2){
 			$( ":mobile-pagecontainer" ).pagecontainer( "change", "#setup-tie", { changeHash: false } );
 		} else if (mfzch.game.status >= 1){
@@ -489,6 +491,7 @@ $(document).on('pagecreate', '#company-entry', function(event){
 				$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-deployment", { changeHash: false } );
 			}
 		} else {
+			mfzch.game.start();
 			mfzch.game.status = 4;
 			mfzch.saveData('game');
 
@@ -696,7 +699,7 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 
 /* ------ status 3: deployment ------ */
 
-$(document).on('pagecreate', '#setup-tie', function(event){
+$(document).on('pagecreate', '#game-deployment', function(event){
 	$(document).on('click', '#game-deployment-back', function(){
 		if (mfzch.game.blindSetup) {
 			mfzch.game.teams = [];	
@@ -705,10 +708,11 @@ $(document).on('pagecreate', '#setup-tie', function(event){
 		mfzch.game.status = 0;
 		mfzch.saveData('game');
 
-		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#company-entry", { changeHash: false } );
+		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
 	});
 
 	$(document).on('click', '.play-combat-phase', function(){
+		mfzch.game.start();
 		mfzch.game.status = 4;
 		mfzch.saveData('game');
 

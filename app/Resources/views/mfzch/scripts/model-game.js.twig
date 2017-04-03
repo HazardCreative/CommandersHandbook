@@ -246,6 +246,19 @@ gameModel.prototype = {
 		mfzch.settings.gameEndedOnce = false;
 		mfzch.saveData('settings');
 	},
+	start: function() {
+		mfzch.templateGame = JSON.stringify(mfzch.game);
+		mfzch.saveData('templateGame');
+
+		this.logEvent('Start Game');
+		this.logParameters();
+		this.logScores();
+
+		try {
+			ga('send', 'event', 'Game', 'Action', 'Start', 0, false);
+		} catch (err) {}
+
+	},
 	checkUnclaimedIsPossible: function () {
 		if (this.teams.length < 3) {
 			return false;

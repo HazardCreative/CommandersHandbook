@@ -1,7 +1,7 @@
 $(document).on('pagecreate', '#active-game', function(event){
 	// open team actions
 	$(document).on('click', '.team-info', function(){
-		if (!mfzch.game.status >= 5) {
+		if (mfzch.game.status < 5) {
 			var teamid = $(this).parent().parent().attr('data-team-index');
 			$('#team-action').attr('data-team-index', teamid).popup('option', 'afterclose', '');
 
@@ -290,8 +290,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 	});
 
 	$(document).on('click', '#newgame-yes', function(){
-		mfzch.game.status = 0;
 		mfzch.game.restoreFromTemplate();
+		mfzch.game.status = 0;
 		if (mfzch.game.blindSetup) {
 			mfzch.game.teams = [];	
 		}
@@ -491,20 +491,6 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		} else {
 			mfzch.updateActiveTeams(mfzch.game);
 			mfzch.updateGameInfo(mfzch.game);
-
-			if (mfzch.game.status < 5) {
-				mfzch.templateGame = JSON.stringify(mfzch.game);
-
-				mfzch.game.logEvent('Start Game');
-				mfzch.game.logParameters();
-				mfzch.game.logScores();
-				mfzch.saveData('game');
-				mfzch.saveData('templateGame');
-
-				try {
-					ga('send', 'event', 'Game', 'Action', 'Start', 0, false);
-				} catch (err) {}
-			}
 
 			$('#undo').prop('disabled', true);
 			$('#redo').prop('disabled', true);
