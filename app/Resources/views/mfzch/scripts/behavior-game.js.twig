@@ -293,7 +293,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.game.restoreFromTemplate();
 		mfzch.game.status = 0;
 		if (mfzch.game.blindSetup) {
-			mfzch.game.teams = [];	
+			mfzch.game.teams = [];
 		}
 		mfzch.saveData('game');
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
@@ -481,7 +481,6 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.saveData('game');
 		mfzch.updateActiveTeams(mfzch.game);
 	});
-
 });
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){
