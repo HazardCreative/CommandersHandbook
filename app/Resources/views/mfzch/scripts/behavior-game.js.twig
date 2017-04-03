@@ -292,6 +292,9 @@ $(document).on('pagecreate', '#active-game', function(event){
 	$(document).on('click', '#newgame-yes', function(){
 		mfzch.game.status = 0;
 		mfzch.game.restoreFromTemplate();
+		if (mfzch.game.blindSetup) {
+			mfzch.game.teams = [];	
+		}
 		mfzch.saveData('game');
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
 	});

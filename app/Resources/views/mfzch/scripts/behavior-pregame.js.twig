@@ -658,6 +658,10 @@ $(document).on('pagecreate', '#setup-tie', function(event){
 	});
 
 	$(document).on('click', '#tie-change-parameters', function(event){
+		if (mfzch.game.blindSetup) {
+			mfzch.game.teams = [];	
+		}
+
 		mfzch.game.status = 0;
 		mfzch.saveData('game');
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
@@ -694,6 +698,10 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 
 $(document).on('pagecreate', '#setup-tie', function(event){
 	$(document).on('click', '#game-deployment-back', function(){
+		if (mfzch.game.blindSetup) {
+			mfzch.game.teams = [];	
+		}
+
 		mfzch.game.status = 0;
 		mfzch.saveData('game');
 
