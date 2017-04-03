@@ -8,9 +8,9 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		$('#loadout-framegraph').popup('open');
 	});
 
-
+	// add (generic loadout) to company
 	$(document).on('click', '#loadouts .add-to-company', function(){
-		$('#lo-company-list').html(mfzch.getCompanyListForLoadouts());
+		$('#lo-company-list').html(mfzch.getShortCompanyList());
 
 		if(mfzch.companies.length < MAXCOMPANIES) {
 			$('#lo-company-list').append('<li data-icon="plus"><a href="#">Add New</a></li>')
@@ -22,6 +22,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		$('#loadout-add-to-company').popup('open');
 	});
 
+	// choose company to add to
 	$(document).on('click', '#lo-company-list li', function(){
 		var load = mfzch.convertHtmlToLoadout('#lo-data');
 
@@ -174,10 +175,11 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		});
 	});
 
+	// add to company
 	$(document).on('click', '#loadout-add-to-company-btn', function(){
 		var loadid = $('#loadout-index').val();
 
-		$('#lo-company-list').html(mfzch.getCompanyListForLoadouts());
+		$('#lo-company-list').html(mfzch.getShortCompanyList());
 
 		if(mfzch.companies.length < MAXCOMPANIES) {
 			$('#lo-company-list').append('<li data-icon="plus"><a href="#">Add New</a></li>')

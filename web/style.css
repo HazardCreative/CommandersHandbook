@@ -119,10 +119,6 @@ body {
 	margin-top: 0.5em 0 0.5em 0.5em;
 }
 
-#game-params .ui-select {
-	width: 100%;
-}
-
 #game-params h3, #game-params p {
 	margin: 0;
 }
@@ -132,9 +128,18 @@ body {
 }
 
 .game-params-info {
-	padding-top: 0.25em;
-	clear: both;
 	text-align: center;
+	font-weight: bold;
+}
+
+ul.reason {
+	margin: 0.5em 0 0;
+	padding: 0;
+}
+
+ul.reason li {
+	list-style: disc;
+	margin-left: 1.5em;
 }
 /* Gameplay */
 
