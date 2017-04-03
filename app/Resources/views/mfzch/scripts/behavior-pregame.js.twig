@@ -529,6 +529,74 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 /* ------ status 2: tie resolution ------ */
 
 $(document).on('pagecreate', '#setup-tie', function(event){
+
+	$('#tie-frame-add').on({
+        popupbeforeposition: function() {
+			if (mfzch.game.trackingLevel >= 20) {
+				var teamid = $('#def-team-choice-index').val();
+				var team = mfzch.game.teams[teamid];
+
+				var frame = new frameModel();
+				frame.name = uniqueName('Frame', buildNameArray(team.cFrames));
+
+				team.cFrames.push(frame);
+				team.gFrames = team.cFrames.length;
+
+				var frameid = team.cFrames.length-1;
+				$('#tie-frame-add-index').val(frameid);
+				$('#tie-frame-add-name').val(team.cFrames[frameid].name);
+				$('#tie-frame-add-systems').html(team.cFrames[frameid].getSystemDisplay(false, true))
+			}
+        }
+    });
+
+	$(document).on('focus', 'tie-frame-add-name', function(){
+		this.select();
+	});
+
+	// add system
+	$(document).on('click', '#tie-frame-add a.add-sys', function(){
+		var teamid = $('#def-team-choice-index').val();
+		var team = mfzch.game.teams[teamid];
+		var frameid = $('#tie-frame-add-index').val();
+
+		team.cFrames[frameid].addSystem($(this).attr('data-sys-type'));
+		$('#tie-frame-add-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
+	});
+
+	// reset systems
+	$(document).on('click', '#tie-frame-add a.reset-sys', function(){
+		var teamid = $('#def-team-choice-index').val();
+		var team = mfzch.game.teams[teamid];
+		var frameid = $('#tie-frame-add-index').val();
+
+		team.cFrames[frameid] = new frameModel();
+		var frameName = $('#team-adjust-frame-name').val();
+		team.cFrames[frameid].name = uniqueName($('<div/>').text(frameName).html(), buildNameArray(team.cFrames));
+
+		$('#tie-frame-add-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
+	});
+
+	// remove system
+	$(document).on('click', '#tie-frame-add-systems li', function(){
+		var teamid = $('#def-team-choice-index').val();
+		var team = mfzch.game.teams[teamid];
+		var frameid = $('#tie-frame-add-index').val();
+
+		team.cFrames[frameid].removeSystem($(this).attr('data-sys'));
+
+		$('#tie-frame-add-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
+	});
+
+	$(document).on('change', '#tie-frame-add-name', function(){
+		var teamid = $('#def-team-choice-index').val();
+		var team = mfzch.game.teams[teamid];
+		var frameid = $('#tie-frame-add-index').val();
+
+		var frameName = $('#tie-frame-add-name').val();
+		team.cFrames[frameid].name = uniqueName($('<div/>').text(frameName).html(), buildNameArray(team.cFrames));
+	});
+
 	$(document).on('click', '#tie-frame-add-submit', function(){
 		var teamid = $('#def-team-choice-index').val();
 		var team = mfzch.game.teams[teamid];
@@ -537,10 +605,6 @@ $(document).on('pagecreate', '#setup-tie', function(event){
 			team.gFrames++;
 			team.sSystems += parseInt($('#tie-frame-add-amount-short').val());
 		} else {
-			/*
-			// get frameid ***
-			team.cFrames.push(***);
-			*/
 			team.gFrames = team.cFrames.length;
 			team.sSystems = team.totalSystems();
 		}

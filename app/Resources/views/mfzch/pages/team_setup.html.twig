@@ -124,8 +124,8 @@
 		</div>
 
 		<div role="main" class="ui-content">
-			<p><strong>Blind setup</strong> hides company information until the game has started. This prevents players from altering their company structure based on what others have already entered.</p>
-			<p>Once turned on, turning this off will clear the current team list.</p>
+			<p><strong>Blind setup</strong> hides company information until the game has started. This prevents players from viewing others' setup when entering company data.</p>
+			<p>Once turned on, the Handbook may clear the team list if a user attempts to change game parameters.</p>
 		</div>
 	</div>
 </div>
@@ -285,7 +285,7 @@
 		<p><button id="tie-change-parameters" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-bullets" data-direction="reverse" data-transition="slide">Change Parameters</button></div>
 	</div>
 
-	<div data-role="popup" id="tie-frame-add" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false">
+	<div data-role="popup" id="tie-frame-add" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false" data-dismissible="false">
 		<div data-role="header">
 			<h1>Add Frame</h1>
 		</div>
@@ -297,18 +297,42 @@
 					<input name="tie-frame-add-amount-short" id="tie-frame-add-amount-short" value="4" min="0" max="4" type="range" data-highlight="true" />
 				</div>
 				<div class="long">
+					<input type="hidden" name="tie-frame-add-index" id="tie-frame-add-index" />
+					<div id="frame-adjust-info">
+						<label for="tie-frame-add-name" class="hide-if-compact-ui">Frame Name:</label>
+						<input name="tie-frame-add-name" id="tie-frame-add-name" type="text" />
+					</div>
+
+					<div class="addbox">
+						<p class="hide-if-compact-ui">Add Systems</p>
+						<p class="shrink-if-compact-ui"><a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="w">W</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="rh">Rh</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="rd">Rd</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="ra">Ra</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="b">B</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="y">Y</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="g">G</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="ssr">SSR</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="rhd" data-sys-split="true">Rh/d</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="rha" data-sys-split="true">Rh/a</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="rda" data-sys-split="true">Rd/a</a>
+							<a href="#" class="add-sys ui-btn ui-btn-inline ui-corner-all" data-sys-type="e" data-sys-env="true">E</a>
+							<a href="#" class="reset-sys ui-btn ui-btn-a ui-btn-inline ui-corner-all">Reset</a></p>
+					</div>
+					<div class="sysbox">
+						<p class="hide-if-compact-ui">Current Systems <small>(tap to remove)</small></p>
+						<div id="tie-frame-add-systems"></div>
+					</div>
 				</div>
 			</form>
 
 			<div>
 				<a href="#" class="ui-btn ui-btn-a ui-corner-all ui-btn-inline" id="tie-frame-add-submit">Confirm</a>
-
-				<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-inline">Cancel</a>
 			</div>
 		</div>
 	</div>
 
-	<div data-role="popup" id="tie-frame-remove" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false">
+	<div data-role="popup" id="tie-frame-remove" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false" data-dismissible="false">
 		<div data-role="header">
 			<h1>Remove Frame</h1>
 		</div>
@@ -330,8 +354,6 @@
 
 			<div>
 				<a href="#" class="ui-btn ui-btn-a ui-corner-all ui-btn-inline short" id="tie-frame-remove-submit">Confirm</a>
-
-				<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-inline">Cancel</a>
 			</div>
 		</div>
 	</div>
