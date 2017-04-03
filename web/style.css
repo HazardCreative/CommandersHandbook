@@ -108,13 +108,10 @@ body {
 		justify-content: space-between;
 		align-items: flex-start;
 	}
-	#team-adjust-data {
-		float: right;
+
+	#team-adjust-info .field {
 		width: 48%;
 		min-width: 10em;
-	}
-	#team-adjust-submit {
-		clear: both;
 	}
 }
 
