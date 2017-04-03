@@ -8,7 +8,6 @@ $(document).on('pagecreate', '#settings', function(event){
 		mfzch.saveData('settings');
 	});
 
-	/* *** */
 	$(document).on('change', '#settings-enableenvironmental', function(){
 		if ($(this).val() == 'on') {
 			mfzch.settings.enableEnvironmental = true;

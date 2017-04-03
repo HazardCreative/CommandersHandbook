@@ -100,10 +100,14 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		$('[data-sys-split=true]').hide();
 	}
 
-	/* *** */
-	if(mfzch.settings.enableEnvironmental) {
-		$('[data-sys-env=true]').show();
-	} else {
-		$('[data-sys-env=true]').hide();
-	}
+	{% if is_granted('IS_AUTHENTICATED_FULLY')
+		and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
+
+		if(mfzch.settings.enableEnvironmental) {
+			$('[data-sys-env=true]').show();
+		} else {
+			$('[data-sys-env=true]').hide();
+		}
+	{% endif %}
+
 });
