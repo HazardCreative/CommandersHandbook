@@ -232,7 +232,6 @@ gameModel.prototype = {
 		this.updateScores();
 
 		// reset game parameters
-		this.status = 1;
 		this.round = 1;
 		this.log = '';
 		this.startTime = new Date();
@@ -243,8 +242,6 @@ gameModel.prototype = {
 
 		shuffle(this.teams);
 		this.sortByScore();
-
-		mfzch.saveData('game');
 
 		mfzch.settings.gameEndedOnce = false;
 		mfzch.saveData('settings');

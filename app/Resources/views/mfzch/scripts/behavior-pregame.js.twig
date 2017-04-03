@@ -463,8 +463,6 @@ $(document).on('pagecreate', '#company-entry', function(event){
 	// confirm companies; decide destination
 	$(document).on('click', '#confirm-companies', function(){
 		mfzch.game.reset();
-		mfzch.game.setPPA();
-		mfzch.game.updateScores();
 		mfzch.game.sortByScore();
 
 		if (mfzch.game.trackingLevel >= 20) {
@@ -556,7 +554,7 @@ $(document).on('pagecreate', '#setup-tie', function(event){
 
 			if (mfzch.game.trackingLevel < 20) {
 				var maxSys = Math.min(4, team.sSystems);
-				var minSys = team.sSystems - ((team.gFrames - 1) * 4);
+				var minSys = Math.max(0, team.sSystems - ((team.gFrames - 1) * 4));
 
 				if (minSys == maxSys) {
 					team.gFrames--;
