@@ -4,14 +4,16 @@ function gameModel() {
 	this.round = 0;
 	this.gameType = 'Battle';
 	this.log = '';
-	this.gameEnded = false;
-	this.maxFrames = 0;
-	this.minFrames = 0;
-	this.stationsPerPlayer = 0;
+	this.maxFrames = 7;
+	this.minFrames = 4;
+	this.stationsPerPlayer = 2;
 	this.unclaimedStations = 0;
 	this.teams = [];
 	this.trackingLevel = 10;
 	this.startTime = new Date();
+	this.intendedPlayers = 3;
+	this.blindSetup = false;
+	this.accessControl = 'Private';
 
 	this.status = 0;
 	/*
@@ -54,38 +56,84 @@ gameModel.prototype = {
 		});
 	},
 	updateParameters: function() {
-		this.stationsPerPlayer = NUMSTATIONS[this.teams.length];
-
-		if (this.gameType == 'Battle') { // Skirmish
-			this.maxFrames = MAXBTFRAMES[this.teams.length];
-			this.minFrames = MINBTFRAMES[this.teams.length];
-		} else if (this.gameType == 'Skirmish') { // Skirmish
-			this.maxFrames = MAXSKFRAMES[this.teams.length];
-			this.minFrames = MINSKFRAMES[this.teams.length];
-		} else { // demo/free
-			this.maxFrames = MAXFRAMES;
-			this.minFrames = 1;
+		if (this.gameType == 'Battle') {
+			this.minFrames = MINBTFRAMES[this.intendedPlayers];
+			this.maxFrames = MAXBTFRAMES[this.intendedPlayers];
+			this.stationsPerPlayer = NUMSTATIONS[this.intendedPlayers];
+			this.unclaimedStations = 0;
+			this.doomsday = 11;
+		} else if (this.gameType == 'Skirmish') {
+			this.minFrames = MINSKFRAMES[this.intendedPlayers];
+			this.maxFrames = MAXSKFRAMES[this.intendedPlayers];
+			this.stationsPerPlayer = NUMSTATIONS[this.intendedPlayers];
+			this.unclaimedStations = 0;
+			this.doomsday = 11;
+		} else if (this.gameType == 'Demo') {
+			this.minFrames = 2;
+			this.maxFrames = 2;
+			this.stationsPerPlayer = 0;
+			this.unclaimedStations = 1;
+			this.doomsday = 5;
 		}
+	},
+	checkSetup: function(team) {
+		var result = new Object();
+
+		result.passing = true;
+		result.reason = [];
+
+		if(typeof(team)==='undefined') {
+			if (this.teams.length != this.intendedPlayers) {
+				result.passing = false;
+				if (this.teams.length < this.intendedPlayers) {
+					result.reason.push('Additional companies are needed.');
+				} else if (this.teams.length > this.intendedPlayers) {
+					result.reason.push('There are too many companies included.');
+				}
+			}
+			for (var i in this.teams) {
+				if(!this.checkSetup(this.teams[i]).passing) {
+					result.passing = false;
+				}
+			}
+		} else {
+			if (this.trackingLevel >= 20) {
+				if (team.cFrames.length < this.minFrames) {
+					result.passing = false;
+					result.reason.push('Not enough frames');
+				} else if (team.cFrames.length > this.maxFrames) {
+					result.passing = false;
+					result.reason.push('Too many frames');
+				}
+				if (team.totalSSRs() < 3) {
+					result.passing = false;
+					result.reason.push('Not enough SSRs');
+				}
+				if (team.totalSSRs() > 3) {
+					result.passing = false;
+					result.reason.push('Too many SSRs');
+				}
+			} else {
+				if (team.gFrames < this.minFrames) {
+					result.passing = false;
+					result.reason.push('Not enough frames');
+				} else if (team.gFrames > this.maxFrames) {
+					result.passing = false;
+					result.reason.push('Too many frames');
+				}
+			}
+		}
+
+
+		return result;
 	},
 	updateScores: function() {
 		for (var i in this.teams) {
 			this.teams[i].gScore = (this.teams[i].gFrames + this.teams[i].gStations) * this.teams[i].gPPA;
 		}
 	},
-	frameCountIsGood: function() {
-		for (var i in this.teams) {
-			if (this.teams[i].gFrames > this.maxFrames
-			|| this.teams[i].gFrames < this.minFrames) {
-				return false;
-			}
-		}
-		return true;
-	},
 	tiedForDefense: function() {
-		shuffle(this.teams); // randomize team order first...
-		this.sortByScore(); // then sorting by score...
-		mfzch.updateTeamList(this); // effectively randomly decides initaitive ties
-
+		// requires sorting teams first
 		if (this.teams[1].gScore == this.teams[0].gScore) {
 			var tiedForDef = 0;
 			for (var i in this.teams) {
@@ -94,18 +142,40 @@ gameModel.prototype = {
 				}
 			}
 
-			$('#def-tie-list').empty();
-
-			for (var i = 0; i < tiedForDef; i++) {
-				$('#def-tie-list').append('<li>' + getIcon('company', this.teams[i].color, 'game-icon') + this.teams[i].name + '</li>')
-			}
-
-			$('.team-dupe-winner').html(getIcon('company', this.teams[0].color, 'game-icon') + this.teams[0].name);
-
-			return true;
+			return tiedForDef;
 		} else {
 			return false;
 		}
+	},
+	tiedForDefenseActions: function(teamid, tiedAmount) {
+		var actions = [];
+
+		// add frame
+		if (this.trackingLevel < 20) {
+			if (this.teams[teamid].gFrames < this.maxFrames) {
+				actions.push('add-frame');
+			}
+		} else {
+			if (this.teams[teamid].cFrames.length < this.maxFrames) {
+				actions.push('add-frame');
+			}
+		}
+		// drop frame
+		if (this.trackingLevel < 20) {
+			if (this.teams[teamid].gFrames > this.minFrames) {
+				actions.push('remove-frame');
+			}
+		} else {
+			if (this.teams[teamid].cFrames.length > this.minFrames) {
+				actions.push('remove-frame');
+			}
+		}
+		// defer
+		if (parseInt(teamid)+1 < tiedAmount) {
+			actions.push('defer');
+		}
+
+		return actions;
 	},
 	setPPA: function() {
 		var teamsCopy = this.teams.slice(0);
@@ -160,11 +230,8 @@ gameModel.prototype = {
 
 		this.setPPA();
 		this.updateScores();
-		mfzch.updateTeamList(mfzch.game);
 
 		// reset game parameters
-		this.unclaimedStations = 0;
-		this.doomsday = 11;
 		this.status = 1;
 		this.round = 1;
 		this.log = '';
@@ -173,6 +240,9 @@ gameModel.prototype = {
 		mfzch.undo.states = [];
 		mfzch.undo.currentState = 0;
 		mfzch.undo.validStates = 0;
+
+		shuffle(this.teams);
+		this.sortByScore();
 
 		mfzch.saveData('game');
 
@@ -341,5 +411,13 @@ gameModel.prototype = {
 		} else {
 			mfzch.game = new gameModel();
 		}
+	},
+	findTeamByName: function(findName) {
+		for (var i in this.teams) {
+			if (this.teams[i].name == findName) {
+				return i;
+			}
+		}
+		return false;
 	}
 };

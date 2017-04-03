@@ -3,6 +3,7 @@ function teamModel() { // simplified company model for gameplay
 	this.color = '#880000';
 	this.sSystems = 20;
 
+	// generic
 	this.gFrames = 5;
 	this.gStations = 0;
 	this.gPPA = 0;
@@ -10,3 +11,21 @@ function teamModel() { // simplified company model for gameplay
 
 	// structured company
 	this.cFrames = [];
+}
+
+teamModel.prototype = {
+	totalSystems: function(){
+		var numSystems = 0;
+		for (var i in this.cFrames) {
+			numSystems += this.cFrames[i].totalSystems();
+		}
+		return numSystems;
+	},
+	totalSSRs: function(){
+		var numSystems = 0;
+		for (var i in this.cFrames) {
+			numSystems += this.cFrames[i].ssr;
+		}
+		return numSystems;
+	}
+};
