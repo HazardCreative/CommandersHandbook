@@ -426,7 +426,7 @@ var mfzch = {
 
 		nav += '<li><a href="#loadouts">Frame Loadouts</a></li>'
 		+ '<li><a href="#company-analysis">Company Structure</a></li>'
-		+ '<li><a href="command-network">Commander\'s Network</a></li>'
+		+ '<li><a href="command-network" data-ajax="false">Commander\'s Network</a></li>'
 		+ '</ul>';
 
 		return nav;
@@ -758,15 +758,14 @@ var mfzch = {
 
 		$('#def-tie-choice').listview('refresh');
 		$('#def-team-choice-index').val(teamid);
-
 	},
 	determineTieChoices: function(thisGame) {
 		var teamid = parseInt($('#def-team-choice-index').val());
-
 		var numTied = mfzch.game.tiedForDefense();
 
 		var nextTeam = teamid + 1;
 		if (nextTeam >= numTied) {
+			thisGame.reset();
 			nextTeam = 0;
 		}
 
