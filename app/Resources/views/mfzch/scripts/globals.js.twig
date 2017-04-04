@@ -13,12 +13,24 @@ var MEAND6D8 = [ // mean (highest of Xd6 + Yd8)
 	[5.43, 6.05, 6.48, 6.79, 7.03],
 	[5.56, 6.12, 6.52, 6.81, 7.04]
 ]
-var MAXCOMPANIES = 20;
-var MAXTEAMS = 5;
-var MAXFRAMES = 9;
-var MAXSTATIONS = 3;
-var MAXUNCLAIMEDSTATIONS = 1;
-var MAXLOADOUTS = 50;
-var MAXDOOMSDAY = 11;
+{% if is_granted('IS_AUTHENTICATED_FULLY')
+		and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
+	var MAXCOMPANIES = 25;
+	var MAXTEAMS = 9;
+	var MAXFRAMES = 9;
+	var MAXSTATIONS = 9;
+	var MAXUNCLAIMEDSTATIONS = 9;
+	var MAXLOADOUTS = 50;
+	var MAXDOOMSDAY = 20;
+{% else %}
+	var MAXCOMPANIES = 5;
+	var MAXTEAMS = 5;
+	var MAXFRAMES = 8;
+	var MAXSTATIONS = 3;
+	var MAXUNCLAIMEDSTATIONS = 1;
+	var MAXLOADOUTS = 10;
+	var MAXDOOMSDAY = 11;
+{% endif %}
+
 var BUILDVERSION = {{ buildver }};
 var PUBLICBUILDSTRING = '{{ buildstring|e('js') }}';
