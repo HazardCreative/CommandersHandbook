@@ -32,6 +32,19 @@
 	<p>The MFZ:RA Commander&#8217;s Handbook requires a recent browser with Javascript enabled.</p>
 </noscript>
 
+<div data-role="panel" id="nav-panel" data-theme="c" data-position="left" data-position-fixed="true" data-display="reveal">
+	<h2><a href="#main-page">MFZ:RA Commander&#8217;s Handbook</a></h2>
+	
+	{% include 'nav.html.twig' %}
+</div>
+<script id="panel-init">
+	// Load the side-panel var to the DOM / page
+	$(document).one('pagebeforecreate', function () {
+		$("#nav-panel").panel();
+		$('.nav-listview').listview();
+	});
+</script>
+
 <!-- ============================ -->
 
 {% block main %}{% endblock %}

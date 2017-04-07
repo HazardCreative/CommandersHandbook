@@ -1,6 +1,6 @@
 // main vars
 mfzch.game = mfzch.restoreLocalData('game');
-mfzch.templateGame = mfzch.restoreLocalData('templateGame'); //
+mfzch.templateGame = mfzch.restoreLocalData('templateGame'); // game state before reset
 mfzch.frameSet = mfzch.restoreLocalData('frameSet');
 mfzch.companies = mfzch.restoreLocalData('companies');
 mfzch.loadouts = mfzch.restoreLocalData('loadouts');
@@ -65,10 +65,6 @@ $(window.applicationCache).on('updateready', function(e) {
 
 // Load the side-panel var to the DOM / page
 $(document).one('pagebeforecreate', function () {
-	$.mobile.pageContainer.prepend(mfzch.buildNavPanel());
-	$("#nav-panel").panel();
-	$('.nav-listview').listview();
-
 	if (mfzch.settings.compactUI) {
 		$('body').addClass('compact-ui');
 	}
@@ -87,10 +83,6 @@ $( document ).on( "pagecreate", function() {
 	$(document).on('swiperight', '[data-role=slider]', function(ev){
 		ev.stopPropagation();
 	});
-});
-
-$(document).on('pagecreate', '#main-page', function(event){
-	$('#main-nav').html(mfzch.buildNav()).enhanceWithin();
 });
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){

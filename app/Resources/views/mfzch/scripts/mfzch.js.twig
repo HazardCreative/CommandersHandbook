@@ -192,7 +192,7 @@ var mfzch = {
 				dataType == 'companies'
 	//			|| dataType == 'loadouts'
 	//			|| dataType == 'settings'
-			) {
+				) {
 				if (mfzch.settings.activeSync && isOnline()) {
 					var postdata = new Object();
 
@@ -413,29 +413,6 @@ var mfzch = {
 
 	/* interface */
 
-	buildNav: function() {
-		var nav = '<ul data-role="listview" data-inset="true" class="nav-listview">'
-		+ '<li><a href="#game-tracking" id="battle-link">Battle Tracking</a></li>'
-		+ '<li><a href="#dice-roller">Frame Simulator</a></li>'
-		+ '<li><a href="#rules-reference">Rules of Engagement</a></li>';
-
-		{% if is_granted('IS_AUTHENTICATED_FULLY')
-		and "now"|date('Y-m-d') < app.user.elite_expires|date('Y-m-d') %}
-			nav += '<li><a href="#tactics-and-strategy">Tactics and Strategy</a></li>';
-		{% endif %}
-
-		nav += '<li><a href="#loadouts">Frame Loadouts</a></li>'
-		+ '<li><a href="#company-analysis">Company Structure</a></li>'
-		+ '<li><a href="command-network" data-ajax="false">Commander\'s Network</a></li>'
-		+ '</ul>';
-
-		return nav;
-	},
-	buildNavPanel: function() {
-		return navPanel = '<div data-role="panel" id="nav-panel" data-theme="c" data-position="left" data-position-fixed="true" data-display="reveal">'
-		+ '<h2><a href="#main-page">MFZ:RA Commander&#8217;s Handbook</a></h2>'
-		+ this.buildNav() + '</div>';
-	},
 	updateGameInfo: function(thisGame) {
 		$('.gameinfo-type').html(thisGame.gameType);
 		$('.gameinfo-round').html(thisGame.round);
