@@ -28,24 +28,14 @@ if (typeof jQuery != 'undefined') {
 			<h1>Commander's Network</h1>
 			<p>Logged in as {{ app.user.getUsername()|e }} | <a href="{{ path('fos_user_security_logout') }}" rel="external">Logout</a></p>
 
-			<h2>Commanders</h2>
-			<ul>
-				<li><a href="{{ path('view-profile') }}">My Profile</a></li>
-				<li><a href="{{ path('player-finder') }}">Find Commanders</a></li>
+			<ul data-role="listview" data-inset="true" class="nav-listview">
+				<li data-role="list-divider">Commanders</li>
+				<li><a href="{{ path('view-profile') }}">View Profile</a></li>
+				<li><a href="{{ path('view-public-profile') }}">View Public Profile</a></li>
+				<li><a href="{{ path('edit-profile') }}">Edit Profile</a></li>
+				<li><a href="{{ path('player-finder') }}">Locate Commanders</a></li>
 			</ul>
 
-			<!--
-			<h2>Companies</h2>
-			<ul>
-				<li>Browse Companies</li>
-			</ul>
-			-->
-
-			<h2>Conflicts</h2>
-			<ul>
-				<li><a href="{{ path('manage-conflicts') }}">Manage Conflicts</a></li>
-				<li>Game finder</li>
-			</ul>
 		{% else %}
 			<p>The commander's network requires users to log in.</p>
 			<p>Registration is free and open to all.</p>

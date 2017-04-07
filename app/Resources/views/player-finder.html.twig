@@ -73,7 +73,7 @@ if (typeof jQuery != 'undefined') {
 			var lastLoad = mymap.getCenter();
 
 			function reloadPoints(e) {
-				// 111322m apporx distance between latitudes
+				// 111322m approx distance between latitudes
 				if (lastLoad.distanceTo(mymap.getCenter()) > 50000) {
 					getNewPlayers();
 				};
