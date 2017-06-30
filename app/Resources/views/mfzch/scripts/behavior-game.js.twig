@@ -33,15 +33,25 @@ $(document).on('pagecreate', '#active-game', function(event){
 	// destroy frame option
 	$(document).on('click', '#destroy-frame', function(){
 		var teamid = $('#team-action').attr('data-team-index');
+		var team = mfzch.game.teams[teamid];
 
-		if(mfzch.game.teams[teamid].gFrames) {
+		if(team.gFrames) {
 			mfzch.undo.setState(mfzch.game);
-			mfzch.game.teams[teamid].gFrames--;
-			mfzch.game.logEvent(mfzch.game.teams[teamid].name + ' loses a frame');
+			team.gFrames--;
+			mfzch.game.logEvent(team.name + ' loses a frame');
 			mfzch.game.updateScores();
 			mfzch.updateActiveTeams(mfzch.game);
 			mfzch.game.logScores('short');
+			mfzch.game.clientmodified = true;
 			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-gFrames',
+					teamid: team.uuid,
+					gFrames: team.gFrames
+				}
+			]);
 
 			mfzch.settings.framesDestroyed++;
 			mfzch.saveData('settings');
@@ -76,7 +86,20 @@ $(document).on('pagecreate', '#active-game', function(event){
 			mfzch.game.updateScores();
 			mfzch.updateActiveTeams(mfzch.game);
 			mfzch.game.logScores('short');
+			mfzch.game.clientmodified = true;
 			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'unclaimedStations',
+					unclaimedStations: mfzch.game.unclaimedStations
+				},
+				{
+					action: 'team-gStations',
+					teamid: mfzch.game.teams[teamid].uuid,
+					gStations: mfzch.game.teams[teamid].gStations
+				}
+			]);
 
 			$('#team-action').popup('close');
 			try {
@@ -107,7 +130,16 @@ $(document).on('pagecreate', '#active-game', function(event){
 			mfzch.game.updateScores();
 			mfzch.updateActiveTeams(mfzch.game);
 			mfzch.game.logScores('short');
+			mfzch.game.clientmodified = true;
 			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-gStations',
+					teamid: mfzch.game.teams[teamid].uuid,
+					gStations: mfzch.game.teams[teamid].gStations
+				}
+			]);
 
 			$('#team-action').popup('close');
 			try {
@@ -141,7 +173,28 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.game.updateScores();
 		mfzch.updateActiveTeams(mfzch.game);
 		mfzch.game.logScores('short');
+		mfzch.game.clientmodified = true;
 		mfzch.saveData('game');
+
+		if (capturedTeamid == 'nobody') { // hack so patch doesn't fail
+			capturedTeamid = 0;
+		}
+		mfzch.sendGameUpdate([
+			{
+				action: 'unclaimedStations',
+				unclaimedStations: mfzch.game.unclaimedStations
+			},
+			{
+				action: 'team-gStations',
+				teamid: mfzch.game.teams[capturingTeamid].uuid,
+				gStations: mfzch.game.teams[capturingTeamid].gStations
+			},
+			{
+				action: 'team-gStations',
+				teamid: mfzch.game.teams[capturedTeamid].uuid,
+				gStations: mfzch.game.teams[capturedTeamid].gStations
+			}
+		]);
 
 		$('#station-capture').popup('close');
 		try {
@@ -169,7 +222,28 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.game.updateScores();
 		mfzch.updateActiveTeams(mfzch.game);
 		mfzch.game.logScores('short');
+		mfzch.game.clientmodified = true;
 		mfzch.saveData('game');
+
+		if (capturedTeamid == 'nobody') { // hack so patch doesn't fail
+			capturedTeamid = 0;
+		}
+		mfzch.sendGameUpdate([
+			{
+				action: 'unclaimedStations',
+				unclaimedStations: mfzch.game.unclaimedStations
+			},
+			{
+				action: 'team-gStations',
+				teamid: mfzch.game.teams[capturingTeamid].uuid,
+				gStations: mfzch.game.teams[capturingTeamid].gStations
+			},
+			{
+				action: 'team-gStations',
+				teamid: mfzch.game.teams[capturedTeamid].uuid,
+				gStations: mfzch.game.teams[capturedTeamid].gStations
+			}
+		]);
 
 		$('#station-capture').popup('close');
 		try {
@@ -185,7 +259,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.game.updateScores();
 		mfzch.updateActiveTeams(mfzch.game);
 		mfzch.updateGameInfo(mfzch.game);
-		mfzch.saveData('game');
+		mfzch.game.clientmodified = true;
+		mfzch.saveData('game', true);
 	});
 
 	// redo
@@ -194,7 +269,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.game.updateScores();
 		mfzch.updateActiveTeams(mfzch.game);
 		mfzch.updateGameInfo(mfzch.game);
-		mfzch.saveData('game');
+		mfzch.game.clientmodified = true;
+		mfzch.saveData('game', true);
 	});
 
 	// end round
@@ -244,7 +320,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 							mfzch.game.logSeparator();
 							mfzch.game.logEvent('Round '+ mfzch.game.round + ' begins');
 							mfzch.game.logScores();
-							mfzch.saveData('game');
+							mfzch.game.clientmodified = true;
+							mfzch.saveData('game', true);
 						}
 					} else {
 						mfzch.game.logEvent('Doomsday is now 0');
@@ -295,7 +372,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 		if (mfzch.game.blindSetup) {
 			mfzch.game.teams = [];
 		}
-		mfzch.saveData('game');
+		mfzch.game.clientmodified = true;
+		mfzch.saveData('game', true);
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
 	});
 
@@ -352,7 +430,22 @@ $(document).on('pagecreate', '#active-game', function(event){
 					ga('send', 'event', 'Game', 'Action', 'Destroyed System', 0, false);
 				} catch (err) {}
 			}
+			mfzch.game.clientmodified = true;
 			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-update',
+					teamid: mfzch.game.teams[companyid].uuid,
+					frameid: mfzch.game.teams[companyid].cFrames[frameid].uuid,
+					frame: frame
+				},
+				{
+					action: 'team-sSystems',
+					teamid: mfzch.game.teams[companyid].uuid,
+					sSystems: mfzch.game.teams[companyid].sSystems
+				}
+			]);
 
 			mfzch.settings.systemsDestroyed++;
 			mfzch.saveData('settings');
@@ -367,6 +460,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 	$(document).on('click', '#frame-smash-destroy', function(){
 		var companyid = $('#company-smash-index').val();
 		var frameid = $('#frame-smash-index').val();
+		var frameuuid = mfzch.game.teams[companyid].cFrames[frameid].uuid;
 
 		mfzch.undo.setState(mfzch.game);
 
@@ -382,10 +476,30 @@ $(document).on('pagecreate', '#active-game', function(event){
 
 		mfzch.game.teams[companyid].cFrames.splice(frameid, 1);
 		mfzch.game.teams[companyid].gFrames = mfzch.game.teams[companyid].cFrames.length;
+		mfzch.game.teams[companyid].sSystems = mfzch.game.teams[companyid].totalSystems();
 
 		mfzch.game.updateScores();
 		mfzch.game.logScores('short');
+		mfzch.game.clientmodified = true;
 		mfzch.saveData('game');
+
+		mfzch.sendGameUpdate([
+			{
+				action: 'team-frame-del',
+				teamid: mfzch.game.teams[companyid].uuid,
+				frameid: frameuuid
+			},
+			{
+				action: 'team-gFrames',
+				teamid: mfzch.game.teams[companyid].uuid,
+				gFrames: mfzch.game.teams[companyid].gFrames
+			},
+			{
+				action: 'team-sSystems',
+				teamid: mfzch.game.teams[companyid].uuid,
+				sSystems: mfzch.game.teams[companyid].sSystems
+			}
+		]);
 
 		mfzch.settings.framesDestroyed++;
 		mfzch.saveData('settings');
@@ -412,7 +526,7 @@ $(document).on('pagecreate', '#active-game', function(event){
 
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#dice-roller");
 	});
-	
+
 	$(document).on('click', '#frame-smash-sim2', function(){
 		var companyid = $('#company-smash-index').val();
 		var frameid = $('#frame-smash-index').val();
@@ -444,7 +558,18 @@ $(document).on('pagecreate', '#active-game', function(event){
 			ga('send', 'event', 'Game', 'Action', 'Activation', 0, false);
 		} catch (err) {}
 
+		mfzch.game.clientmodified = true;
 		mfzch.saveData('game');
+
+		mfzch.sendGameUpdate([
+			{
+				action: 'team-frame-update',
+				teamid: mfzch.game.teams[companyid].uuid,
+				frameid: mfzch.game.teams[companyid].cFrames[frameid].uuid,
+				frame: frame
+			}
+		]);
+
 		mfzch.updateActiveTeams(mfzch.game);
 	});
 
@@ -461,7 +586,18 @@ $(document).on('pagecreate', '#active-game', function(event){
 			ga('send', 'event', 'Game', 'Action', 'Defense', mfzch.game.teams[companyid].cFrames[frameid].defense, false);
 		} catch (err) {}
 
+		mfzch.game.clientmodified = true;
 		mfzch.saveData('game');
+
+		mfzch.sendGameUpdate([
+			{
+				action: 'team-frame-update',
+				teamid: mfzch.game.teams[companyid].uuid,
+				frameid: mfzch.game.teams[companyid].cFrames[frameid].uuid,
+				frame: frame
+			}
+		]);
+
 		mfzch.updateActiveTeams(mfzch.game);
 	});
 
@@ -478,7 +614,18 @@ $(document).on('pagecreate', '#active-game', function(event){
 			ga('send', 'event', 'Game', 'Action', 'Defense', mfzch.game.teams[companyid].cFrames[frameid].spot, false);
 		} catch (err) {}
 
+		mfzch.game.clientmodified = true;
 		mfzch.saveData('game');
+
+		mfzch.sendGameUpdate([
+			{
+				action: 'team-frame-update',
+				teamid: mfzch.game.teams[companyid].uuid,
+				frameid: mfzch.game.teams[companyid].cFrames[frameid].uuid,
+				frame: frame
+			}
+		]);
+
 		mfzch.updateActiveTeams(mfzch.game);
 	});
 });
@@ -513,6 +660,47 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 			} else {
 				$('#frame-smash-status').hide();
 			}
+
+			if (mfzch.game.shared) {
+				$('.game-link').html('This game is shared. <a href="/game/'+ mfzch.game.uuid+ '/">Link to this game</a>.');
+				$('.game-link').show();
+			} else {
+				$('.game-link').hide();
+			}
+
+			if(mfzch.appState.remote.mode
+				&& mfzch.appState.remote.granted != 'modify') {
+				$('#end-round').hide();
+				$('#exit-game').hide();
+				$('#undo').hide();
+				$('#redo').hide();
+			} else {
+				$('#end-round').show();
+				$('#exit-game').show();
+				$('#undo').show();
+				$('#redo').show();
+			}
+
+			if(mfzch.appState.remote.mode) {
+				clearInterval(mfzch.remoteSync['active-game']);
+				mfzch.remoteSync['active-game'] = setInterval(function(){
+					mfzch.checkRemoteStatus('active-game');
+					mfzch.updateActiveTeams(mfzch.game);
+					mfzch.updateGameInfo(mfzch.game);
+
+					if (mfzch.game.doomsday < 1) {
+						$('#end-round').hide();
+					} else {
+						$('#end-round').show();
+					}
+				}, mfzch.appState.remote.refresh);
+			}
 		}
+	}
+});
+
+$(document).on( "pagecontainerhide", function( event, ui ) {
+	if (ui.prevPage[0].id == 'active-game') {
+		clearInterval(mfzch.remoteSync['active-game']);
 	}
 });

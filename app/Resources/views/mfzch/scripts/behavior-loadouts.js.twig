@@ -22,41 +22,6 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		$('#loadout-add-to-company').popup('open');
 	});
 
-	// choose company to add to
-	$(document).on('click', '#lo-company-list li', function(){
-		var load = mfzch.convertHtmlToLoadout('#lo-data');
-
-		var companyid = $(this).attr('data-id');
-		if (typeof(companyid) !== 'undefined' && companyid !== false) {
-			if (mfzch.companies[companyid].frames.length < MAXFRAMES) {
-				load.name = uniqueName(load.name, buildNameArray(mfzch.companies[companyid].frames))
-				mfzch.companies[companyid].frames.push(load);
-				mfzch.saveData('companies');
-
-				try {
-					ga('send', 'event', 'Loadouts', 'Action', 'Add Frame', 0, false);
-				} catch (err) {}
-
-				$('#loadout-add-to-company').popup('close');
-			}
-		} else {
-			var company = new companyModel;
-			var companyDesc = mfzch.generateDescriptor();
-			company.name = companyDesc[0];
-			company.color = companyDesc[1];
-
-			company.frames.push(load);
-			mfzch.companies.push(company);
-			mfzch.saveData('companies');
-
-			try {
-				ga('send', 'event', 'Loadouts', 'Action', 'Add Company', 0, false);
-			} catch (err) {}
-
-			$('#loadout-add-to-company').popup('close');
-		}
-	});
-
 	// add loadout
 	$(document).on('click', '#loadouts #loadout-add', function(){
 		var load = new frameModel();
@@ -175,7 +140,7 @@ $(document).on('pagecreate', '#loadouts', function(event){
 		});
 	});
 
-	// add to company
+	// add to company selector
 	$(document).on('click', '#loadout-add-to-company-btn', function(){
 		var loadid = $('#loadout-index').val();
 
@@ -196,6 +161,44 @@ $(document).on('pagecreate', '#loadouts', function(event){
 			$('#loadout-adjust').popup('option', 'afterclose', '');
 		});
 		$('#loadout-adjust').popup('close');
+	});
+
+	// add to selected company
+	$(document).on('click', '#lo-company-list li', function(){
+		var load = mfzch.convertHtmlToLoadout('#lo-data');
+
+		var companyid = $(this).attr('data-id');
+		if (typeof(companyid) !== 'undefined' && companyid !== false) { // existing company
+			if (mfzch.companies[companyid].frames.length < MAXFRAMES) {
+				var company = mfzch.companies[companyid];
+				load.name = uniqueName(load.name, buildNameArray(company.frames))
+				company.frames.push(load);
+				company.clientmodified = true;
+				mfzch.saveData('companies');
+
+				try {
+					ga('send', 'event', 'Loadouts', 'Action', 'Add Frame', 0, false);
+				} catch (err) {}
+
+				$('#loadout-add-to-company').popup('close');
+			}
+		} else { // generate new company
+			var company = new companyModel;
+			var companyDesc = mfzch.generateDescriptor();
+			company.name = companyDesc[0];
+			company.color = companyDesc[1];
+
+			company.frames.push(load);
+			company.clientmodified = true;
+			mfzch.companies.push(company);
+			mfzch.saveData('companies');
+
+			try {
+				ga('send', 'event', 'Loadouts', 'Action', 'Add Company', 0, false);
+			} catch (err) {}
+
+			$('#loadout-add-to-company').popup('close');
+		}
 	});
 });
 

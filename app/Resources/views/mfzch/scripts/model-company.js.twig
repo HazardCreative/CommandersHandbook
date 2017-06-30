@@ -1,5 +1,6 @@
 function companyModel() {
-	this.id = false;
+	this.uuid = generateUUID();
+	this.dbid = false;
 	this.name = 'Unnamed Company';
 	this.description = '';
 	this.shared = false;

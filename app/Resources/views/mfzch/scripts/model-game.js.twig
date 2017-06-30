@@ -1,5 +1,8 @@
 function gameModel() {
-	this.id = false;
+	this.uuid = generateUUID();
+	this.dbid = false;
+	this.description = '';
+	this.owner = '';
 	this.doomsday = 0;
 	this.round = 0;
 	this.gameType = 'Battle';
@@ -13,8 +16,11 @@ function gameModel() {
 	this.startTime = new Date();
 	this.intendedPlayers = 3;
 	this.blindSetup = false;
-	this.accessControl = 'Private';
-
+	this.shared = false;
+	this.viewPassword = '';
+	this.modifyPassword = '';
+	this.servermodified = false;
+	this.clientmodified = true;
 	this.status = 0;
 	/*
 	0 = choose parameters
@@ -367,7 +373,7 @@ gameModel.prototype = {
 
 		$('#game-end').popup('open');
 		$('#end-round').hide();
-		mfzch.saveData('game');
+		mfzch.saveData('game', true);
 	},
 	logEvent: function(eventText) {
 		this.log += timeStamp() + ' - ' + eventText + '\n';

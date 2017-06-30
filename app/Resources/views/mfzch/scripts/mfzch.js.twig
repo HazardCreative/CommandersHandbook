@@ -6,8 +6,8 @@ var mfzch = {
 	loadouts: [],
 	settings: new settingsModel(),
 	appState: new appStateModel(),
+	remoteSync: [],
 	frameNow: 1,
-	offlinemodified: true,
 
 	/* Parse saved game data */
 	gameDataToGameModel: function (loadedData) {
@@ -45,15 +45,24 @@ var mfzch = {
 
 	/* Load and Save */
 
-	saveData: function(dataType) {
-		if (
-			dataType == 'game'
-			|| dataType == 'templateGame'
+	saveData: function(dataType, forceSync) {
+		if (typeof(forceSync) === undefined) {
+			forceSync = false;
+		}
+
+		if (dataType == 'game') {
+			if (forceSync) {
+				return this.saveLocalData(dataType) && this.syncServerData(dataType);
+			} else {
+				return this.saveLocalData(dataType);
+			}
+		} else if (
+			dataType == 'templateGame'
 			|| dataType == 'frameSet'
 			|| dataType == 'companies'
 			|| dataType == 'loadouts'
 			|| dataType == 'settings'
-		) {
+			) {
 			return this.saveLocalData(dataType) && this.syncServerData(dataType);
 		} else {
 			return false;
@@ -78,19 +87,12 @@ var mfzch = {
 			|| dataType == 'loadouts'
 			|| dataType == 'settings'
 		) {
-			this.offlinemodified = true;
-
 			if (!supportsLocalStorage()) { return false; }
 			if (dataType == 'templateGame') {
 				localStorage[location] = data;
 			} else {
 				localStorage[location] = JSON.stringify(data);
 			}
-
-			if (dataType = 'companies') {
-				this.saveServerData(dataType);
-			}
-
 			return true;
 		} else {
 			return false;
@@ -187,11 +189,14 @@ var mfzch = {
 				return false;
 			}
 
-			if (
-	//			|| dataType == 'game'
-				dataType == 'companies'
-	//			|| dataType == 'loadouts'
-	//			|| dataType == 'settings'
+			if (dataType == 'game' && mfzch.appState.remote.mode) {
+				return false;
+			}
+
+			if (dataType == 'game'
+				|| dataType == 'companies'
+				//	|| dataType == 'loadouts'
+				//	|| dataType == 'settings'
 				) {
 				if (mfzch.settings.activeSync && isOnline()) {
 					var postdata = new Object();
@@ -203,32 +208,30 @@ var mfzch = {
 
 						$.post('/save-data', postdata)
 						.done(function(result) {
-							this.offlinemodified = false;
-							for (var i in data) {
-								if (result[i]) {
-									if (data[i].name == result[i].name) {
-										if (data[i].id === false && result[i].id) {
-											data[i].id = result[i].id;
+							if (dataType == 'companies') {
+								for (var i in data) {
+									if (result[i]) {
+										if (data[i].name == result[i].name) {
+											if (data[i].dbid === false && result[i].dbid) {
+												data[i].dbid = result[i].dbid;
+											}
+											data[i].servermodified = result[i].servermodified;
+											data[i].clientmodified = false;
 										}
-										data[i].servermodified = result[i].servermodified;
-										data[i].clientmodified = false;
 									}
 								}
+							} else if (dataType == 'game') {
+								data.dbid = result[0].dbid;
+								data.servermodified = result[0].servermodified;
+								data.clientmodified = false;
 							}
 						});
 						return true;
-					} else {
-						return false;
 					}
-				} else {
-					return false;
 				}
-			} else {
-				return false;
 			}
-		} else {
-			return false;
 		}
+		return false;
 	},
 	restoreServerData: function(dataType) {
 		if (this.appState.isElite) {
@@ -249,20 +252,20 @@ var mfzch = {
 
 							var companyMap = {};
 							for (var l=0; l < mfzch.companies.length; l++) {
-								companyMap[ mfzch.companies[l]['id'] ] = true;
+								companyMap[ mfzch.companies[l]['dbid'] ] = true;
 							}
 
 							for (var c in result[i].data) {
-								if (!companyMap.hasOwnProperty(result[i].data[c].id)) {
+								if (!companyMap.hasOwnProperty(result[i].data[c].dbid)) {
 									// No match with server means item was deleted locally
 									var delData = new Object();
 
-									delData['companies'] = result[i].data[c].id;
+									delData['companies'] = result[i].data[c].dbid;
 									$.post('/delete-data', delData);
 								} else {
 									var found = false;
 									for (var ec in mfzch.companies) {
-										if (mfzch.companies[ec].id == result[i].data[c].id) {
+										if (mfzch.companies[ec].dbid == result[i].data[c].dbid) {
 											var found = true;
 
 											var useServer = true;
@@ -274,7 +277,7 @@ var mfzch = {
 											}
 
 											if (useServer) {
-												mfzch.companies[ec].id = result[i].data[c].id;
+												mfzch.companies[ec].dbid = result[i].data[c].dbid;
 												mfzch.companies[ec].name = result[i].data[c].name;
 												mfzch.companies[ec].description = result[i].data[c].description;
 												mfzch.companies[ec].shared = result[i].data[c].shared;
@@ -294,7 +297,7 @@ var mfzch = {
 
 											} else {
 												// save client to server now
-												this.saveServerData(this.companies, 'mfz.companies');
+												mfzch.saveServerData(mfzch.companies, 'mfz.companies');
 											}
 										}
 									}
@@ -303,7 +306,7 @@ var mfzch = {
 										// create if ID does not exist
 										var company = new companyModel();
 
-										company.id = result[i].data[c].id;
+										company.dbid = result[i].data[c].dbid;
 										company.name = result[i].data[c].name;
 										company.description = result[i].data[c].description;
 										company.shared = result[i].data[c].shared;
@@ -325,27 +328,108 @@ var mfzch = {
 									}
 								}
 							}
+						} else if (result[i].type == 'game') {
+							// *** restore loaded game
+							mfzch.game = mfzch.gameDataToGameModel(result[i].data[0]);
+							mfzch.game.clientmodified = false;
 						}
 						mfzch.updateCompanyList();
 					}
 				});
 				return true;
 			}
-			return false;
-		} else {
-			return false;
 		}
+		return false;
 	},
 	syncServerData: function(dataType) {
 		if (dataType == 'all') {
-		//	&& this.saveServerData('game') && this.restoreServerData('game')
-			return this.saveServerData('companies') && this.restoreServerData('companies')
-		//	&& this.saveServerData('loadouts') && this.restoreServerData('loadouts')
-		//	&& this.saveServerData('settings') && this.restoreServerData('settings')
-			;
+			this.saveServerData('game');
+			this.saveServerData('companies');
+			// this.saveServerData('loadouts');
+			// this.saveServerData('settings');
+
+			this.restoreServerData('game');
+			this.restoreServerData('companies');
+			// this.restoreServerData('loadouts');
+			// this.restoreServerData('settings');
 		} else {
-			return this.saveServerData(dataType) && this.restoreServerData(dataType);
+			this.saveServerData(dataType);
+			this.restoreServerData(dataType);
 		}
+	},
+	sendGameUpdate: function(patch) {
+		if (this.appState.isElite) { // *** revist when this check is appropriate
+			if (mfzch.settings.activeSync && isOnline()) {
+				if (patch) {
+					$.post('/patch-game', {game_dbid: this.game.dbid, patch: JSON.stringify(patch)})
+					.done(function(result) {
+						// ***
+					});
+					return true;
+				}
+			}
+		}
+		return false;
+	},
+
+	/* remote */
+
+	loadRemoteGame: function(callback) {
+		var postdata = new Object();
+		postdata['type'] = 'game';
+		postdata['data'] = JSON.stringify(mfzch.appState.remote);
+
+		$.post('/remote-load-game/', postdata)
+		.done(function(result) {
+			if (result && result.type == 'game') {
+				var statusflag = false;
+				if (mfzch.game.status != result.data.status) {
+					statusflag = true;
+				}
+
+				mfzch.game = mfzch.gameDataToGameModel(result.data); // check if servermodified
+				mfzch.game.clientmodified = false;
+				mfzch.appState.remote.granted = result.grant;
+			}
+			mfzch.appState.remote.connection = true;
+
+			if (statusflag) {
+				if (typeof callback === 'function') {
+					callback('status');
+				}
+			} else {
+				if (typeof callback === 'function') {
+					callback(true);
+				}
+			}
+
+		}).fail(function(){
+			mfzch.appState.remote.connection = false;
+
+			if (typeof callback === 'function') {
+				callback(false);
+			}
+		});
+	},
+	checkRemoteStatus(page){
+		mfzch.loadRemoteGame(function(result){
+			if (!result
+				|| (
+					result == 'status'
+					&& mfzch.chooseGamePage() != page
+					)
+				) {
+
+				$( ":mobile-pagecontainer" ).pagecontainer( "change", mfzch.chooseGamePage(), { changeHash: false } );
+			}
+		});
+	},
+	checkRemoteConnection(){
+		mfzch.loadRemoteGame(function(result){
+			if (mfzch.chooseGamePage() != '#remote-noconnection') {
+				$( ":mobile-pagecontainer" ).pagecontainer( "change", mfzch.chooseGamePage(), { changeHash: false } );
+			}
+		});
 	},
 
 	/* undo/redo */
@@ -685,7 +769,12 @@ var mfzch = {
 		var result = thisGame.checkSetup();
 
 		if (result.passing) {
-			$('#game-ready-status').html('<a href="#" id="confirm-companies" class="ui-btn ui-btn-b ui-icon-carat-r ui-btn-icon-right ui-corner-all">Confirm Companies</a>');
+			if(mfzch.appState.remote.mode
+				&& mfzch.appState.remote.mode != 'host') {
+				$('#game-ready-status').html('<div class="ui-body ui-body-b ui-corner-all">Waiting for host to proceed.</div>');
+			} else {
+				$('#game-ready-status').html('<a href="#" id="confirm-companies" class="ui-btn ui-btn-b ui-icon-carat-r ui-btn-icon-right ui-corner-all">Confirm Companies</a>');
+			}
 		} else {
 			if (result.reason.length) {
 				var response = '<ul>';
@@ -766,12 +855,12 @@ var mfzch = {
 				|| mfzch.game.gameType == "Skirmish") {
 
 				mfzch.game.status = 3;
-				mfzch.saveData('game');
+				mfzch.saveData('game', true);
 
 				$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-deployment", { changeHash: false } );
 			} else {
 				mfzch.game.status = 4;
-				mfzch.saveData('game');
+				mfzch.saveData('game', true);
 
 				$( ":mobile-pagecontainer" ).pagecontainer( "change", "#active-game", { changeHash: false } );
 			}
@@ -934,6 +1023,55 @@ var mfzch = {
 			$('.company-graph-in-list').hide();
 		}
 	},
+	chooseGamePage: function() {
+		if (mfzch.appState.remote.mode) {
+			if (mfzch.appState.remote.connection) {
+				if (mfzch.appState.remote.granted == 'modify') {
+					if (mfzch.game.status >= 4) {
+						return "#active-game";
+					} else if (mfzch.game.status >= 3) {
+						return "#game-deployment";
+					} else if (mfzch.game.status >= 2) { // wait out tie resolution
+						if (mfzch.appState.remote.mode == 'host') {
+							return "#setup-tie";
+						} else {
+							return "#remote-hold";
+						}
+					} else if (mfzch.game.status >= 1) {
+						return "#company-entry";
+					} else {
+						if (mfzch.appState.remote.mode == 'host') {
+							return "#game-setup";
+						} else { // *** wait it out or kick users? (need to reauth if wait)
+							return "#remote-hold";
+						}
+					}
+				} else if (mfzch.appState.remote.granted == 'view') {
+					if (mfzch.game.status >= 2) { // skip deployment, tie resolution
+						return "#active-game";
+					} else {
+						return "#remote-hold";
+					}
+				} else {
+					return "#remote-password";
+				}
+			} else {
+				return "#remote-noconnection";
+			}
+		} else { // offline or host
+			if (mfzch.game.status >= 4) {
+				return "#active-game";
+			} else if (mfzch.game.status >= 3) {
+				return "#game-deployment";
+			} else if (mfzch.game.status >= 2) {
+				return "#setup-tie";
+			} else if (mfzch.game.status >= 1) {
+				return "#company-entry";
+			} else {
+				return "#game-setup";
+			}
+		}
+	},
 
 	/* Deployment */
 
@@ -993,4 +1131,3 @@ var mfzch = {
 		} catch (err) {}
 	}
 }
-
