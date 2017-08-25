@@ -23,8 +23,8 @@ if (typeof jQuery != 'undefined') {
 		<div id="mapid" style="height: 50vh;"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user and app.user.geo_latitude and app.user.geo_longitude %}
-				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 11);
+			{% if app.user and locations %}
+				var mymap = L.map('mapid').setView([{{ locations[0].geo_latitude|e }}, {{ locations[0].geo_longitude|e }}], 11);
 			{% else %}
 				var mymap = L.map('mapid').setView([42.6, -72.6], 9);
 			{% endif %}

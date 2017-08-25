@@ -41,17 +41,12 @@ class User extends BaseUser {
 	/**
 	 * @ORM\Column(type="text")
 	 */
-	public $profile_materials_owned;
+	public $profile_materials;
 
 	/**
-	 * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
+	 * @ORM\Column(type="text")
 	 */
-	public $geo_latitude;
-
-	/**
-	 * @ORM\Column(type="decimal", precision=8, scale=5, nullable=true)
-	 */
-	public $geo_longitude;
+	public $profile_experience;
 
 	/**
 	 * @ORM\Column(type="datetime", nullable=true)
@@ -130,54 +125,6 @@ class User extends BaseUser {
 	public function getProfileRealname()
 	{
 		return $this->profile_realname;
-	}
-
-	/**
-	 * Set geoLatitude
-	 *
-	 * @param string $geoLatitude
-	 *
-	 * @return User
-	 */
-	public function setGeoLatitude($geoLatitude)
-	{
-		$this->geo_latitude = $geoLatitude;
-
-		return $this;
-	}
-
-	/**
-	 * Get geoLatitude
-	 *
-	 * @return string
-	 */
-	public function getGeoLatitude()
-	{
-		return $this->geo_latitude;
-	}
-
-	/**
-	 * Set geoLongitude
-	 *
-	 * @param string $geoLongitude
-	 *
-	 * @return User
-	 */
-	public function setGeoLongitude($geoLongitude)
-	{
-		$this->geo_longitude = $geoLongitude;
-
-		return $this;
-	}
-
-	/**
-	 * Get geoLongitude
-	 *
-	 * @return string
-	 */
-	public function getGeoLongitude()
-	{
-		return $this->geo_longitude;
 	}
 
 	/**

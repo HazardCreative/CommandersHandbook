@@ -34,6 +34,11 @@ if (typeof jQuery != 'undefined') {
 				<li>Display Profile: {% if app.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
 				<li>Display E-mail: {% if app.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
 				<li>Patreon ID: {% if app.user.patreon_id %}{{ app.user.patreon_id }} &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Update Patreon Account</a>{% else %}None &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Connect Patreon Account</a>{% endif %}</li>
+
+				<li>Game Preferences: {{ app.user.profile_game_preferences }}</li>
+				<li>Materials: {{ app.user.profile_materials }}</li>
+				<li>Experience: {{ app.user.profile_experience }}</li>
+
 				<li>Location:<br />
 					<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
 				</li>
@@ -42,6 +47,7 @@ if (typeof jQuery != 'undefined') {
 			{# dump(app.user) #}
 			{# {{ app.user.getRoles()|join(', ')|e }} #}
 
+			{#
 			<script>
 			$(document).on("pagecontainershow", function(event, ui) {
 				{% if app.user.geo_latitude and app.user.geo_longitude %}
@@ -81,6 +87,7 @@ if (typeof jQuery != 'undefined') {
 					border: none;
 				}
 			</style>
+			#}
 
 		{% else %}
 			<h1>Not logged in</h1>

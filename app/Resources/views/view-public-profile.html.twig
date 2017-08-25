@@ -33,18 +33,28 @@ if (typeof jQuery != 'undefined') {
 					<li>Regular User</li>
 				{% endif %}
 				<li>Last login: {{ user.lastLogin()|date("Y-m-d H:i:s") }}</li>
+
+				{% if user.profile_game_preferences %}
+					<li>Game Preferences: {{ app.user.profile_game_preferences }}</li>
+				{% endif %}
+
+				{% if user.profile_materials %}
+					<li>Materials: {{ app.user.profile_materials }}</li>
+				{% endif %}
+
+				{% if user.profile_experience %}
+					<li>Experience: {{ app.user.profile_experience }}</li>
+				{% endif %}
 			</ul>
 
-			{% if user.geo_latitude and user.geo_longitude %}
 
+			{% if locations %}
 				<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
 				<script>
 				$(document).on("pagecontainershow", function(event, ui) {
-					{% if app.user.geo_latitude and app.user.geo_longitude %}
-						var mymap = L.map('mapid').setView([{{ user.geo_latitude|e }}, {{ user.geo_longitude|e }}], 7);
-					{% else %}
-						var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
-					{% endif %}
+
+
+					var mymap = L.map('mapid').setView([{{locations[0].geo_latitude}}, {{locations[0].geo_longitude}}], 4);
 
 					mymap.attributionControl.setPrefix('');
 
@@ -64,7 +74,34 @@ if (typeof jQuery != 'undefined') {
 						iconSize: [36, 36]
 					});
 
-					var marker = L.marker([{{ user.geo_latitude|e }}, {{ user.geo_longitude|e }}], {icon: userIcon}).addTo(mymap);
+					backgroundgroup = new L.featureGroup();
+
+					{% for point in locations %}
+						{% if point.radius %}
+						L.circle( [ {{point.geo_latitude}} , {{point.geo_longitude}} ],
+							{
+								radius: {{point.radius}} * 1609.34,
+								color: '#be1e2d',
+								opacity: 0.9,
+								weight: 1
+							})
+						.addTo(backgroundgroup);
+						{% endif %}
+					{% endfor %}
+
+					backgroundgroup.addTo(mymap);
+
+					group = new L.featureGroup();
+
+					{% for point in locations %}
+						L.marker( [ {{point.geo_latitude}} , {{point.geo_longitude}} ], {icon: userIcon})
+						.bindPopup( '{{point.name}}' )
+						.addTo(group);
+					{% endfor %}
+
+					group.addTo(mymap);
+
+					mymap.fitBounds(backgroundgroup.getBounds());
 				});
 				</script>
 				<style>
@@ -78,6 +115,7 @@ if (typeof jQuery != 'undefined') {
 					}
 				</style>
 			{% endif %}
+
 		{% else %}
 			<h1>No public profile for this user</h1>
 		{% endif %}

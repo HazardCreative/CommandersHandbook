@@ -46,15 +46,36 @@ class DefaultController extends Controller {
 		$userManager = $this->get('fos_user.user_manager');
 		$user = $userManager->findUserByUsername($username);
 
+		$locations_repo = $this->getDoctrine()
+			->getRepository('AppBundle:Location');
+
+		$locations = $locations_repo->findByOwner($user->getId());
+
 		return $this->render('view-public-profile.html.twig',
-			array('user' => $user));
+			array(
+				'user' => $user,
+				'locations' => $locations
+			)
+		);
 	}
 
 	/**
 	 * @Route("/view-profile", name="view-profile")
 	 */
 	public function viewProfileAction() {
-		return $this->render('view-profile.html.twig');
+		$userManager = $this->get('fos_user.user_manager');
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+		$locations_repo = $this->getDoctrine()
+			->getRepository('AppBundle:Location');
+
+		$locations = $locations_repo->findByOwner($user->getId());
+
+		return $this->render('view-profile.html.twig',
+			array(
+				'locations' => $locations
+			)
+		);
 	}
 
 	/**
@@ -86,7 +107,19 @@ class DefaultController extends Controller {
 	 * @Route("/player-finder", name="player-finder")
 	 */
 	public function playerFinderAction(Request $request) {
-		return $this->render('player-finder.html.twig');
+		$userManager = $this->get('fos_user.user_manager');
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+		$locations_repo = $this->getDoctrine()
+			->getRepository('AppBundle:Location');
+
+		$locations = $locations_repo->findByOwner($user->getId());
+
+		return $this->render('player-finder.html.twig',
+			array(
+				'locations' => $locations
+			)
+		);
 	}
 
 	/**
@@ -98,6 +131,33 @@ class DefaultController extends Controller {
 			$data = json_decode($_REQUEST['data']);
 
 			// Get closest
+			$user = $this->get('security.token_storage')->getToken()->getUser();
+
+			$locations_repo = $this->getDoctrine()
+				->getRepository('AppBundle:Location');
+
+			$locations = $locations_repo->findByOwner($user->getId());
+
+			/*
+			$query = $this->getDoctrine()->getEntityManager()
+				->createQuery(
+					'SELECT l, u
+					FROM AppBundle:Location l
+					LEFT JOIN AppBundle:User u
+					WHERE l.owner = u.id
+					AND l.geo_latitude > :latmin
+					AND l.geo_latitude < :latmax
+					AND l.geo_longitude > :longmin
+					AND l.geo_longitude < :longmax
+					AND u.profile_is_public = true'
+				)->setParameter('latmin', $data->lat -1)
+				->setParameter('latmax', $data->lat +1)
+				->setParameter('longmin', $data->lng -1)
+				->setParameter('longmax', $data->lng +1);
+
+			$queryResult = $query->getResult();
+
+			-----------
 			$user = $this->get('security.token_storage')->getToken()->getUser();
 
 			$query = $this->getDoctrine()->getEntityManager()
@@ -124,8 +184,40 @@ class DefaultController extends Controller {
 
 				$userOutput[] = $thisUser;
 			}
+			*/
 
-			return new JsonResponse($userOutput);
+			$query = $this->getDoctrine()->getEntityManager()
+				->createQuery(
+					'SELECT l
+					FROM AppBundle:Location l
+					WHERE l.geo_latitude > :latmin
+					AND l.geo_latitude < :latmax
+					AND l.geo_longitude > :longmin
+					AND l.geo_longitude < :longmax'
+				)->setParameter('latmin', $data->lat -1)
+				->setParameter('latmax', $data->lat +1)
+				->setParameter('longmin', $data->lng -1)
+				->setParameter('longmax', $data->lng +1);
+
+			$queryResult = $query->getResult();
+
+			$locOutput = [];
+			foreach ($queryResult as $location) {
+				$userObj = $this->getDoctrine()->getRepository('AppBundle:User')->find($location->getOwner());
+
+				if ($userObj->getProfileIsPublic() ) {
+					$loc['username'] = $userObj->getUsername();
+					$loc['geo_latitude'] = $location->getGeoLatitude();
+					$loc['geo_longitude'] = $location->getGeoLongitude();
+					$loc['link'] = $this->generateUrl('view-profile-public', array('username' => $userObj->getUsername()));
+
+					/* *** Additional location data here */
+
+					$locOutput[] = $loc;
+				}
+			}
+
+			return new JsonResponse($locOutput);
 
 		} else {
 			return new Response('', Response::HTTP_INTERNAL_SERVER_ERROR); // 500
