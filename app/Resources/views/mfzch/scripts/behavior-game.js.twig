@@ -1,6 +1,11 @@
 $(document).on('pagecreate', '#active-game', function(event){
 	// open team actions
 	$(document).on('click', '.team-info', function(){
+		if(mfzch.appState.remote.mode
+			&& mfzch.appState.remote.granted != 'modify') {
+			return false;
+		}
+
 		if (mfzch.game.status < 5) {
 			var teamid = $(this).parent().parent().attr('data-team-index');
 			$('#team-action').attr('data-team-index', teamid).popup('option', 'afterclose', '');
@@ -49,7 +54,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 				{
 					action: 'team-gFrames',
 					teamid: team.uuid,
-					gFrames: team.gFrames
+					gFrames: team.gFrames,
+					gScore: team.gScore
 				}
 			]);
 
@@ -97,7 +103,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 				{
 					action: 'team-gStations',
 					teamid: mfzch.game.teams[teamid].uuid,
-					gStations: mfzch.game.teams[teamid].gStations
+					gStations: mfzch.game.teams[teamid].gStations,
+					gScore: mfzch.game.teams[teamid].gScore
 				}
 			]);
 
@@ -137,7 +144,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 				{
 					action: 'team-gStations',
 					teamid: mfzch.game.teams[teamid].uuid,
-					gStations: mfzch.game.teams[teamid].gStations
+					gStations: mfzch.game.teams[teamid].gStations,
+					gScore: mfzch.game.teams[teamid].gScore
 				}
 			]);
 
@@ -187,12 +195,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 			{
 				action: 'team-gStations',
 				teamid: mfzch.game.teams[capturingTeamid].uuid,
-				gStations: mfzch.game.teams[capturingTeamid].gStations
+				gStations: mfzch.game.teams[capturingTeamid].gStations,
+				gScore: mfzch.game.teams[capturingTeamid].gScore
 			},
 			{
 				action: 'team-gStations',
 				teamid: mfzch.game.teams[capturedTeamid].uuid,
-				gStations: mfzch.game.teams[capturedTeamid].gStations
+				gStations: mfzch.game.teams[capturedTeamid].gStations,
+				gScore: mfzch.game.teams[capturedTeamid].gScore
 			}
 		]);
 
@@ -236,12 +246,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 			{
 				action: 'team-gStations',
 				teamid: mfzch.game.teams[capturingTeamid].uuid,
-				gStations: mfzch.game.teams[capturingTeamid].gStations
+				gStations: mfzch.game.teams[capturingTeamid].gStations,
+				gScore: mfzch.game.teams[capturingTeamid].gScore
 			},
 			{
 				action: 'team-gStations',
 				teamid: mfzch.game.teams[capturedTeamid].uuid,
-				gStations: mfzch.game.teams[capturedTeamid].gStations
+				gStations: mfzch.game.teams[capturedTeamid].gStations,
+				gScore: mfzch.game.teams[capturedTeamid].gScore
 			}
 		]);
 
@@ -361,26 +373,6 @@ $(document).on('pagecreate', '#active-game', function(event){
 		} catch (err) {}
 	});
 
-	// exit game
-	$(document).on('click', '#exit-game', function(){
-		$('#confirm-exit-game').popup('open');
-	});
-
-	$(document).on('click', '#newgame-yes', function(){
-		mfzch.game.restoreFromTemplate();
-		mfzch.game.status = 0;
-		if (mfzch.game.blindSetup) {
-			mfzch.game.teams = [];
-		}
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game', true);
-		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
-	});
-
-	$(document).on('click', '#newgame-no', function(){
-		$('#confirm-exit-game').popup('close');
-	});
-
 	// Tracking level 20+
 	// manage frame
 	$(document).on('click', '.frame-smash', function(){
@@ -492,7 +484,8 @@ $(document).on('pagecreate', '#active-game', function(event){
 			{
 				action: 'team-gFrames',
 				teamid: mfzch.game.teams[companyid].uuid,
-				gFrames: mfzch.game.teams[companyid].gFrames
+				gFrames: mfzch.game.teams[companyid].gFrames,
+				gScore: mfzch.game.teams[companyid].gScore
 			},
 			{
 				action: 'team-sSystems',
@@ -668,31 +661,32 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 				$('.game-link').hide();
 			}
 
-			if(mfzch.appState.remote.mode
-				&& mfzch.appState.remote.granted != 'modify') {
-				$('#end-round').hide();
-				$('#exit-game').hide();
-				$('#undo').hide();
-				$('#redo').hide();
-			} else {
-				$('#end-round').show();
-				$('#exit-game').show();
-				$('#undo').show();
-				$('#redo').show();
-			}
-
 			if(mfzch.appState.remote.mode) {
-				clearInterval(mfzch.remoteSync['active-game']);
-				mfzch.remoteSync['active-game'] = setInterval(function(){
-					mfzch.checkRemoteStatus('active-game');
-					mfzch.updateActiveTeams(mfzch.game);
-					mfzch.updateGameInfo(mfzch.game);
+				if(mfzch.appState.remote.granted != 'modify') {
+					$('#end-round').hide();
+					$('#undo').hide();
+					$('#redo').hide();
+				} else {
+					$('#end-round').show();
+					$('#undo').show();
+					$('#redo').show();
+				}
 
-					if (mfzch.game.doomsday < 1) {
-						$('#end-round').hide();
-					} else {
-						$('#end-round').show();
-					}
+				clearInterval(mfzch.remoteSync['active-game']);
+
+				mfzch.remoteSync['active-game'] = setInterval(function(){
+					mfzch.checkRemoteStatus('active-game', function(){
+						mfzch.updateActiveTeams(mfzch.game);
+						mfzch.updateGameInfo(mfzch.game);
+
+						if (mfzch.game.doomsday < 1) {
+							$('#end-round').hide();
+						} else {
+							if(mfzch.appState.remote.granted == 'modify') {
+								$('#end-round').show();
+							}
+						}
+					});
 				}, mfzch.appState.remote.refresh);
 			}
 		}

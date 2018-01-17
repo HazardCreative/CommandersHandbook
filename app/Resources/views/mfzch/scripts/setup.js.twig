@@ -14,21 +14,6 @@ if(mfzch.settings.saveVersion <= 2) { // legacy game format (2014.09.19)
 	mfzch.saveData('settings');
 }
 
-if (mfzch.appState.remote.mode) {
-	mfzch.loadRemoteGame(function (result) {
-		if (result) {
-			$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-tracking");
-		} else {
-			// *** fail??
-		}
-	});
-} else if (mfzch.game.shared) {
-	mfzch.appState.remote.mode = 'host';
-	mfzch.appState.remote.id = mfzch.game.uuid;
-	mfzch.appState.remote.password = mfzch.game.modifyPassword;
-	mfzch.appState.remote.granted = 'modify';
-}
-
 $(document).on('submit', 'form', function(event){ // kill all HTML form submits
 	event.preventDefault();
 });
@@ -60,6 +45,22 @@ $(document).ready(function(){
 			ga('send', 'event', 'App', 'Run', BUILDVERSION, 1, true);
 		} catch (err) {}
 	}
+
+	if (mfzch.appState.remote.mode) {
+		mfzch.loadRemoteGame(function (result) {
+			$( ":mobile-pagecontainer" ).pagecontainer( "change", '#game-tracking');
+		});
+	} else if (mfzch.game.shared) {
+		if (mfzch.appState.isElite) {
+			mfzch.appState.remote.mode = 'host';
+			mfzch.appState.remote.id = mfzch.game.uuid;
+			mfzch.appState.remote.password = mfzch.game.modifyPassword;
+			mfzch.appState.remote.granted = 'modify';
+		} else {
+			mfzch.game.shared = false;
+		}
+	}
+
 });
 
 // notify of available update
@@ -98,6 +99,41 @@ $( document ).on( "pagecreate", function() {
 	$(document).on('swiperight', '[data-role=slider]', function(ev){
 		ev.stopPropagation();
 	});
+
+
+	/* ------ exit game ------ */
+
+	$( "#confirm-exit-game" ).enhanceWithin().popup();
+
+	// exit game
+	$(document).on('click', '#exit-game', function(ev){
+		if(mfzch.appState.remote.mode) {
+			$('#confirm-exit-game .local').hide();
+			$('#confirm-exit-game .remote').show();
+		} else {
+			$('#confirm-exit-game .local').show();
+			$('#confirm-exit-game .remote').hide();
+		}
+
+		$('#confirm-exit-game').popup('open');
+	});
+
+	$(document).on('click', '#newgame-yes', function(){
+		mfzch.appState.remote.mode = false;
+		mfzch.game.restoreFromTemplate();
+		mfzch.game.status = 0;
+		if (mfzch.game.blindSetup) {
+			mfzch.game.teams = [];
+		}
+		mfzch.game.clientmodified = true;
+		mfzch.saveData('game', true);
+		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#game-setup", { changeHash: false } );
+	});
+
+	$(document).on('click', '#newgame-no', function(){
+		$('#confirm-exit-game').popup('close');
+	});
+
 });
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){

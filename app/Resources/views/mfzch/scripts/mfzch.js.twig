@@ -52,7 +52,10 @@ var mfzch = {
 
 		if (dataType == 'game') {
 			if (forceSync) {
-				return this.saveLocalData(dataType) && this.syncServerData(dataType);
+				var result = new Object;
+				result.local = this.saveLocalData(dataType);
+				result.remote = this.syncServerData(dataType);
+				return result;
 			} else {
 				return this.saveLocalData(dataType);
 			}
@@ -189,9 +192,11 @@ var mfzch = {
 				return false;
 			}
 
+			/* *** What was this check for? It's breaking game parameter changes at pregame.
 			if (dataType == 'game' && mfzch.appState.remote.mode) {
 				return false;
 			}
+			*/
 
 			if (dataType == 'game'
 				|| dataType == 'companies'
@@ -223,19 +228,23 @@ var mfzch = {
 							} else if (dataType == 'game') {
 								data.dbid = result[0].dbid;
 								data.servermodified = result[0].servermodified;
+								data.passwordSet = result[0].passwordSet;
 								data.clientmodified = false;
 							}
 						});
+						mfzch.appState.remote.connection = true;
 						return true;
 					}
 				}
 			}
 		}
+		mfzch.appState.remote.connection = false;
 		return false;
 	},
 	restoreServerData: function(dataType) {
 		if (this.appState.isElite) {
 			if (!this.hasOwnProperty(dataType)) {
+				mfzch.appState.remote.connection = false;
 				return false;
 			}
 
@@ -336,37 +345,46 @@ var mfzch = {
 						mfzch.updateCompanyList();
 					}
 				});
+				mfzch.appState.remote.connection = true;
 				return true;
 			}
 		}
+		mfzch.appState.remote.connection = false;
 		return false;
 	},
 	syncServerData: function(dataType) {
-		if (dataType == 'all') {
-			this.saveServerData('game');
-			this.saveServerData('companies');
-			// this.saveServerData('loadouts');
-			// this.saveServerData('settings');
+		var result = new Object;
+		result.save = new Object;
+		result.load = new Object;
 
-			this.restoreServerData('game');
-			this.restoreServerData('companies');
-			// this.restoreServerData('loadouts');
-			// this.restoreServerData('settings');
+		if (dataType == 'all') {
+			result.save.game = this.saveServerData('game');
+			result.save.companies = this.saveServerData('companies');
+			// result['save']['loadout'] = this.saveServerData('loadouts');
+			// result['save']['setting'] = this.saveServerData('settings');
+
+			result.load.game = this.restoreServerData('game');
+			result.load.companies = this.restoreServerData('companies');
+			// result['load']['loadouts'] = this.restoreServerData('loadouts');
+			// result['load']['settings'] = this.restoreServerData('settings');
 		} else {
-			this.saveServerData(dataType);
-			this.restoreServerData(dataType);
+			result.save[dataType] = this.saveServerData(dataType);
+			result.load[dataType] = this.restoreServerData(dataType);
 		}
+		return result;
 	},
 	sendGameUpdate: function(patch) {
-		if (this.appState.isElite) { // *** revist when this check is appropriate
-			if (mfzch.settings.activeSync && isOnline()) {
-				if (patch) {
-					$.post('/patch-game', {game_dbid: this.game.dbid, patch: JSON.stringify(patch)})
-					.done(function(result) {
-						// ***
-					});
-					return true;
-				}
+		if (mfzch.settings.activeSync && isOnline()) {
+			if (patch) {
+				$.post('/patch-game', {
+					game_dbid: this.game.dbid,
+					password: mfzch.appState.remote.password,
+					patch: JSON.stringify(patch)
+				})
+				.done(function(result) {
+					// ***
+				});
+				return true;
 			}
 		}
 		return false;
@@ -375,6 +393,10 @@ var mfzch = {
 	/* remote */
 
 	loadRemoteGame: function(callback) {
+		var remoteLoadResult = new Object();
+		remoteLoadResult.loaded = false;
+		remoteLoadResult.statusChange = false;
+
 		var postdata = new Object();
 		postdata['type'] = 'game';
 		postdata['data'] = JSON.stringify(mfzch.appState.remote);
@@ -382,45 +404,53 @@ var mfzch = {
 		$.post('/remote-load-game/', postdata)
 		.done(function(result) {
 			if (result && result.type == 'game') {
-				var statusflag = false;
 				if (mfzch.game.status != result.data.status) {
-					statusflag = true;
+					remoteLoadResult.statusChange = true;
+				}
+
+				if (mfzch.game.passwordSet.date != result.data.passwordSet.date) {
+					result.passwordChange = true;
 				}
 
 				mfzch.game = mfzch.gameDataToGameModel(result.data); // check if servermodified
 				mfzch.game.clientmodified = false;
+
 				mfzch.appState.remote.granted = result.grant;
+
+				if (!result.passwordChange) {
+					if(mfzch.appState.remote.granted == 'view-nopass'){
+						mfzch.appState.remote.granted = 'view';
+					}
+				}
+
+				remoteLoadResult.loaded = true;
 			}
 			mfzch.appState.remote.connection = true;
 
-			if (statusflag) {
-				if (typeof callback === 'function') {
-					callback('status');
-				}
-			} else {
-				if (typeof callback === 'function') {
-					callback(true);
-				}
-			}
-
 		}).fail(function(){
 			mfzch.appState.remote.connection = false;
-
+			remoteLoadResult.loaded = false;
+		}).always(function(){
 			if (typeof callback === 'function') {
-				callback(false);
+				callback(remoteLoadResult);
 			}
 		});
 	},
-	checkRemoteStatus(page){
+	checkRemoteStatus(page, callback){
 		mfzch.loadRemoteGame(function(result){
-			if (!result
-				|| (
-					result == 'status'
+			if (result
+				&& result.loaded == true
+				&& (
+					result.statusChange
 					&& mfzch.chooseGamePage() != page
 					)
 				) {
 
 				$( ":mobile-pagecontainer" ).pagecontainer( "change", mfzch.chooseGamePage(), { changeHash: false } );
+			} else {
+				if (typeof callback === 'function') {
+					callback();
+				}
 			}
 		});
 	},

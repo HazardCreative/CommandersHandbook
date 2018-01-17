@@ -16,7 +16,7 @@ if (typeof jQuery != 'undefined') {
 	$.mobile.ignoreContentEnabled = true;
 }
 </script>
-<div data-role="page" id="main-page">
+<div data-role="page" id="view-profile">
 	<div role="main" class="ui-content" data-ajax="false">
 		{% if user and user.profile_is_public %}
 			<h1>Profile for {{ user.username|e }}</h1>

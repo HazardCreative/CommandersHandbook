@@ -26,10 +26,10 @@ class Location {
 	/**
 	 * @ORM\Column(type="string", nullable=true)
 	 */
-	public $name;
+	public $name = 'New Location';
 
 	/**
-	 * @ORM\Column(type="text")
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	public $description;
 
@@ -46,7 +46,7 @@ class Location {
 	/**
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
-	public $radius;
+	public $radius = '10';
 
 	/**
 	 * @ORM\Column(type="datetime")

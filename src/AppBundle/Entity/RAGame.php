@@ -116,6 +116,11 @@ class RAGame {
 	protected $status = self::STATUS_PARAMETERS;
 
 	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	protected $password_set;
+
+	/**
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $view_password;
@@ -142,6 +147,7 @@ class RAGame {
 	 */
 	public function onPrePersistSetDefaultDates() {
 		$current = new \DateTime();
+		$this->password_set = $current;
 		$this->date_created = $current;
 		$this->date_modified = $current;
 	}
@@ -196,6 +202,7 @@ class RAGame {
 					foreach($this->teams as $teamkey => $teamval) {
 						if ($teamval->uuid == $patch->teamid) {
 							$this->teams[$teamkey]->gStations = $patch->gStations;
+							$this->teams[$teamkey]->gScore = $patch->gScore;
 						}
 					}
 					$this->teams[0] = clone $this->teams[0]; // Doctrine won't presist this otherwise
@@ -243,6 +250,8 @@ class RAGame {
 					foreach($this->teams as $teamkey => $teamval) {
 						if ($teamval->uuid == $patch->teamid) {
 							$this->teams[$teamkey]->gFrames = $patch->gFrames;
+							$this->teams[$teamkey]->gScore = $patch->gScore;
+
 						}
 					}
 					$this->teams[0] = clone $this->teams[0];
@@ -740,6 +749,28 @@ class RAGame {
 	}
 
 	/**
+	 * Get passwordSet
+	 *
+	 * @return integer
+	 */
+	public function getPasswordSet()
+	{
+		return $this->password_set;
+	}
+
+	/**
+	 * Set passwordSet
+	 *
+	 * @return integer
+	 */
+	public function setPasswordSet($passwordSet)
+	{
+		$this->password_set = $passwordSet;
+
+		return $this;
+	}
+
+	/**
 	 * Set viewPassword
 	 *
 	 * @param integer $viewPassword
@@ -749,6 +780,7 @@ class RAGame {
 	public function setViewPassword($viewPassword)
 	{
 		$this->view_password = $viewPassword;
+		$this->password_set = new \DateTime();;
 
 		return $this;
 	}
@@ -773,6 +805,7 @@ class RAGame {
 	public function setModifyPassword($modifyPassword)
 	{
 		$this->modify_password = $modifyPassword;
+		$this->password_set = new \DateTime();;
 
 		return $this;
 	}

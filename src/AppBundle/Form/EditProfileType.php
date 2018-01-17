@@ -6,7 +6,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+// use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class EditProfileType extends AbstractType {
@@ -24,14 +24,6 @@ class EditProfileType extends AbstractType {
 				'required' => false,
 				'label' => 'Allow logged-in users to see my E-mail address'
 			))
-			/*
-			->add('geo_latitude', HiddenType::class, array(
-				'required' => false
-			))
-			->add('geo_longitude', HiddenType::class, array(
-				'required' => false
-			))
-			*/
 			->add('profile_game_preferences', TextareaType::class, array(
 				'required' => false,
 				'label' => 'Game Preferences (battle or skirmish, number of players, optional rules)'
@@ -45,7 +37,10 @@ class EditProfileType extends AbstractType {
 				'label' => 'Experience (tactical skill, familiarity with rules)'
 			))
 			->add('save', SubmitType::class, array(
-				'label' => 'Save Profile'
+				'label' => 'Save Profile',
+				'attr' => array(
+					'class' => 'ui-btn ui-btn-a ui-corner-all'
+				)
 			))
 		;
 	}

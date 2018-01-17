@@ -600,3 +600,14 @@ th.stat-type .type-label {
 	right: 0;
 	display: none;
 }
+
+/* leaflet maps */
+.leaflet-container .frame-icon {
+	width: 3em;
+	height: 3em;
+}
+
+.leaflet-container .leaflet-div-icon {
+	background: transparent;
+	border: none;
+}

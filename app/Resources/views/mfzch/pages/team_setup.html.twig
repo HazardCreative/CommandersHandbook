@@ -389,11 +389,14 @@
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Access Remote Game</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+		<a href="#" id="exit-game" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-star">Exit Game</a>
 	</div>
 
 	<div role="main" class="ui-content">
-		<form id="def-team-choice">
-			<p><label for="game-enterpassword">This game requires a password:</label>
+		<form id="game-password-entry">
+			<div id="password-fail" class="ui-body ui-body-c ui-corner-all"><p>Wrong password. Please try again.</p></div>
+			<p id="game-password-description">Enter a password.</p>
+			<p><label for="game-enterpassword">Password:</label>
 			<input name="game-enterpassword" id="game-enterpassword" value="" type="password" autocomplete="off" /></p>
 			<p><button id="game-password-go" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-arrow-r">Enter</button></div>
 
@@ -405,6 +408,7 @@
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Remote Game</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+		<a href="#" id="exit-game" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-star">Exit Game</a>
 	</div>
 
 	<div role="main" class="ui-content">
@@ -416,11 +420,12 @@
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Remote Game</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+		<a href="#" id="exit-game" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-star">Exit Game</a>
 	</div>
 
 	<div role="main" class="ui-content">
-		<p>The connection to the shared game has been lost. This might have occurred becausee ither you or the server are not connected to the internet; or, this shared game no longer exists.</p>
+		<p>The connection to this shared game has been lost. This might have occurred because either you or the server are not connected to the internet; or, this shared game no longer exists.</p>
 
-		<p>If the connection can be re-established, this page will automatically update. If it does not, you may <a href="#" rel="external">disconnect from this remote game</a>.</p>
+		<p>This page will automatically update if the connection can be re-established.</p>
 	</div>
 </div>

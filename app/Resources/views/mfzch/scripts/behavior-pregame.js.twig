@@ -55,12 +55,14 @@ $(document).on('pagecreate', '#game-setup', function(event){
 	// view password
 	$(document).on('change', '#game-viewpassword', function(){
 		mfzch.game.viewPassword = $('#game-viewpassword').val();
+		mfzch.game.passwordSet = false;
 		mfzch.game.clientmodified = true;
 	});
 
 	// modify password
 	$(document).on('change', '#game-modifypassword', function(){
 		mfzch.game.modifyPassword = $('#game-modifypassword').val();
+		mfzch.game.passwordSet = false;
 		mfzch.game.clientmodified = true;
 	});
 
@@ -107,6 +109,7 @@ function gameSharingChanged(e) {
 	}
 	mfzch.game.clientmodified = true;
 	mfzch.game.uuid = generateUUID(); // *** is this the right time for this?
+	$('#game-params').listview('refresh');
 };
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){
@@ -1144,14 +1147,31 @@ $(document).on('pagecreate', '#remote-password', function(event){
 	});
 
 	$(document).on('click', '#game-password-go', function(){
+		$('#password-fail').hide();
 		mfzch.loadRemoteGame(function(result){
-			if (result) {
+			if (result.loaded) {
 				$( ":mobile-pagecontainer" ).pagecontainer( "change", mfzch.chooseGamePage(), { changeHash: false } );
 			} else {
-				// *** fail?
+				$('#password-fail').slideDown();
 			}
 		});
 	});
+});
+
+$(document).on("pagecontainerbeforeshow", function(event, ui){
+	if (ui.toPage[0].id == 'remote-password') {
+		$('#password-fail').hide();
+	}
+});
+
+$(document).on('pagecontainerbeforechange', function(event, ui){
+	if (ui.toPage[0].id == 'remote-password') {
+		if (mfzch.appState.remote.granted == 'view-nopass') {
+			$('#game-password-description').html('Enter a password to enable sending updates, or leave blank to view.');
+		} else {
+			$('#game-password-description').html('This game requires a password.');
+		}
+	}
 });
 
 /* ------ remote game: status hold ------ */

@@ -16,7 +16,7 @@ if (typeof jQuery != 'undefined') {
 	$.mobile.ignoreContentEnabled = true;
 }
 </script>
-<div data-role="page" id="main-page">
+<div data-role="page" id="command-home">
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Commander's Network</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
@@ -32,25 +32,108 @@ if (typeof jQuery != 'undefined') {
 				<li>Real name: {{ app.user.profile_realname|e }}</li>
 				<li>{{ app.user.email|e }}</li>
 				{% if date(app.user.elite_expires) > date() %}
-					<li>Elite User through {{ app.user.elite_expires|date("Y-m-d H:i:s") }} </li>
+					<li>Elite User (through {{ app.user.elite_expires|date("Y-m-d") }})</li>
 				{% else %}
-					<li>Regular User</li>
+					<li>Regular User
+						{% if date(app.user.elite_expires) > date('-2years') %}
+							(expired {{ app.user.elite_expires|date("Y-m-d") }})
+						{% endif %}
+					</li>
 				{% endif %}
 				<li>Last login: {{ app.user.lastLogin()|date("Y-m-d H:i:s") }}</li>
 				<li>Display Profile: {% if app.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
 				<li>Display E-mail: {% if app.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
 				<li>Patreon ID: {% if app.user.patreon_id %}{{ app.user.patreon_id }} &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Update Patreon Account</a>{% else %}None &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Connect Patreon Account</a>{% endif %}</li>
 
-				<li>Game Preferences: {{ app.user.profile_game_preferences }}</li>
-				<li>Materials: {{ app.user.profile_materials }}</li>
-				<li>Experience: {{ app.user.profile_experience }}</li>
+				<li>Game Preferences: {{ app.user.profile_game_preferences|e }}</li>
+				<li>Materials: {{ app.user.profile_materials|e }}</li>
+				<li>Experience: {{ app.user.profile_experience|e }}</li>
 			</ul>
+
+			<button class="edit-profile ui-btn ui-btn-inline ui-corner-all ui-btn-icon-left ui-icon-edit">Edit Profile</button>
+
+
+			{% if locations %}
+			<ul>
+				{% for location in locations %}
+					<li style="overflow: hidden">
+						<div id="map_{{location.id}}" style="height: 12em; width:12em; float: left;"></div>
+						<h3>{{location.name|e}}</h3>
+						<p>{{location.description|e}}</p>
+						<p><a href="edit-location/{{location.id}}" class="ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-edit ui-mini">Edit</a> <a href="remove-location/{{location.id}}" class="ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-delete ui-mini">Remove</a></p>
+
+						<script>
+						$(document).on("pagecontainershow", function(event, ui) {
+							var mymap = L.map('map_{{location.id}}', {
+									zoomControl: false,
+									attributionControl: false,
+									boxZoom: false,
+									doubleClickZoom: false,
+									scrollWheelZoom: false,
+									touchZoom: false,
+									keyboard: false,
+									dragging: false
+								}).setView([
+									{{ location.geo_latitude }},
+									{{ location.geo_longitude }}
+								], 11);
+
+							var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+								attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+								subdomains: 'abcd',
+								minZoom: 0,
+								maxZoom: 15,
+								ext: 'png'
+							});
+
+							Stamen_Terrain.addTo(mymap);
+
+							var group = new L.featureGroup();
+
+							if (!isNaN({{ location.radius }})) {
+								L.circle( [ {{ location.geo_latitude }}, {{ location.geo_longitude }} ],
+									{
+										radius: {{ location.radius }} * 1609.34,
+										color: '#880000',
+										opacity: 0.9,
+										fillOpacity: 0.1,
+										weight: 1
+									}
+								).addTo(group);
+							}
+
+							L.marker(
+								[
+									{{ location.geo_latitude }},
+									{{ location.geo_longitude }}
+								],
+								{icon:
+									L.divIcon({
+										html: getIcon('frame', '#880000'),
+										iconSize: [36, 36],
+										iconAnchor: [21, 18],
+										popupAnchor: [0, -12]
+									})
+								},
+							).addTo(group);
+
+							group.addTo(mymap);
+
+							mymap.fitBounds(group.getBounds());
+						});
+						</script>
+					</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+
+			{% if under_max_locations %}
+				<a href="edit-location/new" class="add-location ui-btn ui-btn-inline ui-corner-all ui-btn-icon-left ui-icon-plus">Add Location</a>
+			{% endif %}
 
 			<ul data-role="listview" data-inset="true" class="nav-listview">
 				<li data-role="list-divider">Commanders</li>
 				<li><a href="{{ path('view-profile-public', {username: app.user.getUsername()}) }}">View My Public Profile</a></li>
-				<li><a href="{{ path('edit-profile') }}">Edit Profile</a></li>
-				<li><a href="{{ path('edit-profile') }}">Edit Locations</a></li>
 				<li><a href="{{ path('player-finder') }}">Locate Commanders</a></li>
 			</ul>
 
@@ -61,5 +144,23 @@ if (typeof jQuery != 'undefined') {
 			<p><a href="{{ path('fos_user_security_login') }}" rel="external">Log in</a> or <a href="{{ path('fos_user_registration_register') }}" rel="external">Register</a></p>
 		{% endif %}
 	</div>
+
+	<div data-role="popup" id="command-edit-profile" data-overlay-theme="b" data-theme="b" data-transition="pop" data-history="false" data-ajax="false">
+		<div data-role="header">
+			<h1>Edit Profile</h1>
+		</div>
+
+		<div role="main" class="ui-content">
+			{{ form_start(form) }}
+			{{ form_widget(form) }}
+			{{ form_end(form) }}
+
+			<p><a href="#" data-rel="back" class="ui-btn ui-corner-all">Cancel</a></p>
+		</div>
+	</div>
 </div>
+{% endblock %}
+
+{% block footer_scripts %}
+{{ include('locations.js.twig') }}
 {% endblock %}

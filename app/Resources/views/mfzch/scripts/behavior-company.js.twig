@@ -26,7 +26,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		var companyid = mfzch.companies.length-1;
 		var company = mfzch.companies[companyid];
 
-		$('#company-index').val(companyid);
+		$('#company-adjust-index').val(companyid);
 		$('#company-name').val(company.name);
 		$('#company-color').val(company.color);
 
@@ -46,7 +46,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		var companyid = $(this).parent().parent().parent().attr('data-companyid');
 		var company = mfzch.companies[companyid];
 
-		$('#company-index').val(companyid);
+		$('#company-adjust-index').val(companyid);
 		$('#company-name').val(company.name);
 		$('#company-color').val(company.color);
 
@@ -96,7 +96,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	});
 
 	$(document).on('change', '#company-name', function(){
-		var companyid = $('#company-index').val();
+		var companyid = $('#company-adjust-index').val();
 		var company = mfzch.companies[companyid];
 
 		company.name = $('#company-name').val();
@@ -105,7 +105,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	});
 
 	$(document).on('change', '#company-color', function(){
-		var companyid = $('#company-index').val();
+		var companyid = $('#company-adjust-index').val();
 		var company = mfzch.companies[companyid];
 
 		company.color = $('#company-color').val();
@@ -115,7 +115,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 
 	// company regen name/color
 	$(document).on('click', '#company-regen', function(){
-		var companyid = $('#company-index').val();
+		var companyid = $('#company-adjust-index').val();
 		var company = mfzch.companies[companyid];
 
 		var companyDesc = mfzch.generateDescriptor();
@@ -293,7 +293,7 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 	});
 
 	$(document).on('click', '#company-duplicate', function(){
-		var srcCompanyIndex = $('#company-index').val();
+		var srcCompanyIndex = $('#company-adjust-index').val();
 
 		var destCompany = new companyModel();
 

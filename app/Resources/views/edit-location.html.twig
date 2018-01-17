@@ -1,0 +1,109 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
+
+<script>
+{{ include('mfzch/scripts/generics.js.twig') }}
+</script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+		<p>Click to set location</p>
+		<div id="mapid" style="height: 50vh;"></div>
+		<script>
+		$(document).on("pagecontainershow", function(event, ui) {
+			{% if location.geo_latitude and location.geo_longitude %}
+				var mymap = L.map('mapid').setView([{{ location.geo_latitude }}, {{ location.geo_longitude|e }}], 10);
+			{% else %}
+				var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
+			{% endif %}
+
+			mymap.attributionControl.setPrefix('');
+
+			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				subdomains: 'abcd',
+				minZoom: 0,
+				maxZoom: 18,
+				ext: 'png'
+			});
+
+			Stamen_Terrain.addTo(mymap);
+			L.control.scale().addTo(mymap);
+
+			function updateLocation() {
+				var newLat = $('#edit_location_geo_latitude').val();
+				var newLng = $('#edit_location_geo_longitude').val();
+				var radius = $('#edit_location_radius').val();
+				var color = '#be1e2d';
+
+				backgroundgroup.remove();
+				group.remove();
+
+				backgroundgroup = new L.featureGroup();
+				group = new L.featureGroup();
+
+				if (!isNaN(radius)) {
+					L.circle( [ newLat, newLng ],
+						{
+							radius: radius * 1609.34,
+							color: color,
+							opacity: 0.9,
+							fillOpacity: 0.1,
+							weight: 1
+						})
+					.addTo(backgroundgroup);
+				}
+
+				var marker = L.marker(
+					[ newLat, newLng ],
+					{icon:
+						L.divIcon({
+							html: getIcon('frame', color),
+							iconSize: [36, 36],
+							iconAnchor: [21, 18],
+							popupAnchor: [0, -12]
+						})
+					},
+				);
+
+				marker.addTo(group);
+
+				backgroundgroup.addTo(mymap);
+				group.addTo(mymap);
+			}
+
+			var backgroundgroup = new L.featureGroup();
+			var group = new L.featureGroup();
+			updateLocation();
+
+			mymap.on('click', function(e){
+				$('#edit_location_geo_latitude').val(e.latlng.lat);
+				$('#edit_location_geo_longitude').val(e.latlng.lng);
+				updateLocation();
+			});
+
+			$(document).on('change wheel keypress', '#edit_location_radius', function(){
+				updateLocation();
+			});
+
+		});
+		</script>
+
+		{{ form_start(form) }}
+		{{ form_widget(form) }}
+		{{ form_end(form) }}
+
+	</div>
+</div>
+{% endblock %}

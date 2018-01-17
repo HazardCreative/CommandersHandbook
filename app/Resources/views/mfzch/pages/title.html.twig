@@ -7,6 +7,19 @@
 
 			{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
 				<p>Logged in as {{ app.user.getUsername()|e }} | <a href="{{ path('fos_user_security_logout') }}" rel="external">Logout</a></p>
+
+				{% if date(app.user.elite_expires) > date() %}
+					<p>Elite User (through {{ app.user.elite_expires|date("Y-m-d") }})</p>
+					{% if date(app.user.elite_expires) <= date('1day') %}
+						<p>Warning: Elite status expires soon.</p>
+					{% endif %}
+				{% else %}
+					<p>Regular User
+						{% if date(app.user.elite_expires) > date('-2years') %}
+							(expired {{ app.user.elite_expires|date("Y-m-d") }})
+						{% endif %}
+					</p>
+				{% endif %}
 			{% else %}
 				<p><a href="{{ path('fos_user_security_login') }}" rel="external">Log in</a> or <a href="{{ path('fos_user_registration_register') }}" rel="external">Register</a></p>
 			{% endif %}
@@ -20,5 +33,34 @@
 		<h4 id="version">-</h4>
 		<a href="#settings" class="ui-btn ui-btn-left ui-btn-c ui-icon-gear ui-btn-icon-notext ui-corner-all">Preferences</a>
 		<a href="#license" class="ui-btn ui-btn-right ui-btn-c ui-icon-info ui-btn-icon-notext ui-corner-all">General Information</a>
+	</div>
+</div>
+
+<!-- Generic Items -->
+
+<div data-role="popup" id="confirm-exit-game" data-overlay-theme="b" data-theme="b" data-dismissible="false" data-transition="pop" data-history="false">
+	<div data-role="header">
+		<h1>Exit Game</h1>
+	</div>
+
+	<div role="main" class="ui-content">
+		<p class="local">Exiting will abandon the current game and create a new one. Scores and the game log will no longer be available.</p>
+
+		<p class="remote">Exiting will disconnect from this remote game and create a new one. Scores and the game log will no longer be available.</p>
+
+		<p><strong>Do you wish to exit this game?</strong></p>
+
+		<p><a href="#" id="newgame-yes" class="ui-btn ui-btn-a ui-corner-all ui-icon-alert ui-btn-icon-left">Yes</a> <a href="#" id="newgame-no" class="ui-btn ui-corner-all ui-icon-back ui-btn-icon-left">No</a></p>
+	</div>
+</div>
+
+<div data-role="page" id="no-elite">
+ 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Elite Required</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+ 	<div role="main" class="ui-content">
+		<p><em>Elite</em> status is required to access this feature.</p>
+		<p>Become an <em>Elite</em> member by <a href="https://www.patreon.com/hazardcreative">supporting this project on Patreon</a>.</p>
 	</div>
 </div>

@@ -14,43 +14,9 @@ if (typeof jQuery != 'undefined') {
 </script>
 <div data-role="page" id="main-page">
 	<div role="main" class="ui-content" data-ajax="false">
-		{#
-		<p>Click to set location</p>
-		<div id="mapid" style="height: 50vh;"></div>
-		<script>
-		$(document).on("pagecontainershow", function(event, ui) {
-			{% if app.user.geo_latitude and app.user.geo_longitude %}
-				var mymap = L.map('mapid').setView([{{ app.user.geo_latitude|e }}, {{ app.user.geo_longitude|e }}], 10);
-			{% else %}
-				var mymap = L.map('mapid').setView([39.70719, -96.41602], 4);
-			{% endif %}
-
-			mymap.attributionControl.setPrefix('');
-
-			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
-				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-				subdomains: 'abcd',
-				minZoom: 0,
-				maxZoom: 18,
-				ext: 'png'
-			});
-
-			Stamen_Terrain.addTo(mymap);
-			L.control.scale().addTo(mymap);
-
-			mymap.on('click', function(e){
-				alert("Setting location to " + e.latlng);
-				$('#edit_profile_geo_latitude').val(e.latlng.lat);
-				$('#edit_profile_geo_longitude').val(e.latlng.lng);
-			});
-		});
-		</script>
-		#}
-
 		{{ form_start(form) }}
 		{{ form_widget(form) }}
 		{{ form_end(form) }}
-
 	</div>
 </div>
 {% endblock %}

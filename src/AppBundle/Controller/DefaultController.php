@@ -9,8 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Form\EditProfileType;
+use AppBundle\Form\EditLocationType;
 use AppBundle\Entity\FrameCompany;
 use AppBundle\Entity\RAGame;
+use AppBundle\Entity\Location;
 
 class DefaultController extends Controller {
 	/**
@@ -36,7 +38,26 @@ class DefaultController extends Controller {
 	 * @Route("/command-network", name="command-home")
 	 */
 	public function commandNetworkAction() {
-		return $this->render('mfzch/pages/command-home.html.twig');
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+		$locations_repo = $this->getDoctrine()
+			->getRepository('AppBundle:Location');
+
+		$locations = $locations_repo->findByOwner($user->getId());
+
+		$form = $this->createForm(EditProfileType::class, $user, array(
+			'action' => $this->generateUrl('edit-profile')
+		));
+
+		$under_max_locations = (count($locations) < 3);
+
+		return $this->render('mfzch/pages/command-home.html.twig',
+			array(
+				'locations' => $locations,
+				'under_max_locations' => $under_max_locations,
+				'form' => $form->createView()
+			)
+		);
 	}
 
 	/**
@@ -60,25 +81,6 @@ class DefaultController extends Controller {
 	}
 
 	/**
-	 * @Route("/view-profile", name="view-profile")
-	 */
-	public function viewProfileAction() {
-		$userManager = $this->get('fos_user.user_manager');
-		$user = $this->get('security.token_storage')->getToken()->getUser();
-
-		$locations_repo = $this->getDoctrine()
-			->getRepository('AppBundle:Location');
-
-		$locations = $locations_repo->findByOwner($user->getId());
-
-		return $this->render('view-profile.html.twig',
-			array(
-				'locations' => $locations
-			)
-		);
-	}
-
-	/**
 	 * @Route("/edit-profile", name="edit-profile")
 	 */
 	public function editProfileAction(Request $request) {
@@ -95,12 +97,77 @@ class DefaultController extends Controller {
 			$em->persist($user);
 			$em->flush();
 
-			return $this->redirectToRoute('view-profile');
+			return $this->redirectToRoute('command-home');
 		}
 
 		return $this->render('edit-profile.html.twig', array(
 			'form' => $form->createView()
 		));
+	}
+
+	/**
+	 * @Route("/edit-location/{loc_id}", name="edit-location")
+	 */
+	public function editLocationAction($loc_id, Request $request) {
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+		$locations_repo = $this->getDoctrine()
+			->getRepository('AppBundle:Location');
+
+		if ($loc_id == 'new') {
+			$location = new Location();
+			$location->setOwner($user->getId());
+		} else {
+			$location = $locations_repo->findOneById($loc_id);
+
+			if ($location->getOwner() != $user->getId()) {
+				$location = new Location();
+				$location->setOwner($user->getId());
+			}
+		}
+
+		$form = $this->createForm(EditLocationType::class, $location);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			$loc = $form->getData();
+
+			// *** check if max locations reached
+
+			if ($loc->getOwner() == $user->getId()) {
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($loc);
+				$em->flush();
+			}
+
+			return $this->redirectToRoute('command-home');
+		}
+
+		return $this->render('edit-location.html.twig', array(
+			'location' => $location,
+			'form' => $form->createView()
+		));
+	}
+
+	/**
+	 * @Route("/remove-location/{loc_id}", name="remove-location")
+	 */
+	public function removeLocationAction($loc_id, Request $request) {
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+		$locations_repo = $this->getDoctrine()
+			->getRepository('AppBundle:Location');
+
+		$location = $locations_repo->findOneById($loc_id);
+
+		if ($location->getOwner() == $user->getId()) {
+			$em = $this->getDoctrine()->getManager();
+			$em->remove($location);
+			$em->flush();
+		}
+
+		return $this->redirectToRoute('command-home');
 	}
 
 	/**
@@ -138,54 +205,6 @@ class DefaultController extends Controller {
 
 			$locations = $locations_repo->findByOwner($user->getId());
 
-			/*
-			$query = $this->getDoctrine()->getEntityManager()
-				->createQuery(
-					'SELECT l, u
-					FROM AppBundle:Location l
-					LEFT JOIN AppBundle:User u
-					WHERE l.owner = u.id
-					AND l.geo_latitude > :latmin
-					AND l.geo_latitude < :latmax
-					AND l.geo_longitude > :longmin
-					AND l.geo_longitude < :longmax
-					AND u.profile_is_public = true'
-				)->setParameter('latmin', $data->lat -1)
-				->setParameter('latmax', $data->lat +1)
-				->setParameter('longmin', $data->lng -1)
-				->setParameter('longmax', $data->lng +1);
-
-			$queryResult = $query->getResult();
-
-			-----------
-			$user = $this->get('security.token_storage')->getToken()->getUser();
-
-			$query = $this->getDoctrine()->getEntityManager()
-				->createQuery(
-					'SELECT u FROM AppBundle:User u
-					WHERE u.geo_latitude > :latmin
-					AND u.geo_latitude < :latmax
-					AND u.geo_longitude > :longmin
-					AND u.geo_longitude < :longmax
-					AND u.profile_is_public = true'
-				)->setParameter('latmin', $data->lat -1)
-				->setParameter('latmax', $data->lat +1)
-				->setParameter('longmin', $data->lng -1)
-				->setParameter('longmax', $data->lng +1);
-
-			$queryResult = $query->getResult();
-
-			$userOutput = [];
-			foreach ($queryResult as $userObj) {
-				$thisUser['username'] = $userObj->getUsername();
-				$thisUser['geo_latitude'] = $userObj->getGeoLatitude();
-				$thisUser['geo_longitude'] = $userObj->getGeoLongitude();
-				$thisUser['link'] = $this->generateUrl('view-profile-public', array('username' => $userObj->getUsername()));
-
-				$userOutput[] = $thisUser;
-			}
-			*/
-
 			$query = $this->getDoctrine()->getEntityManager()
 				->createQuery(
 					'SELECT l
@@ -194,10 +213,10 @@ class DefaultController extends Controller {
 					AND l.geo_latitude < :latmax
 					AND l.geo_longitude > :longmin
 					AND l.geo_longitude < :longmax'
-				)->setParameter('latmin', $data->lat -1)
-				->setParameter('latmax', $data->lat +1)
-				->setParameter('longmin', $data->lng -1)
-				->setParameter('longmax', $data->lng +1);
+				)->setParameter('latmin', $data->_southWest->lat)
+				->setParameter('latmax', $data->_northEast->lat +1)
+				->setParameter('longmin', $data->_southWest->lng -1)
+				->setParameter('longmax', $data->_northEast->lng +1);
 
 			$queryResult = $query->getResult();
 
@@ -206,12 +225,21 @@ class DefaultController extends Controller {
 				$userObj = $this->getDoctrine()->getRepository('AppBundle:User')->find($location->getOwner());
 
 				if ($userObj->getProfileIsPublic() ) {
-					$loc['username'] = $userObj->getUsername();
 					$loc['geo_latitude'] = $location->getGeoLatitude();
 					$loc['geo_longitude'] = $location->getGeoLongitude();
+					$loc['radius'] = $location->getRadius();
+
+					$loc['name'] = $location->getName();
+					$loc['description'] = $location->getDescription();
+
+					$loc['username'] = $userObj->getUsername();
 					$loc['link'] = $this->generateUrl('view-profile-public', array('username' => $userObj->getUsername()));
 
-					/* *** Additional location data here */
+					if ($userObj->getId() == $user->getId()) {
+						$loc['color'] = '#eeeeee';
+					} else {
+						$loc['color'] = '#be1e2d';
+					}
 
 					$locOutput[] = $loc;
 				}
@@ -328,6 +356,8 @@ class DefaultController extends Controller {
 					}
 
 					if ($incoming->clientmodified) {
+						$date_now = new \DateTime();
+
 						$game->setDescription($incoming->description);
 						$game->setUuid($incoming->uuid);
 						$game->setDoomsday($incoming->doomsday);
@@ -345,9 +375,12 @@ class DefaultController extends Controller {
 						$game->setBlindSetup($incoming->blindSetup);
 						$game->setShared($incoming->shared);
 						$game->setStatus($incoming->status);
-						$game->setViewPassword($incoming->viewPassword);
-						$game->setModifyPassword($incoming->modifyPassword);
-						$game->setDateModified(new \DateTime());
+						if (!$incoming->passwordSet) {
+							$game->setViewPassword($incoming->viewPassword);
+							$game->setModifyPassword($incoming->modifyPassword);
+							$game->setPasswordSet($date_now);
+						}
+						$game->setDateModified($date_now);
 
 						try {
 							$em = $this->getDoctrine()->getManager();
@@ -357,6 +390,7 @@ class DefaultController extends Controller {
 							$result[] = array(
 								'dbid' => $game->getId(),
 								'servermodified' => $game->getDateModified(),
+								'passwordSet' => $game->getPasswordSet()
 							);
 						} catch (Exception $e) {
 							$success_check = false;
@@ -545,7 +579,7 @@ class DefaultController extends Controller {
 			$game = $game_repo->findOneById($game_dbid);
 
 			if ($game) {
-				// patch allowed by owner or anyone with password
+				// patch allowed by owner or anyone with modify password
 				$grant = false;
 
 				$auth_checker = $this->get('security.authorization_checker');
@@ -574,10 +608,10 @@ class DefaultController extends Controller {
 						$em->persist($game);
 						$em->flush();
 					} catch (Exception $e) {
-						$success_check = false;
+						return new Response('Database Error', Response::HTTP_INTERNAL_SERVER_ERROR);
 					}
 
-					$result[] = array( // *** revisit if each is needed
+					$result[] = array(
 						'dbid' => $game->getId(),
 						'uuid' => $game->getUUID(),
 						'doomsday' => $game->getDoomsday(),
@@ -595,8 +629,6 @@ class DefaultController extends Controller {
 						'blindSetup' => $game->getBlindSetup(),
 						'shared' => $game->getShared(),
 						'status' => $game->getStatus(),
-						// 'viewPassword' => $game->getViewPassword(),
-						// 'modifyPassword' => $game->getModifyPassword(),
 						'created' => $game->getDateCreated(),
 						'servermodified' => $game->getDateModified(),
 					);
@@ -627,20 +659,40 @@ class DefaultController extends Controller {
 			$game = $game_repo->findOneByUuid( $remote->id );
 
 			if (isset($game)) {
-				if ($game->getModifyPassword() == $remote->password) {
-					$grant = 'modify';
-				} elseif ($game->getViewPassword() == $remote->password) {
-					$grant = 'view';
-				} else {
-					$grant = false;
+				$grant = false;
+
+				// always give owner rights
+				$auth_checker = $this->get('security.authorization_checker');
+				if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+					$user = $this->get('security.token_storage')->getToken()->getUser();
+					if ($game->getOwner() == $user->getId()) {
+						$grant = 'modify';
+					}
 				}
 
 				if (!$grant) {
-					$auth_checker = $this->get('security.authorization_checker');
-					if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-						$user = $this->get('security.token_storage')->getToken()->getUser();
-						if ($game->getOwner() == $user->getId()) {
-							$grant = true;
+					if (!$game->getModifyPassword()
+						&& !$game->getViewPassword()) {
+
+						$grant = 'modify';
+
+					} elseif ($game->getModifyPassword()
+						&& !$game->getViewPassword()
+						&& !$remote->password) {
+
+						$grant = 'view-nopass';
+
+					} elseif ($remote->password) {
+
+						if ($game->getModifyPassword() == $remote->password) {
+
+							$grant = 'modify';
+
+						} elseif ($game->getViewPassword()
+							&& $game->getViewPassword() == $remote->password) {
+
+							$grant = 'view';
+
 						}
 					}
 				}
@@ -669,6 +721,7 @@ class DefaultController extends Controller {
 					$response['data']['shared'] = $game->getShared();
 					$response['data']['status'] = $game->getStatus();
 					$response['data']['created'] = $game->getDateCreated();
+					$response['data']['passwordSet'] = $game->getPasswordSet();
 					$response['data']['servermodified'] = $game->getDateModified();
 
 					$response['grant'] = $grant;

@@ -79,7 +79,7 @@ function selectText(element) {
 
 function rollDie(size) {
 	if(typeof(size)==='undefined') size = 6;
-	return roll = Math.floor(Math.random() * size)+1;
+	return roll = Math.ceil(Math.random() * size);
 }
 
 function uniqueName(desiredName, otherNames) {
