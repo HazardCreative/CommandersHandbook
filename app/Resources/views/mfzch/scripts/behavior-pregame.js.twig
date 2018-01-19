@@ -797,7 +797,6 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 
 			clearInterval(mfzch.remoteSync['company-entry']);
 			mfzch.remoteSync['company-entry'] = setInterval(function(){
-				$('#team-systems').attr('max', mfzch.game.maxFrames * 4);
 				mfzch.checkRemoteStatus('company-entry', function(){
 					mfzch.outputSetupParameters(mfzch.game);
 					mfzch.updateTeamList(mfzch.game);
