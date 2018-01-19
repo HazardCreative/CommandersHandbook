@@ -797,20 +797,21 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 
 			clearInterval(mfzch.remoteSync['company-entry']);
 			mfzch.remoteSync['company-entry'] = setInterval(function(){
-				mfzch.checkRemoteStatus('company-entry');
-				mfzch.outputSetupParameters(mfzch.game);
-				mfzch.updateTeamList(mfzch.game);
-				mfzch.updateReadyStatus(mfzch.game);
-
-				$('#team-frames').attr('max', mfzch.game.maxFrames);
-				$('#team-frames').attr('min', mfzch.game.minFrames);
 				$('#team-systems').attr('max', mfzch.game.maxFrames * 4);
+				mfzch.checkRemoteStatus('company-entry', function(){
+					mfzch.outputSetupParameters(mfzch.game);
+					mfzch.updateTeamList(mfzch.game);
+					mfzch.updateReadyStatus(mfzch.game);
 
-				if (mfzch.companies.length) {
-					$('#team-choose-company').show();
-				} else {
-					$('#team-choose-company').hide();
-				}
+					$('#team-frames').attr('max', mfzch.game.maxFrames);
+					$('#team-frames').attr('min', mfzch.game.minFrames);
+
+					if (mfzch.companies.length) {
+						$('#team-choose-company').show();
+					} else {
+						$('#team-choose-company').hide();
+					}
+				});
 			}, mfzch.appState.remote.refresh);
 		} else {
 			$('#change-parameters').show();
