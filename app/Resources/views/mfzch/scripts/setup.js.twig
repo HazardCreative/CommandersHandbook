@@ -121,6 +121,7 @@ $(document).one('pagecreate', function() {
 	$(document).on('click', '#newgame-yes', function(){
 		mfzch.appState.remote.mode = false;
 		mfzch.game.restoreFromTemplate();
+		mfzch.game.uuid = generateUUID();
 		mfzch.game.status = 0;
 		if (mfzch.game.blindSetup) {
 			mfzch.game.teams = [];

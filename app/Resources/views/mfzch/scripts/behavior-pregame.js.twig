@@ -108,7 +108,7 @@ function gameSharingChanged(e) {
 		$('.game-online-form').addClass('ui-screen-hidden');
 	}
 	mfzch.game.clientmodified = true;
-	mfzch.game.uuid = generateUUID(); // *** is this the right time for this?
+	mfzch.game.uuid = generateUUID();
 	$('#game-params').listview('refresh');
 };
 
