@@ -206,7 +206,6 @@ $(document).on('pagecreate', '#company-entry', function(event){
 	$(document).on('click', '.team-del', function(){
 		var teamid = $(this).parent().attr('data-teamid');
 		var team = mfzch.game.teams[teamid];
-		var teamuuid = team.uuid;
 
 		mfzch.game.teams.splice(teamid, 1);
 		mfzch.saveData('game');
@@ -222,7 +221,7 @@ $(document).on('pagecreate', '#company-entry', function(event){
 		mfzch.sendGameUpdate([
 			{
 				action: 'team-del',
-				teamid: teamuuid
+				teamid: team.uuid
 			}
 		]);
 	});
