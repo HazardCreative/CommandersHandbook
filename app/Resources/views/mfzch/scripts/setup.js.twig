@@ -86,7 +86,7 @@ $(document).one('pagebeforecreate', function () {
 	}
 });
 
-$( document ).on( "pagecreate", function() {
+$(document).one('pagecreate', function() {
 	// swipe menu open
 	$( document ).on( "swiperight", function( e ) {
 		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open"
