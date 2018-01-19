@@ -651,9 +651,24 @@ $(document).on('pagecreate', '#company-entry', function(event){
 		team.color = company.color;
 		team.cFrames = [];
 		company.frames.forEach (function(item, index){
-			var frame = new frameModel();
-			$.extend(true, frame, company.frames[index]);
-			team.cFrames.push(frame);
+			var srcFrame = company.frames[index];
+			var destFrame = new frameModel();
+
+			destFrame.name = srcFrame.name;
+			destFrame.w = srcFrame.w;
+			destFrame.rh = srcFrame.rh
+			destFrame.rd = srcFrame.rd
+			destFrame.ra = srcFrame.ra
+			destFrame.b = srcFrame.b
+			destFrame.y = srcFrame.y;
+			destFrame.g = srcFrame.g;
+			destFrame.e = srcFrame.e;
+			destFrame.ssr = srcFrame.ssr;
+			destFrame.rhd = srcFrame.rhd;
+			destFrame.rha = srcFrame.rha;
+			destFrame.rda = srcFrame.rda;
+
+			team.cFrames.push(destFrame);
 		})
 		team.gFrames = team.cFrames.length;
 		team.sSystems = team.totalSystems();
