@@ -596,7 +596,7 @@ var mfzch = {
 		var teamlist = '';
 
 		for (var i in frames) {
-			teamlist += '<li id="team_frame_'+ i +'" data-frameid="' + i + '">';
+			teamlist += '<li id="team_frame_'+ i +'" data-frameid="' + frames[i].uuid + '">';
 			teamlist += '<a href="#team-adjust-frame" data-rel="popup" data-position-to="window" data-transition="pop" class="team-frame-manage">';
 			teamlist += frames[i].name;
 			teamlist += frames[i].getSystemDisplay(false, false, 'in-list');

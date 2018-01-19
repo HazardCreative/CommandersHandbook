@@ -25,6 +25,14 @@ companyModel.prototype = {
 		}
 		return numSystems;
 	},
+	findFrameByUUID: function(findUUID) {
+		for (var i in this.frames) {
+			if (this.frames[i].uuid == findUUID) {
+				return this.frames[i];
+			}
+		}
+		return false;
+	},
 /*	getPlayerCounts: function(){
 		var validPlayerCounts = [false, false, false, false, false, false];
 

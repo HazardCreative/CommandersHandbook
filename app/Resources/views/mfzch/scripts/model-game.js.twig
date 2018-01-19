@@ -436,9 +436,9 @@ gameModel.prototype = {
 		}
 		return false;
 	},
-	findTeamByUUID: function(findUuid) {
+	findTeamByUUID: function(findUUID) {
 		for (var i in this.teams) {
-			if (this.teams[i].uuid == findUuid) {
+			if (this.teams[i].uuid == findUUID) {
 				return this.teams[i];
 			}
 		}

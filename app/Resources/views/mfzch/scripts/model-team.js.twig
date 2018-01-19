@@ -28,5 +28,13 @@ teamModel.prototype = {
 			numSystems += this.cFrames[i].ssr;
 		}
 		return numSystems;
+	},
+	findFrameByUUID: function(findUUID) {
+		for (var i in this.cFrames) {
+			if (this.cFrames[i].uuid == findUUID) {
+				return this.cFrames[i];
+			}
+		}
+		return false;
 	}
 };
