@@ -221,6 +221,7 @@ class RAGame {
 					foreach($this->teams as $teamkey => $teamval) {
 						if ($teamval->uuid == $patch->teamid) {
 							unset($this->teams[$teamkey]);
+							$this->teams = array_values($this->teams);
 						}
 					}
 				}
