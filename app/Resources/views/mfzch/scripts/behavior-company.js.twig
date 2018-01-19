@@ -294,20 +294,36 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 
 	$(document).on('click', '#company-duplicate', function(){
 		var srcCompanyIndex = $('#company-adjust-index').val();
+		var srcCompany = mfzch.companies[srcCompanyIndex];
 
 		var destCompany = new companyModel();
 
-		$.extend(true, destCompany, mfzch.companies[srcCompanyIndex]);
-
-		destCompany.name = uniqueName(destCompany.name, buildNameArray(mfzch.companies));
+		destCompany.name = uniqueName(srcCompany.name, buildNameArray(mfzch.companies));
+		destCompany.description = srcCompany.description;
+		destCompany.color = srcCompany.color;
 
 		// dump and fill frames
 		destCompany.frames = [];
 
 		mfzch.companies[srcCompanyIndex].frames.forEach (function(item, index){
-			var frame = new frameModel();
-			$.extend(true, frame, mfzch.companies[srcCompanyIndex].frames[index]);
-			destCompany.frames.push(frame);
+			var srcFrame = mfzch.companies[srcCompanyIndex].frames[index];
+			var destFrame = new frameModel();
+
+			destFrame.name = srcFrame.name;
+			destFrame.w = srcFrame.w;
+			destFrame.rh = srcFrame.rh
+			destFrame.rd = srcFrame.rd
+			destFrame.ra = srcFrame.ra
+			destFrame.b = srcFrame.b
+			destFrame.y = srcFrame.y;
+			destFrame.g = srcFrame.g;
+			destFrame.e = srcFrame.e;
+			destFrame.ssr = srcFrame.ssr;
+			destFrame.rhd = srcFrame.rhd;
+			destFrame.rha = srcFrame.rha;
+			destFrame.rda = srcFrame.rda;
+
+			destCompany.frames.push(destFrame);
 		})
 
 		destCompany.clientmodified = true;
