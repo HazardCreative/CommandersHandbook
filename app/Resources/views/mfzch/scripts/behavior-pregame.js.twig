@@ -177,7 +177,7 @@ $(document).on('pagecreate', '#company-entry', function(event){
 		var teamid = mfzch.game.teams.length-1;
 		var team = mfzch.game.teams[teamid];
 
-		$('#team-index').val(teamid);
+		$('#team-index').val(team.uuid);
 		$('#team-name').val(team.name);
 		$('#team-color').val(team.color);
 
@@ -205,42 +205,54 @@ $(document).on('pagecreate', '#company-entry', function(event){
 	// delete team
 	$(document).on('click', '.team-del', function(){
 		var teamid = $(this).parent().attr('data-teamid');
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		mfzch.game.teams.splice(teamid, 1);
-		mfzch.saveData('game');
+		if (team) {
+			var index = mfzch.game.teams.indexOf(team);
 
-		$('#teams [data-teamid=' + teamid + ']').slideUp(function(){
-			mfzch.updateTeamList(mfzch.game);
-		});
-
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
-
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-del',
-				teamid: team.uuid
+			if (index !== -1) {
+				mfzch.game.teams.splice(index, 1);
 			}
-		]);
+
+			mfzch.saveData('game');
+
+			$('#teams [data-teamid=' + teamid + ']').slideUp(function(){
+				mfzch.updateTeamList(mfzch.game);
+			});
+
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-del',
+					teamid: team.uuid
+				}
+			]);
+		}
+
 	});
 
 	// manage team
-	$(document).on('click', '.team-manage', function(){
+	$(document).on('click', '.team-manage', function(event){
 		var teamid = $(this).parent().attr('data-teamid');
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		$('#team-index').val(teamid);
-		$('#team-name').val(team.name);
-		$('#team-color').val(team.color);
+		if (team) {
+			$('#team-index').val(team.uuid);
+			$('#team-name').val(team.name);
+			$('#team-color').val(team.color);
 
-		if (mfzch.game.trackingLevel > 10) {
-			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			if (mfzch.game.trackingLevel > 10) {
+				mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			} else {
+				$('#team-frames').val(team.gFrames).slider( "refresh" );
+				$('#team-systems').val(team.sSystems).slider( "refresh" );
+				mfzch.updateSystemsInputs();
+			}
 		} else {
-			$('#team-frames').val(team.gFrames).slider( "refresh" );
-			$('#team-systems').val(team.sSystems).slider( "refresh" );
-			mfzch.updateSystemsInputs();
+			event.preventDefault();
 		}
 	});
 
@@ -258,166 +270,189 @@ $(document).on('pagecreate', '#company-entry', function(event){
 
 	$(document).on('change', '#team-name', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.name = uniqueName($('<div/>').text($('#team-name').val()).html(), buildNameArray(mfzch.game.teams));
+		if (team) {
+			team.name = uniqueName($('<div/>').text($('#team-name').val()).html(), buildNameArray(mfzch.game.teams));
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-name',
-				teamid: team.uuid,
-				name: team.name
-			}
-		]);
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-name',
+					teamid: team.uuid,
+					name: team.name
+				}
+			]);
+		} else {
+			$('#team-adjust').popup('close');
+		}
 	});
 
 	$(document).on('change', '#team-color', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.color = $('#team-color').val();
+		if (team) {
+			team.color = $('#team-color').val();
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-color',
-				teamid: team.uuid,
-				color: team.color
-			}
-		]);
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-color',
+					teamid: team.uuid,
+					color: team.color
+				}
+			]);
+		} else {
+			$('#team-adjust').popup('close');
+		}
 	});
 
 	$(document).on('slidestop', '#team-frames', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.gFrames = parseInt($('#team-frames').val());
+		if (team) {
+			team.gFrames = parseInt($('#team-frames').val());
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-gFrames',
-				teamid: team.uuid,
-				gFrames: team.gFrames
-			}
-		]);
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-gFrames',
+					teamid: team.uuid,
+					gFrames: team.gFrames
+				}
+			]);
+		} else {
+			$('#team-adjust').popup('close');
+		}
 	});
 
 	$(document).on('slidestop', '#team-systems', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.sSystems = parseInt($('#team-systems').val());
+		if (team) {
+			team.sSystems = parseInt($('#team-systems').val());
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+		} else {
+			$('#team-adjust').popup('close');
+		}
 	});
 
 	// team regen name/color
 	$(document).on('click', '#team-regen', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		var teamDesc = mfzch.generateDescriptor();
+		if (team) {
+			var teamDesc = mfzch.generateDescriptor();
 
-		$('#team-name').val(teamDesc[0]);
-		$('#team-color').val(teamDesc[1]);
-		team.name = uniqueName(teamDesc[0], buildNameArray(mfzch.game.teams));
-		team.color = teamDesc[1];
+			$('#team-name').val(teamDesc[0]);
+			$('#team-color').val(teamDesc[1]);
+			team.name = uniqueName(teamDesc[0], buildNameArray(mfzch.game.teams));
+			team.color = teamDesc[1];
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-name',
-				teamid: team.uuid,
-				name: team.name
-			},
-			{
-				action: 'team-color',
-				teamid: team.uuid,
-				color: team.color
-			}
-		]);
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-name',
+					teamid: team.uuid,
+					name: team.name
+				},
+				{
+					action: 'team-color',
+					teamid: team.uuid,
+					color: team.color
+				}
+			]);
+		} else {
+			$('#team-adjust').popup('close');
+		}
 	});
 
 	// add frame
 	$(document).on('click', '#team-frame-add', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		var frame = new frameModel();
-		frame.name = uniqueName('Frame', buildNameArray(team.cFrames));
+		if (team) {
+			var frame = new frameModel();
+			frame.name = uniqueName('Frame', buildNameArray(team.cFrames));
 
-		team.cFrames.push(frame);
-		team.gFrames = team.cFrames.length;
-		team.sSystems = team.totalSystems();
+			team.cFrames.push(frame);
+			team.gFrames = team.cFrames.length;
+			team.sSystems = team.totalSystems();
 
-		mfzch.updateTeamList(mfzch.game);
+			mfzch.updateTeamList(mfzch.game);
 
-		var frameid = team.cFrames.length-1;
+			var frameid = team.cFrames.length-1;
 
-		$('#team-index').val(teamid);
-		$('#team-frame-index').val(frameid);
-		$('#team-adjust-frame-name').val(team.cFrames[frameid].name);
-		$('#team-adjust-frame-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
+			$('#team-index').val(teamid);
+			$('#team-frame-index').val(frameid);
+			$('#team-adjust-frame-name').val(team.cFrames[frameid].name);
+			$('#team-adjust-frame-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
 
-		// go to frame selector next
-		$('#team-adjust').on({
-			popupafterclose: function() {
-				setTimeout( function(){
-					$('#team-adjust-frame').popup('open');
-					$('#team-adjust').off('popupafterclose');
-				}, 100 );
-			}
-		});
+			// go to frame selector next
+			$('#team-adjust').on({
+				popupafterclose: function() {
+					setTimeout( function(){
+						$('#team-adjust-frame').popup('open');
+						$('#team-adjust').off('popupafterclose');
+					}, 100 );
+				}
+			});
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-frame-add',
-				teamid: team.uuid,
-				frameid: frame.uuid,
-				frame: frame
-			},
-			{
-				action: 'team-gFrames',
-				teamid: team.uuid,
-				gFrames: team.gFrames
-			},
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-add',
+					teamid: team.uuid,
+					frameid: frame.uuid,
+					frame: frame
+				},
+				{
+					action: 'team-gFrames',
+					teamid: team.uuid,
+					gFrames: team.gFrames
+				},
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+
+		}
 
 		$('#team-adjust').popup('close');
 	});
@@ -425,63 +460,71 @@ $(document).on('pagecreate', '#company-entry', function(event){
 	// delete frame
 	$(document).on('click', '#team-adjust-long-company-list .team-frame-del', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var frameid = $(this).parent().attr('data-frameid');
-		var frame = team.cFrames[frameid];
-		var frameuuid = frame.uuid;
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.cFrames.splice(frameid, 1);
-		team.gFrames = team.cFrames.length;
-		team.sSystems = team.totalSystems();
+		if (team) {
+			var frameid = $(this).parent().attr('data-frameid');
+			var frame = team.cFrames[frameid];
+			var frameuuid = frame.uuid;
 
-		$('#team-adjust-long-company-list [data-frameid=' + frameid + ']').slideUp(function(){
-			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
-		});
+			team.cFrames.splice(frameid, 1);
+			team.gFrames = team.cFrames.length;
+			team.sSystems = team.totalSystems();
 
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			$('#team-adjust-long-company-list [data-frameid=' + frameid + ']').slideUp(function(){
+				mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			});
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-frame-del',
-				teamid: team.uuid,
-				frameid: frameuuid
-			},
-			{
-				action: 'team-gFrames',
-				teamid: team.uuid,
-				gFrames: team.gFrames
-			},
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-del',
+					teamid: team.uuid,
+					frameid: frameuuid
+				},
+				{
+					action: 'team-gFrames',
+					teamid: team.uuid,
+					gFrames: team.gFrames
+				},
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+		} else {
+			$('#team-adjust').popup('close');
+		}
 	});
 
 	// manage frame
 	$(document).on('click', '.team-frame-manage', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var frameid = $(this).parent().attr('data-frameid');
-		var frame = team.cFrames[frameid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		$('#team-frame-index').val(frameid);
-		$('#team-adjust-frame-name').val(frame.name);
-		$('#team-adjust-frame-systems').html(frame.getSystemDisplay(false, true));
+		if (team) {
+			var frameid = $(this).parent().attr('data-frameid');
+			var frame = team.cFrames[frameid];
 
-		// go to frame selector next
-		$('#team-adjust').on({
-			popupafterclose: function() {
-				setTimeout( function(){
-					$('#team-adjust-frame').popup('open');
-					$('#team-adjust').off('popupafterclose');
-				}, 100 );
-			}
-		});
+			$('#team-frame-index').val(frameid);
+			$('#team-adjust-frame-name').val(frame.name);
+			$('#team-adjust-frame-systems').html(frame.getSystemDisplay(false, true));
+
+			// go to frame selector next
+			$('#team-adjust').on({
+				popupafterclose: function() {
+					setTimeout( function(){
+						$('#team-adjust-frame').popup('open');
+						$('#team-adjust').off('popupafterclose');
+					}, 100 );
+				}
+			});
+		}
 
 		$('#team-adjust').popup('close');
 	});
@@ -492,131 +535,168 @@ $(document).on('pagecreate', '#company-entry', function(event){
 
 	$(document).on('change', '#team-adjust-frame-name', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var frameid = $(this).parent().attr('data-frameid');
-		var frame = team.cFrames[frameid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		var frameName = $('#team-adjust-frame-name').val();
-		team.cFrames[frameid].name = uniqueName($('<div/>').text(frameName).html(), buildNameArray(team.cFrames));
+		if (team) {
+			var frameid = $(this).parent().attr('data-frameid');
+			var frame = team.cFrames[frameid];
 
-		mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			var frameName = $('#team-adjust-frame-name').val();
+			team.cFrames[frameid].name = uniqueName($('<div/>').text(frameName).html(), buildNameArray(team.cFrames));
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-frame-update',
-				teamid: team.uuid,
-				frameid: frame.uuid,
-				frame: frame
-			}
-		]);
+			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-update',
+					teamid: team.uuid,
+					frameid: frame.uuid,
+					frame: frame
+				}
+			]);
+		} else {
+			// don't return to normal adjust when killed
+			$('#team-adjust-frame').off('popupafterclose');
+			$('#team-adjust-frame').popup('close');
+			$('#team-adjust-frame').on({
+		        popupafterclose: returnToCompanyAdjust
+		    });
+		}
 	});
 
 	// add system
 	$(document).on('click', '#team-adjust-frame a.add-sys', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var frameid = $('#team-frame-index').val();
-		var frame = team.cFrames[frameid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		frame.addSystem($(this).attr('data-sys-type'));
-		$('#team-adjust-frame-systems').html(frame.getSystemDisplay(false, true));
-		team.sSystems = team.totalSystems();
+		if (team) {
+			var frameid = $('#team-frame-index').val();
+			var frame = team.cFrames[frameid];
 
-		mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			frame.addSystem($(this).attr('data-sys-type'));
+			$('#team-adjust-frame-systems').html(frame.getSystemDisplay(false, true));
+			team.sSystems = team.totalSystems();
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-frame-update',
-				teamid: team.uuid,
-				frameid: frame.uuid,
-				frame: frame
-			},
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-update',
+					teamid: team.uuid,
+					frameid: frame.uuid,
+					frame: frame
+				},
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+		} else {
+			// don't return to normal adjust when killed
+			$('#team-adjust-frame').off('popupafterclose');
+			$('#team-adjust-frame').popup('close');
+			$('#team-adjust-frame').on({
+		        popupafterclose: returnToCompanyAdjust
+		    });
+		}
 	});
 
 	// reset systems
 	$(document).on('click', '#team-adjust-frame a.reset-sys', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var frameid = $('#team-frame-index').val();
-		var frame = team.cFrames[frameid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.cFrames[frameid] = new frameModel();
-		team.sSystems = team.totalSystems();
+		if (team) {
+			var frameid = $('#team-frame-index').val();
+			var frame = team.cFrames[frameid];
 
-		$('#team-adjust-frame-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
+			team.cFrames[frameid] = new frameModel();
+			team.sSystems = team.totalSystems();
 
-		mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			$('#team-adjust-frame-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-frame-update',
-				teamid: team.uuid,
-				frameid: frame.uuid,
-				frame: frame
-			},
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-update',
+					teamid: team.uuid,
+					frameid: frame.uuid,
+					frame: frame
+				},
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+		} else {
+			// don't return to normal adjust when killed
+			$('#team-adjust-frame').off('popupafterclose');
+			$('#team-adjust-frame').popup('close');
+			$('#team-adjust-frame').on({
+		        popupafterclose: returnToCompanyAdjust
+		    });
+		}
 	});
 
 	// remove system
 	$(document).on('click', '#team-adjust-frame-systems li', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var frameid = $('#team-frame-index').val();
-		var frame = team.cFrames[frameid];
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.cFrames[frameid].removeSystem($(this).attr('data-sys'));
-		team.sSystems = team.totalSystems();
+		if (team) {
+			var frameid = $('#team-frame-index').val();
+			var frame = team.cFrames[frameid];
 
-		$('#team-adjust-frame-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
+			team.cFrames[frameid].removeSystem($(this).attr('data-sys'));
+			team.sSystems = team.totalSystems();
 
-		mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			$('#team-adjust-frame-systems').html(team.cFrames[frameid].getSystemDisplay(false, true));
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-frame-update',
-				teamid: team.uuid,
-				frameid: frame.uuid,
-				frame: frame
-			},
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-frame-update',
+					teamid: team.uuid,
+					frameid: frame.uuid,
+					frame: frame
+				},
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+		} else {
+			// don't return to normal adjust when killed
+			$('#team-adjust-frame').off('popupafterclose');
+			$('#team-adjust-frame').popup('close');
+			$('#team-adjust-frame').on({
+		        popupafterclose: returnToCompanyAdjust
+		    });
+		}
 	});
 
 	// always return to team dialog after
 	$('#team-adjust-frame').on({
-        popupafterclose: function() {
-			mfzch.updateTeamFrameList(mfzch.game, mfzch.game.teams[$('#team-index').val()], $('#team-adjust-long-company-list'));
-            setTimeout( function(){ $('#team-adjust').popup('open') }, 100 );
-        }
+        popupafterclose: returnToCompanyAdjust
     });
 
 	// update max systems (when tracking >10)
@@ -643,87 +723,85 @@ $(document).on('pagecreate', '#company-entry', function(event){
 	// do company import
 	$(document).on('click', '#team-import-company-list li', function(){
 		var teamid = $('#team-index').val();
-		var team = mfzch.game.teams[teamid];
-		var companyid = $(this).attr('data-id');
-		var company = mfzch.companies[companyid]
+		var team = mfzch.game.findTeamByUUID(teamid);
 
-		team.name = uniqueName(company.name, buildNameArray(mfzch.game.teams));
-		team.color = company.color;
-		team.cFrames = [];
-		company.frames.forEach (function(item, index){
-			var srcFrame = company.frames[index];
-			var destFrame = new frameModel();
+		if (team) {
+			var companyid = $(this).attr('data-id');
+			var company = mfzch.companies[companyid]
 
-			destFrame.name = srcFrame.name;
-			destFrame.w = srcFrame.w;
-			destFrame.rh = srcFrame.rh
-			destFrame.rd = srcFrame.rd
-			destFrame.ra = srcFrame.ra
-			destFrame.b = srcFrame.b
-			destFrame.y = srcFrame.y;
-			destFrame.g = srcFrame.g;
-			destFrame.e = srcFrame.e;
-			destFrame.ssr = srcFrame.ssr;
-			destFrame.rhd = srcFrame.rhd;
-			destFrame.rha = srcFrame.rha;
-			destFrame.rda = srcFrame.rda;
+			team.name = uniqueName(company.name, buildNameArray(mfzch.game.teams));
+			team.color = company.color;
+			team.cFrames = [];
+			company.frames.forEach (function(item, index){
+				var srcFrame = company.frames[index];
+				var destFrame = new frameModel();
 
-			team.cFrames.push(destFrame);
-		})
-		team.gFrames = team.cFrames.length;
-		team.sSystems = team.totalSystems();
+				destFrame.name = srcFrame.name;
+				destFrame.w = srcFrame.w;
+				destFrame.rh = srcFrame.rh
+				destFrame.rd = srcFrame.rd
+				destFrame.ra = srcFrame.ra
+				destFrame.b = srcFrame.b
+				destFrame.y = srcFrame.y;
+				destFrame.g = srcFrame.g;
+				destFrame.e = srcFrame.e;
+				destFrame.ssr = srcFrame.ssr;
+				destFrame.rhd = srcFrame.rhd;
+				destFrame.rha = srcFrame.rha;
+				destFrame.rda = srcFrame.rda;
 
-		$('#team-name').val(team.name);
-		$('#team-color').val(team.color);
-		$('#team-frames').val(team.gFrames).slider( "refresh" );
-		$('#team-systems').val(team.sSystems).slider( "refresh" );
-		mfzch.updateSystemsInputs();
+				team.cFrames.push(destFrame);
+			})
+			team.gFrames = team.cFrames.length;
+			team.sSystems = team.totalSystems();
 
-		mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
-		mfzch.updateTeamList(mfzch.game);
-		mfzch.updateReadyStatus(mfzch.game);
-		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
+			$('#team-name').val(team.name);
+			$('#team-color').val(team.color);
+			$('#team-frames').val(team.gFrames).slider( "refresh" );
+			$('#team-systems').val(team.sSystems).slider( "refresh" );
+			mfzch.updateSystemsInputs();
 
-		mfzch.sendGameUpdate([
-			{
-				action: 'team-name',
-				teamid: team.uuid,
-				name: team.name
-			},
-			{
-				action: 'team-color',
-				teamid: team.uuid,
-				color: team.color
-			},
-			{
-				action: 'team-frames-replace',
-				teamid: team.uuid,
-				cFrames: team.cFrames
-			},
-			{
-				action: 'team-gFrames',
-				teamid: team.uuid,
-				gFrames: team.gFrames
-			},
-			{
-				action: 'team-sSystems',
-				teamid: team.uuid,
-				sSystems: team.sSystems
-			}
-		]);
+			mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+			mfzch.updateTeamList(mfzch.game);
+			mfzch.updateReadyStatus(mfzch.game);
+			mfzch.game.clientmodified = true;
+			mfzch.saveData('game');
+
+			mfzch.sendGameUpdate([
+				{
+					action: 'team-name',
+					teamid: team.uuid,
+					name: team.name
+				},
+				{
+					action: 'team-color',
+					teamid: team.uuid,
+					color: team.color
+				},
+				{
+					action: 'team-frames-replace',
+					teamid: team.uuid,
+					cFrames: team.cFrames
+				},
+				{
+					action: 'team-gFrames',
+					teamid: team.uuid,
+					gFrames: team.gFrames
+				},
+				{
+					action: 'team-sSystems',
+					teamid: team.uuid,
+					sSystems: team.sSystems
+				}
+			]);
+		}
 
 		$('#team-import-company').popup('close');
 	});
 
 	// always return to team dialog after
 	$('#team-import-company').on({
-        popupafterclose: function() {
-			mfzch.updateTeamFrameList(mfzch.game, mfzch.game.teams[$('#team-index').val()], $('#team-adjust-long-company-list'));
-            setTimeout( function(){
-				$('#team-adjust').popup('open');
-			}, 100 );
-        }
+        popupafterclose: returnToCompanyAdjust
     });
 
 	// confirm companies; decide destination
@@ -765,6 +843,16 @@ $(document).on('pagecreate', '#company-entry', function(event){
 		}
 	});
 });
+
+function returnToCompanyAdjust() {
+	var teamid = $('#team-index').val();
+	var team = mfzch.game.findTeamByUUID(teamid);
+
+	if (team) {
+		mfzch.updateTeamFrameList(mfzch.game, team, $('#team-adjust-long-company-list'));
+		setTimeout( function(){ $('#team-adjust').popup('open') }, 100 );
+	}
+};
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){
 	if (ui.toPage[0].id == 'company-entry') {

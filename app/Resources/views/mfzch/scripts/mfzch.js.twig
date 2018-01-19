@@ -542,8 +542,9 @@ var mfzch = {
 		var newteam = '';
 
 		for (var i in thisGame.teams) {
-			var checkSetup = thisGame.checkSetup(thisGame.teams[i]);
-			newteam += '<li id="team_'+ i +'" data-teamid="' + i + '"';
+			var team = thisGame.teams[i];
+			var checkSetup = thisGame.checkSetup(team);
+			newteam += '<li id="team_'+ i +'" data-teamid="' + team.uuid + '"';
 
 			if (!checkSetup.passing) {
 				newteam += ' data-theme="c"';
@@ -551,18 +552,18 @@ var mfzch = {
 
 			if (thisGame.blindSetup) {
 				newteam += ' data-icon="delete">';
-				newteam += '<a href="#" class="team-del"><h2>' + getIcon('frame', thisGame.teams[i].color, 'game-icon') +  ' ' + thisGame.teams[i].name + '</h2>';
+				newteam += '<a href="#" class="team-del"><h2>' + getIcon('frame', team.color, 'game-icon') +  ' ' + team.name + '</h2>';
 			} else {
 				newteam += '>';
 				newteam += '<a href="#team-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="team-manage">';
-				newteam += '<h2>' + thisGame.teams[i].name + '</h2>';
+				newteam += '<h2>' + team.name + '</h2>';
 
 				if (thisGame.trackingLevel <= 10) {
-					newteam += '<div class="team-display-info">' + getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].gFrames + ' ' + getIcon('system', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].sSystems + '</div>';
+					newteam += '<div class="team-display-info">' + getIcon('frame', team.color, 'game-icon') + team.gFrames + ' ' + getIcon('system', team.color, 'game-icon') + team.sSystems + '</div>';
 				} else {
-					var totalSystems = thisGame.teams[i].totalSystems();
+					var totalSystems = team.totalSystems();
 
-					newteam += '<div class="team-display-info">' + getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].cFrames.length + ' ' + getIcon('system', thisGame.teams[i].color, 'game-icon') + totalSystems + '</div>';
+					newteam += '<div class="team-display-info">' + getIcon('frame', team.color, 'game-icon') + team.cFrames.length + ' ' + getIcon('system', team.color, 'game-icon') + totalSystems + '</div>';
 				}
 
 				if (!checkSetup.passing) {
@@ -591,7 +592,7 @@ var mfzch = {
 	},
 	updateTeamFrameList: function(thisGame, team, jqobj) {
 		jqobj.empty();
-		var frames = team.cFrames
+		var frames = team.cFrames;
 		var teamlist = '';
 
 		for (var i in frames) {

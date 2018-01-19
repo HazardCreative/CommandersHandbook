@@ -435,5 +435,13 @@ gameModel.prototype = {
 			}
 		}
 		return false;
-	}
+	},
+	findTeamByUUID: function(findUuid) {
+		for (var i in this.teams) {
+			if (this.teams[i].uuid == findUuid) {
+				return this.teams[i];
+			}
+		}
+		return false;
+	},
 };
