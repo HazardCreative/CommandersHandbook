@@ -202,7 +202,10 @@ class RAGame {
 					foreach($this->teams as $teamkey => $teamval) {
 						if ($teamval->uuid == $patch->teamid) {
 							$this->teams[$teamkey]->gStations = $patch->gStations;
-							$this->teams[$teamkey]->gScore = $patch->gScore;
+
+							if (isset($patch->gScore)) {
+								$this->teams[$teamkey]->gScore = $patch->gScore;
+							}
 						}
 					}
 					$this->teams[0] = clone $this->teams[0]; // Doctrine won't presist this otherwise
@@ -250,8 +253,10 @@ class RAGame {
 					foreach($this->teams as $teamkey => $teamval) {
 						if ($teamval->uuid == $patch->teamid) {
 							$this->teams[$teamkey]->gFrames = $patch->gFrames;
-							$this->teams[$teamkey]->gScore = $patch->gScore;
 
+							if (isset($patch->gScore)) {
+								$this->teams[$teamkey]->gScore = $patch->gScore;
+							}
 						}
 					}
 					$this->teams[0] = clone $this->teams[0];
