@@ -1,4 +1,7 @@
 $(document).on('pagecreate', '#active-game', function(event){
+	// enable Wake Lock with active game
+	$(document).on('click', '#active-game', enableNoSleep);
+
 	// open team actions
 	$(document).on('click', '.team-info', function(){
 		if(mfzch.appState.remote.mode
@@ -810,5 +813,6 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 $(document).on( "pagecontainerhide", function( event, ui ) {
 	if (ui.prevPage[0].id == 'active-game') {
 		clearInterval(mfzch.remoteSync['active-game']);
+		noSleep.disable();
 	}
 });
