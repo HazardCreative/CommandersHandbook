@@ -283,20 +283,20 @@ gameModel.prototype = {
 		}
 		return true;
 	},
-	checkOtherFrames: function(teamid) {
+	checkOtherFrames: function(team) {
 		for (var i in this.teams) {
-			if (i != teamid && this.teams[i].gFrames) {
+			if (this.teams[i].uuid != team.uuid && this.teams[i].gFrames) {
 				return true;
 			}
 		}
 		return false;
 	},
-	checkCapturableStations: function(teamid) {
-		if (!this.teams[teamid].gFrames) {
+	checkCapturableStations: function(team) {
+		if (!team.gFrames) {
 			return false;
 		}
 		for (var i in this.teams) {
-			if (i != teamid && this.teams[i].gStations) {
+			if (this.teams[i].uuid != team.uuid && this.teams[i].gStations) {
 				return true;
 			}
 		}
@@ -305,32 +305,32 @@ gameModel.prototype = {
 		}
 		return false;
 	},
-	checkDroppableStations: function(teamid) {
-		if (!this.teams[teamid].gStations) {
+	checkDroppableStations: function(team) {
+		if (!team.gStations) {
 			return false;
 		}
 		for (var i in this.teams) {
-			if (i != teamid && this.teams[i].gFrames) {
+			if (this.teams[i] != team.uuid && this.teams[i].gFrames) {
 				return true;
 			}
 		}
 		return false;
 	},
-	getActions: function(teamid) {
+	getActions: function(team) {
 		var actions = [];
 
 		// frame loss
 		if (this.trackingLevel < 20) {
-			if (this.teams[teamid].gFrames && this.checkOtherFrames(teamid)) {
+			if (team.gFrames && this.checkOtherFrames(team)) {
 				actions.push('frame');
 			}
 		}
 		// station gain
-		if (this.checkCapturableStations(teamid)) {
+		if (this.checkCapturableStations(team)) {
 			actions.push('station-capture');
 		}
 		// station loss
-		if (this.checkDroppableStations(teamid)) {
+		if (this.checkDroppableStations(team)) {
 			actions.push('station-drop');
 		}
 
@@ -428,9 +428,9 @@ gameModel.prototype = {
 			mfzch.game = new gameModel();
 		}
 	},
-	findTeamByName: function(findName) {
+	findTeamIndexByUUID: function(findUUID) {
 		for (var i in this.teams) {
-			if (this.teams[i].name == findName) {
+			if (this.teams[i].uuid == findUUID) {
 				return i;
 			}
 		}

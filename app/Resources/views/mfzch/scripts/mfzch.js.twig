@@ -743,47 +743,50 @@ var mfzch = {
 		$('#active-game-teams').empty();
 
 		for (var i in thisGame.teams) {
+			var team = thisGame.teams[i];
 			var teamrow = '';
 
-			teamrow = '<div class="team" data-team-index="'+ i + '">';
+			teamrow = '<div class="team" data-team-id="'+ team.uuid + '">';
 
 			teamrow += '<ul class="team-box" data-role="listview" data-inset="true"><li class="team-info">';
 
-			teamrow += '<div class="team-score"><div class="score">' + thisGame.teams[i].gScore + '</div>';
-			teamrow += '<small class="PPA">' + thisGame.teams[i].gPPA + ' PPA</small></div>';
+			teamrow += '<div class="team-score"><div class="score">' + team.gScore + '</div>';
+			teamrow += '<small class="PPA">' + team.gPPA + ' PPA</small></div>';
 
-			teamrow += '<div class="team-asset-summary">' + getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].gFrames + '<br />';
-			teamrow += getIcon('station', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].gStations + '</div>';
+			teamrow += '<div class="team-asset-summary">' + getIcon('frame', team.color, 'game-icon') + team.gFrames + '<br />';
+			teamrow += getIcon('station', team.color, 'game-icon') + team.gStations + '</div>';
 
-			teamrow += '<div class="team-name"><h2>' + thisGame.teams[i].name + '</h2></div></li>';
+			teamrow += '<div class="team-name"><h2>' + team.name + '</h2></div></li>';
 
 			if (thisGame.trackingLevel >= 20) {
 
-				for (var j in thisGame.teams[i].cFrames) {
+				for (var j in team.cFrames) {
+					var frame = team.cFrames[j];
+
 					teamrow += '<li class="team-frame';
 
 					if (thisGame.trackingLevel >= 30) {
-						if (thisGame.teams[i].cFrames[j].activated) {
+						if (frame.activated) {
 							teamrow += ' activated" data-theme="c';
 						}
 					}
 
-					teamrow += '" data-frameid="' + j + '"><a href="#" data-rel="popup" data-position-to="window" data-transition="pop" class="frame-smash">';
+					teamrow += '" data-frameid="' + frame.uuid + '"><a href="#" data-rel="popup" data-position-to="window" data-transition="pop" class="frame-smash">';
 
 					teamrow += '<span class="lv-wsys-name">';
 
 					if (thisGame.trackingLevel >= 30) {
-						if (thisGame.teams[i].cFrames[j].activated) {
-							teamrow += '<span data-sys="b">' + thisGame.teams[i].cFrames[j].defense + '</span>';
+						if (frame.activated) {
+							teamrow += '<span data-sys="b">' + frame.defense + '</span>';
 						}
-						if (thisGame.teams[i].cFrames[j].spot > 0) {
-							teamrow += '<span data-sys="y">' + thisGame.teams[i].cFrames[j].spot + '</span>';
+						if (frame.spot > 0) {
+							teamrow += '<span data-sys="y">' + frame.spot + '</span>';
 						}
 					}
 
-					teamrow += getIcon('frame', thisGame.teams[i].color, 'game-icon') + thisGame.teams[i].cFrames[j].name + '</span>';
+					teamrow += getIcon('frame', team.color, 'game-icon') + frame.name + '</span>';
 
-					teamrow += thisGame.teams[i].cFrames[j].getSystemDisplay(false, true, 'in-list');
+					teamrow += frame.getSystemDisplay(false, true, 'in-list');
 
 					teamrow += '</a></li>';
 				}
@@ -820,7 +823,7 @@ var mfzch = {
 			}
 		}
 	},
-	updateTieChoices: function(thisGame, teamid, totalTied) {
+	updateTieChoices: function(thisGame, teamIndex, totalTied) {
 		$('#def-tie-teams').empty();
 		for (var i = 0; i < mfzch.game.teams.length; i++) {
 			var teamrow = '<li>';
@@ -837,9 +840,9 @@ var mfzch = {
 		}
 		$('#def-tie-teams').listview('refresh');
 
-		$('.def-tie-choice-team').html(getIcon('company', thisGame.teams[teamid].color, 'game-icon') + thisGame.teams[teamid].name);
+		$('.def-tie-choice-team').html(getIcon('company', thisGame.teams[teamIndex].color, 'game-icon') + thisGame.teams[teamIndex].name);
 
-		var actions = thisGame.tiedForDefenseActions(teamid, totalTied);
+		var actions = thisGame.tiedForDefenseActions(teamIndex, totalTied);
 
 		$('#def-tie-choice').empty();
 
@@ -854,19 +857,19 @@ var mfzch = {
 		}
 
 		$('#def-tie-choice').listview('refresh');
-		$('#def-team-choice-index').val(teamid);
+		$('#def-team-choice-index').val(teamIndex);
 	},
 	determineTieChoices: function(thisGame) {
-		var teamid = parseInt($('#def-team-choice-index').val());
+		var teamIndex = parseInt($('#def-team-choice-index').val());
 		var numTied = mfzch.game.tiedForDefense();
 
-		var nextTeam = teamid + 1;
+		var nextTeam = teamIndex + 1;
 		if (nextTeam >= numTied) {
 			thisGame.reset();
 			nextTeam = 0;
 		}
 
-		var teamName = thisGame.teams[nextTeam].name;
+		var teamUUID = thisGame.teams[nextTeam].uuid;
 
 		thisGame.setPPA();
 		thisGame.updateScores();
@@ -875,9 +878,9 @@ var mfzch = {
 		numTied = mfzch.game.tiedForDefense();
 
 		if (numTied > 1){
-			teamid = thisGame.findTeamByName(teamName);
+			teamIndex = thisGame.findTeamIndexByUUID(teamUUID);
 
-			mfzch.updateTieChoices(thisGame, teamid, numTied)
+			mfzch.updateTieChoices(thisGame, teamIndex, numTied)
 		} else {
 			// tie is resolved; move on
 			mfzch.game.reset();
@@ -925,39 +928,42 @@ var mfzch = {
 
 		$('.framespec').html(thisFrame.createFrameGraph(true));
 	},
-	getCapturableStations: function(captureTeam, isGaining) {
+	getCapturableStations: function(captureTeamId, isGaining) {
 		var availableStations = '';
 		var availableStationIDs = [];
+		var captureTeam = this.game.findTeamByUUID(captureTeamId);
 
 		if (isGaining) {
-			$('.station-capture-message').html('Who controls the station that <strong>' + getIcon('company', this.game.teams[captureTeam].color, 'game-icon') + this.game.teams[captureTeam].name + '</strong> is capturing?')
+			$('.station-capture-message').html('Who controls the station that <strong>' + getIcon('company', captureTeam.color, 'game-icon') + captureTeam.name + '</strong> is capturing?')
 
 			for (var i in this.game.teams) {
-				if (this.game.teams[i].gStations) {
-					if (i != captureTeam) {
-						if (this.game.teams[i].gStations) {
-							availableStationIDs.push(i);
-							availableStations += '<li data-icon="minus"><a href="#" class="station-capture-button" data-team-index="' + i + '">' + getIcon('company', this.game.teams[i].color, 'game-icon') + this.game.teams[i].name + ' <span class="ui-li-count">' + this.game.teams[i].gStations + '</span></a></li>';
+				var team = this.game.teams[i];
+				if (team.gStations) {
+					if (team.uuid != captureTeam.uuid) {
+						if (team.gStations) {
+							availableStationIDs.push(team.uuid);
+							availableStations += '<li data-icon="minus"><a href="#" class="station-capture-button" data-team-id="' + team.uuid + '">' + getIcon('company', team.color, 'game-icon') + team.name + ' <span class="ui-li-count">' + team.gStations + '</span></a></li>';
 						}
 					}
 				}
 			}
 			if(this.game.unclaimedStations) {
 				availableStationIDs.push('nobody');
-				availableStations += '<li data-icon="minus"><a href="#" class="station-capture-button" data-team-index="nobody">Unclaimed <span class="ui-li-count">' + this.game.unclaimedStations + '</span></a></li>';
+				availableStations += '<li data-icon="minus"><a href="#" class="station-capture-button" data-team-id="nobody">Unclaimed <span class="ui-li-count">' + this.game.unclaimedStations + '</span></a></li>';
 			}
 
 		} else {
-			$('.station-capture-message').html('Who is gaining control of the station <strong>' + getIcon('company', this.game.teams[captureTeam].color, 'game-icon') + this.game.teams[captureTeam].name + '</strong> is losing?')
+			$('.station-capture-message').html('Who is gaining control of the station <strong>' + getIcon('company', captureTeam.color, 'game-icon') + captureTeam.name + '</strong> is losing?')
 
 			for (var i in this.game.teams) {
-				if (i != captureTeam && this.game.teams[i].gFrames) {
-					availableStationIDs.push(i);
-					availableStations += '<li data-icon="plus"><a href="#" class="station-drop-button" data-team-index="' + i + '">' + getIcon('company', this.game.teams[i].color, 'game-icon') + this.game.teams[i].name + ' <span class="ui-li-count">' + this.game.teams[i].gStations + '</span></a></li>';
+				var team = this.game.teams[i];
+				if (team.uuid != captureTeam.uuid && team.gFrames) {
+					availableStationIDs.push(team.uuid);
+					availableStations += '<li data-icon="plus"><a href="#" class="station-drop-button" data-team-id="' + team.uuid + '">' + getIcon('company', team.color, 'game-icon') + team.name + ' <span class="ui-li-count">' + team.gStations + '</span></a></li>';
 				}
 			}
 			if (mfzch.game.checkUnclaimedIsPossible()) {
-				availableStations += '<li data-icon="plus"><a href="#" class="station-drop-button" data-team-index="nobody">Nobody/Contested <span class="ui-li-count">' + this.game.unclaimedStations + '</span></a></li>';
+				availableStations += '<li data-icon="plus"><a href="#" class="station-drop-button" data-team-id="nobody">Nobody/Contested <span class="ui-li-count">' + this.game.unclaimedStations + '</span></a></li>';
 			}
 		}
 
