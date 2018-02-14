@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 {% if app.debug %}
-	<html>
+	<html lang="en-us">
 {% else %}
-	<html manifest="cache.manifest">
+	<html lang="en-us" manifest="cache.manifest">
 {% endif %}
 
 <head>
@@ -34,7 +34,7 @@
 
 <div data-role="panel" id="nav-panel" data-theme="c" data-position="left" data-position-fixed="true" data-display="reveal">
 	<h2><a href="#main-page">MFZ:RA Commander&#8217;s Handbook</a></h2>
-	
+
 	{% include 'nav.html.twig' %}
 </div>
 <script id="panel-init">

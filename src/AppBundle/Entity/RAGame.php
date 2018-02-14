@@ -161,22 +161,6 @@ class RAGame {
 
 	public function applyPatch($patch) {
 		switch ($patch->action) {
-			/*
-			Set at status 0; ever patched?
-			'gameType' => $game->getGameType(),
-			'maxFrames' => $game->getMaxFrames(),
-			'minFrames' => $game->getMinFrames(),
-			'stationsPerPlayer' => $game->getStationsPerPlayer(),
-			'unclaimedStations' => $game->getUnclaimedStations(),
-			'trackingLevel' => $game->getTrackingLevel(),
-			'startTime' => $game->getStartTime(),
-			'intendedPlayers' => $game->getIntendedPlayers(),
-			'blindSetup' => $game->getBlindSetup(),
-			'accessControl' => $game->getAccessControl(),
-			'viewPassword' => $game->getViewPassword(),
-			'modifyPassword' => $game->getModifyPassword(),
-			*/
-
 			case 'doomsday':
 				$this->doomsday = $patch->doomsday;
 				break;
