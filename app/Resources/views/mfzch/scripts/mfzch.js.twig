@@ -823,7 +823,7 @@ var mfzch = {
 			}
 		}
 	},
-	updateTieChoices: function(thisGame, teamIndex, totalTied) {
+	updateTieChoices: function(thisGame, team, totalTied) {
 		$('#def-tie-teams').empty();
 		for (var i = 0; i < mfzch.game.teams.length; i++) {
 			var teamrow = '<li>';
@@ -840,9 +840,9 @@ var mfzch = {
 		}
 		$('#def-tie-teams').listview('refresh');
 
-		$('.def-tie-choice-team').html(getIcon('company', thisGame.teams[teamIndex].color, 'game-icon') + thisGame.teams[teamIndex].name);
+		$('.def-tie-choice-team').html(getIcon('company', team.color, 'game-icon') + team.name);
 
-		var actions = thisGame.tiedForDefenseActions(teamIndex, totalTied);
+		var actions = thisGame.tiedForDefenseActions(team, totalTied);
 
 		$('#def-tie-choice').empty();
 
@@ -857,19 +857,22 @@ var mfzch = {
 		}
 
 		$('#def-tie-choice').listview('refresh');
-		$('#def-team-choice-index').val(teamIndex);
+		$('#def-team-choice-id').val(team.uuid);
 	},
 	determineTieChoices: function(thisGame) {
-		var teamIndex = parseInt($('#def-team-choice-index').val());
+		var teamid = $('#def-team-choice-id').val();
+		var team = mfzch.game.findTeamByUUID(teamid);
+		var teamIndex = mfzch.game.teams.indexOf(team);
+
 		var numTied = mfzch.game.tiedForDefense();
 
-		var nextTeam = teamIndex + 1;
-		if (nextTeam >= numTied) {
+		var nextTeamIndex = teamIndex + 1;
+		if (nextTeamIndex >= numTied) {
 			thisGame.reset();
-			nextTeam = 0;
+			nextTeamIndex = 0;
 		}
 
-		var teamUUID = thisGame.teams[nextTeam].uuid;
+		team = thisGame.teams[nextTeamIndex];
 
 		thisGame.setPPA();
 		thisGame.updateScores();
@@ -877,10 +880,8 @@ var mfzch = {
 
 		numTied = mfzch.game.tiedForDefense();
 
-		if (numTied > 1){
-			teamIndex = thisGame.findTeamIndexByUUID(teamUUID);
-
-			mfzch.updateTieChoices(thisGame, teamIndex, numTied)
+		if (numTied > 1) {
+			mfzch.updateTieChoices(thisGame, team, numTied)
 		} else {
 			// tie is resolved; move on
 			mfzch.game.reset();
@@ -906,9 +907,10 @@ var mfzch = {
 		var teamlist = '';
 
 		for (var i in frames) {
-			teamlist += '<a href=""><li data-frameid="' + i + '">';
-			teamlist += frames[i].name;
-			teamlist += frames[i].getSystemDisplay(false, false, 'in-list');
+			var frame = frames[i];
+			teamlist += '<a href=""><li data-frameid="' + frame.uuid + '">';
+			teamlist += frame.name;
+			teamlist += frame.getSystemDisplay(false, false, 'in-list');
 			teamlist += '</a></li>'
 		}
 
@@ -984,65 +986,53 @@ var mfzch = {
 	getShortCompanyList: function(){
 		var output = '';
 		for (var i in this.companies) {
-			if (this.companies[i].frames.length < MAXFRAMES) {
-				output += '<li data-id="' + i + '" data-icon="false"><a href="#">' + getIcon('company', this.companies[i].color, 'game-icon') + this.companies[i].name + '<span class="ui-li-count">' + this.companies[i].frames.length + '</span></a></li>';
+			var company = this.companies[i];
+			if (company.frames.length < MAXFRAMES) {
+				output += '<li data-id="' + company.uuid + '" data-icon="false"><a href="#">' + getIcon('company', company.color, 'game-icon') + company.name + '<span class="ui-li-count">' + company.frames.length + '</span></a></li>';
 			} else {
-				output += '<li data-id="' + i + '">' + getIcon('company', this.companies[i].color, 'game-icon') + this.companies[i].name + '<span class="ui-li-count">Full</span></li>';
+				output += '<li data-id="' + company.uuid + '">' + getIcon('company', company.color, 'game-icon') + company.name + '<span class="ui-li-count">Full</span></li>';
 			}
 		}
 		return output;
 	},
-	updateLoadoutList: function() {
-		$('#loadouts-custom').empty();
-		var loadoutList = '<ul data-role="listview" data-split-icon="delete" data-inset="true">';
 
-		for (var i in this.loadouts) {
-			loadoutList += '<li data-load-id="' + i + '"><a href="#loadout-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="load-manage">';
-			loadoutList += '<span class="lv-wsys-name">' + this.loadouts[i].name + '</span>';
-			loadoutList += this.loadouts[i].getSystemDisplay(false, false, 'in-list no-ssr');
-			loadoutList += '</a><a href="#" class="load-del">Delete</a></li>';
-		}
-		if (this.loadouts.length < MAXLOADOUTS) {
-			loadoutList += '<li><a href="#" id="loadout-add" class="ui-btn ui-icon-plus ui-btn-icon-left">Add Loadout</a></li>';
-		}
-		loadoutList += '</ul>';
-
-		$('#loadouts-custom').html(loadoutList);
-		$('#loadouts-custom>ul').listview();
-	},
 	updateCompanyList: function() {
 		$('#company-list').empty();
 
 		for (var i in this.companies) {
-			var companyList = '<li id="company_'+ i +'" data-companyid="' + i + '">'
+			var company = this.companies[i];
+
+			var companyList = '<li id="company_'+ i +'" data-companyid="' + company.uuid + '">'
 
 			+ '<ul data-role="listview" data-split-icon="delete" data-inset="true" class="company-frames">'
 
-			+ '<li data-theme="b"><a href="#company-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="company-manage" class="company-info">' + '<span class="lv-wsys-name">' + getIcon('company', this.companies[i].color, 'game-icon', true) + this.companies[i].name + '</span><ul class="companyinfo-string in-list">';
+			+ '<li data-theme="b"><a href="#company-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="company-manage" class="company-info">' + '<span class="lv-wsys-name">' + getIcon('company', company.color, 'game-icon', true) + company.name + '</span><ul class="companyinfo-string in-list">';
 
-			companyList += '<li>' + getIcon('frame', this.companies[i].color, 'game-icon') + this.companies[i].frames.length + '</li>';
-			companyList += '<li>' + getIcon('system', this.companies[i].color, 'game-icon') + this.companies[i].totalSystems() + '</li>';
-			companyList += '<li><span data-sys="ssr">SSR</span>' + this.companies[i].totalSSRs()+ '</li>';
+			companyList += '<li>' + getIcon('frame', company.color, 'game-icon') + company.frames.length + '</li>';
+			companyList += '<li>' + getIcon('system', company.color, 'game-icon') + company.totalSystems() + '</li>';
+			companyList += '<li><span data-sys="ssr">SSR</span>' + company.totalSSRs()+ '</li>';
 
 			companyList += '</ul></a>';
 
 			companyList += '<a href="#" class="company-delete">Delete</a>';
 
-			if (this.companies[i].frames.length) {
-				companyList += '<li data-role="list-divider" class="company-graph-in-list">' + this.companies[i].getCompanyGraph() + '</li>';
+			if (company.frames.length) {
+				companyList += '<li data-role="list-divider" class="company-graph-in-list">' + company.getCompanyGraph() + '</li>';
 			}
 
-			for (var j in this.companies[i].frames) {
-				companyList += '<li data-frameid="' + j + '"><a href="#frame-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="frame-manage">';
+			for (var j in company.frames) {
+				var frame = company.frames[j];
 
-				companyList += '<span class="lv-wsys-name">' + getIcon('frame', this.companies[i].color, 'game-icon') + this.companies[i].frames[j].name + '</span>';
+				companyList += '<li data-frameid="' + frame.uuid + '"><a href="#frame-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="frame-manage">';
 
-				companyList += this.companies[i].frames[j].getSystemDisplay(false, false, 'in-list');
+				companyList += '<span class="lv-wsys-name">' + getIcon('frame', company.color, 'game-icon') + frame.name + '</span>';
+
+				companyList += frame.getSystemDisplay(false, false, 'in-list');
 
 				companyList += '</a><a href="#" class="frame-del">Delete</a></li>';
 			}
 
-			if (this.companies[i].frames.length < MAXFRAMES) {
+			if (company.frames.length < MAXFRAMES) {
 				companyList += '<li><a href="#" class="frame-add ui-btn ui-btn-a ui-icon-plus ui-btn-icon-left">Add Frame</a></li>';
 			}
 
@@ -1121,6 +1111,54 @@ var mfzch = {
 
 	/* Loadouts */
 
+	buildPresetLoadouts: function() {
+		var loadoutList = '';
+
+		for (var i in FRAMELOADS) {
+			var loadset = FRAMELOADS[i];
+			loadoutList += '<h2>' + loadset.title + '</h2>';
+
+			loadoutList += '<div data-role="collapsible-set" data-expanded-icon="carat-d" data-collapsed-icon="carat-r">';
+
+			for (var j in loadset.loadouts) {
+				var load = new frameModel;
+				for (var k in loadset.loadouts[j]) {
+					load[k] = loadset.loadouts[j][k];
+				}
+
+				loadoutList += '<div data-role="collapsible" data-load-index="' + k + '">';
+				loadoutList += '<h3><span class="lv-wsys-name">' + load.name + '</span> ';
+				loadoutList += load.getSystemDisplay(false, false, 'in-list no-ssr');
+				loadoutList += '</h3><p>' + load.description + '</p>';
+				loadoutList += '<button class="loadout-graph ui-btn ui-btn-inline ui-corner-all">Show Graph</button>';
+				loadoutList += '<button class="add-to-company ui-btn ui-btn-inline ui-corner-all">Add to Company</button>';
+				loadoutList += '</div>';
+			}
+
+			loadoutList += '</div>';
+		}
+
+		$('#loadouts-preset').html(loadoutList).enhanceWithin();
+	},
+	updateLoadoutList: function() {
+		$('#loadouts-custom').empty();
+		var loadoutList = '<ul data-role="listview" data-split-icon="delete" data-inset="true">';
+
+		for (var i in this.loadouts) {
+			var load = this.loadouts[i];
+			loadoutList += '<li data-load-id="' + load.uuid + '"><a href="#loadout-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="load-manage">';
+			loadoutList += '<span class="lv-wsys-name">' + load.name + '</span>';
+			loadoutList += load.getSystemDisplay(false, false, 'in-list no-ssr');
+			loadoutList += '</a><a href="#" class="load-del">Delete</a></li>';
+		}
+		if (this.loadouts.length < MAXLOADOUTS) {
+			loadoutList += '<li><a href="#" id="loadout-add" class="ui-btn ui-icon-plus ui-btn-icon-left">Add Loadout</a></li>';
+		}
+		loadoutList += '</ul>';
+
+		$('#loadouts-custom').html(loadoutList);
+		$('#loadouts-custom>ul').listview();
+	},
 	extractLoadoutFromTitle: function(elInput, elOutput) {
 		var name = $(elInput).parent().parent().find('.lv-wsys-name').html().trim();
 		$(elOutput).attr('data-name', name);
@@ -1142,20 +1180,21 @@ var mfzch = {
 	/* Structured Units */
 
 	addCompanyToAsset: function() {
-		var companyid = $('#company-index').val();
+		var companyid = $('#company-id').val();
+		var company = findObjectByUUID(companyid, mfzch.companies);
 
 		var team = new teamModel();
-		team.name = uniqueName(this.companies[companyid].name, buildNameArray(this.game.teams));
+		team.name = uniqueName(company.name, buildNameArray(this.game.teams));
 
-		team.color = this.companies[companyid].color;
-		team.gFrames = this.companies[companyid].frames.length;
-		team.sSystems = this.companies[companyid].totalSystems();
+		team.color = company.color;
+		team.gFrames = company.frames.length;
+		team.sSystems = company.totalSystems();
 
 		 // Copy frames in
-		for (var i in this.companies[companyid].frames) {
+		for (var i in company.frames) {
 			team.cFrames[i] = new frameModel();
-			for (var j in this.companies[companyid].frames[i]) {
-				team.cFrames[i][j] = this.companies[companyid].frames[i][j];
+			for (var j in company.frames[i]) {
+				team.cFrames[i][j] = company.frames[i][j];
 			}
 		}
 

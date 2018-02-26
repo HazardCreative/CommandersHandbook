@@ -1,6 +1,6 @@
 <div data-role="page" id="company-analysis">
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
-		<h1>Structured Units</h1>
+		<h1>Company Structure</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
 	</div>
 
@@ -26,7 +26,7 @@
 
 		<div role="main" class="ui-content">
 			<form id="company-form">
-				<input name="company-index" id="company-adjust-index" type="hidden">
+				<input name="company-id" id="company-adjust-id" type="hidden">
 
 				<div id="company-adjust-info">
 					<div class="field">
@@ -39,15 +39,16 @@
 						<input name="company-color" id="company-color" type="color" />
 					</div>
 				</div>
+
+				<div id="company-notice" class="ui-body ui-body-c ui-corner-all">-</div>
+
+				<div id="company-adjust-submit">
+					<button id="company-submit" class="ui-btn ui-corner-all ui-btn-inline">Back</button>
+					<button id="company-regen" class="ui-btn ui-corner-all ui-btn-inline">Generate</button>
+					<button id="company-duplicate" class="ui-btn ui-corner-all ui-btn-inline">Duplicate</button>
+				</div>
 			</form>
 
-			<div id="company-notice" class="ui-body ui-body-c ui-corner-all">-</div>
-
-			<div id="company-adjust-submit">
-				<button id="company-submit" class="ui-btn ui-corner-all ui-btn-inline">Back</button>
-				<button id="company-regen" class="ui-btn ui-corner-all ui-btn-inline">Generate</button>
-				<button id="company-duplicate" class="ui-btn ui-corner-all ui-btn-inline">Duplicate</button>
-			</div>
 		</div>
 	</div>
 
@@ -58,8 +59,8 @@
 
 		<div role="main" class="ui-content">
 			<form id="frame-adjust-form">
-				<input name="company-index" id="company-index" type="hidden">
-				<input name="frame-index" id="frame-index" type="hidden">
+				<input name="company-id" id="company-id" type="hidden">
+				<input name="frame-id" id="frame-id" type="hidden">
 
 				<div id="frame-adjust-info">
 					<label for="frame-name" class="hide-if-compact-ui">Frame Name:</label>

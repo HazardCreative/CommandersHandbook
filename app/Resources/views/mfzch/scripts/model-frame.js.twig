@@ -1,6 +1,7 @@
 function frameModel() {
 	this.uuid = generateUUID();
-	this.name = "Unnamed Frame"
+	this.name = "Unnamed Frame";
+	this.description = "";
 	this.w = 2;
 	this.rh = 0;
 	this.rd = 0;
@@ -26,7 +27,6 @@ frameModel.prototype = {
 	totalSystems: function() {
 		return n = this.rh + this.rd + this.ra + this.b + this.y + this.g + this.rhd + this.rha + this.rda + this.e;
 	},
-
 	getSystemDisplay: function(useRange, showWhite, cssClass) {
 		if(typeof(useRange) === 'undefined') useRange = false;
 		if(typeof(showWhite) === 'undefined') showWhite = true;
@@ -529,26 +529,41 @@ frameModel.prototype = {
 			frameStat.dur.meanw2 = 0;
 		}
 
-/* *** efficiency */
-/*
+/* *** efficiency (needs to change with active range?) */
+
 		// efficiency
 		frameStat.eff = [];
 		frameStat.eff.label = '<span data-sys="d">Ef</span>';
 		frameStat.eff.hexcolor = '#f2f2f2';
 		frameStat.eff.multiplier = 1;
-		frameStat.eff.max = 16.7;
+		frameStat.eff.max = 18.7;
 
-		frameStat.eff.mean = Math.max(
-			(frameStat.rh.mean / frameStat.rh.multiplier),
-			(frameStat.rd.mean / frameStat.rd.multiplier),
-			(frameStat.ra.mean / frameStat.ra.multiplier))
+//		frameStat.eff.mean = Math.max(
+//			(frameStat.rh.mean / frameStat.rh.multiplier),
+//			(frameStat.rd.mean / frameStat.rd.multiplier),
+//			(frameStat.ra.mean / frameStat.ra.multiplier))
+//			+ frameStat.y.mean
+//			+ frameStat.b.mean
+//			+ frameStat.g.mean;
+
+//		frameStat.eff.meanw1 = 0;
+//		frameStat.eff.meanw2 = 0;
+
+		frameStat.eff.mean = (frameStat.rh.mean / frameStat.rh.multiplier)
 			+ frameStat.y.mean
 			+ frameStat.b.mean
 			+ frameStat.g.mean;
 
-		frameStat.eff.meanw1 = 0;
-		frameStat.eff.meanw2 = 0;
-*/
+		frameStat.eff.meanw1 = (frameStat.rd.mean / frameStat.rd.multiplier)
+			+ frameStat.y.mean
+			+ frameStat.b.mean
+			+ frameStat.g.mean;
+
+		frameStat.eff.meanw2 = (frameStat.ra.mean / frameStat.ra.multiplier)
+			+ frameStat.y.mean
+			+ frameStat.b.mean
+			+ frameStat.g.mean;
+
 		return frameStat;
 	},
 	createFrameGraph: function(useActiveRange) {

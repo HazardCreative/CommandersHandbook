@@ -1,6 +1,6 @@
 <div data-role="page" id="active-game">
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
-		<h1>Asset Tracking</h1>
+		<h1>Battle Tracking</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
 		<a href="#" id="exit-game" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-star">Exit Game</a>
 	</div>
@@ -25,7 +25,7 @@
 		<div class="game-link">Error</div>
 	</div>
 
-	<div data-role="popup" id="team-action" data-theme="b" data-overlay-theme="b" data-team-index="none" data-history="false">
+	<div data-role="popup" id="team-action" data-theme="b" data-overlay-theme="b" data-team-id="none" data-history="false">
         <ul data-role="listview" data-inset="true">
             <li data-role="list-divider">Choose an action</li>
             <li data-icon="delete"><a href="#" id="destroy-frame">Destroy Frame</a></li>
@@ -34,7 +34,7 @@
         </ul>
 	</div>
 
-	<div data-role="popup" id="no-action" data-theme="b" data-overlay-theme="b" data-team-index="none" data-history="false">
+	<div data-role="popup" id="no-action" data-theme="b" data-overlay-theme="b" data-history="false">
 		<div data-role="header">
 			<h1>Company Eliminated</h1>
 		</div>
@@ -44,7 +44,7 @@
 		</div>
 	</div>
 
-	<div data-role="popup" id="station-capture" data-theme="b" data-overlay-theme="b" data-team-index="none" data-transition="pop" data-history="false">
+	<div data-role="popup" id="station-capture" data-theme="b" data-overlay-theme="b" data-team-id="none" data-transition="pop" data-history="false">
 		<div data-role="header">
 			<h1>Capture Station</h1>
 		</div>
@@ -71,7 +71,7 @@
 		</div>
 	</div>
 
-	<div data-role="popup" id="game-end" data-theme="b" data-overlay-theme="b" data-team-index="none" data-transition="pop" data-history="false">
+	<div data-role="popup" id="game-end" data-theme="b" data-overlay-theme="b" data-transition="pop" data-history="false">
 		<div data-role="header">
 			<h1>Game Ends</h1>
 		</div>
@@ -82,7 +82,7 @@
 		</div>
 	</div>
 
-	<div data-role="popup" id="game-log-box" data-theme="b" data-overlay-theme="b" data-team-index="none" data-history="false">
+	<div data-role="popup" id="game-log-box" data-theme="b" data-overlay-theme="b" data-history="false">
 		<div data-role="header">
 			<h1>Game Log</h1>
 		</div>
@@ -136,5 +136,4 @@
 			</div>
 		</div>
 	</div>
-
 </div>

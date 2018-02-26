@@ -187,6 +187,17 @@ function generateUUID () { // Public Domain/MIT
     });
 }
 
+function findObjectByUUID(findUUID, haystack) {
+	for (var i in haystack) {
+		if (haystack[i].uuid == findUUID) {
+			return haystack[i];
+		}
+	}
+	return false;
+}
+
+/* nosleep */
+
 var noSleep = new NoSleep();
 
 function enableNoSleep() {

@@ -154,31 +154,32 @@ gameModel.prototype = {
 			return false;
 		}
 	},
-	tiedForDefenseActions: function(teamid, tiedAmount) {
+	tiedForDefenseActions: function(team, tiedAmount) {
 		var actions = [];
+		var index = this.teams.indexOf(team);
 
 		// add frame
 		if (this.trackingLevel < 20) {
-			if (this.teams[teamid].gFrames < this.maxFrames) {
+			if (team.gFrames < this.maxFrames) {
 				actions.push('add-frame');
 			}
 		} else {
-			if (this.teams[teamid].cFrames.length < this.maxFrames) {
+			if (team.cFrames.length < this.maxFrames) {
 				actions.push('add-frame');
 			}
 		}
 		// drop frame
 		if (this.trackingLevel < 20) {
-			if (this.teams[teamid].gFrames > this.minFrames) {
+			if (team.gFrames > this.minFrames) {
 				actions.push('remove-frame');
 			}
 		} else {
-			if (this.teams[teamid].cFrames.length > this.minFrames) {
+			if (team.cFrames.length > this.minFrames) {
 				actions.push('remove-frame');
 			}
 		}
 		// defer
-		if (parseInt(teamid)+1 < tiedAmount) {
+		if (index+1 < tiedAmount) {
 			actions.push('defer');
 		}
 
@@ -427,14 +428,6 @@ gameModel.prototype = {
 		} else {
 			mfzch.game = new gameModel();
 		}
-	},
-	findTeamIndexByUUID: function(findUUID) {
-		for (var i in this.teams) {
-			if (this.teams[i].uuid == findUUID) {
-				return i;
-			}
-		}
-		return false;
 	},
 	findTeamByUUID: function(findUUID) {
 		for (var i in this.teams) {

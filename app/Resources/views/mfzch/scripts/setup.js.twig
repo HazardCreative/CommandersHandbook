@@ -60,7 +60,6 @@ $(document).ready(function(){
 			mfzch.game.shared = false;
 		}
 	}
-
 });
 
 // notify of available update
@@ -90,7 +89,8 @@ $(document).one('pagecreate', function() {
 	// swipe menu open
 	$( document ).on( "swiperight", function( e ) {
 		if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open"
-			 && $(".ui-page-active .ui-popup-active").length <= 0) {
+			 && $(".ui-page-active .ui-popup-active").length <= 0
+			 ) {
 			$( "#nav-panel" ).panel( "open" );
 		}
 	});
