@@ -12,7 +12,10 @@
 
 	<li><a href="/#loadouts">Frame Loadouts</a></li>
 	<li><a href="/#company-analysis">Company Structure</a></li>
-	<li><a href="/command-network" data-ajax="false">Commander's Network</a></li>
+
+	{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+		<li><a href="/command-network" data-ajax="false">Commander's Network</a></li>
+	{% endif %}
 </ul>
 
 {% else %}
@@ -29,7 +32,10 @@
 
 	<li><a href="/#loadouts" data-ajax="false">Frame Loadouts</a></li>
 	<li><a href="/#company-analysis" data-ajax="false">Company Structure</a></li>
-	<li><a href="/command-network" data-ajax="false">Commander's Network</a></li>
+
+	{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+		<li><a href="/command-network" data-ajax="false">Commander's Network</a></li>
+	{% endif %}
 </ul>
 
 {% endif %}

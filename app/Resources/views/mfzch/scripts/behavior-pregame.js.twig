@@ -1122,6 +1122,7 @@ $(document).on('pagecreate', '#setup-tie', function(event){
 					if (minSys == maxSys) {
 						team.gFrames--;
 						team.sSystems -= maxSys;
+						mfzch.game.clientmodified = true;
 						mfzch.saveData('game');
 						$('#tie-frame-remove').popup('close');
 						mfzch.determineTieChoices(mfzch.game);
@@ -1327,14 +1328,7 @@ $(document).on('pagecreate', '#game-deployment', function(event){
 		mfzch.game.start();
 		mfzch.game.status = 4;
 		mfzch.game.clientmodified = true;
-		mfzch.saveData('game');
-
-		mfzch.sendGameUpdate([
-			{
-				action: 'status',
-				status: mfzch.game.status
-			}
-		]);
+		mfzch.saveData('game', true);
 
 		$( ":mobile-pagecontainer" ).pagecontainer( "change", "#active-game", { changeHash: false } );
 	});

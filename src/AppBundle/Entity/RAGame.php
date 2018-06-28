@@ -26,7 +26,7 @@ class RAGame {
 	protected $id;
 
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="guid")
 	 */
 	protected $uuid;
 
@@ -56,7 +56,7 @@ class RAGame {
 	protected $gameType = 'Battle';
 
 	/**
-	 * @ORM\Column(type="string", nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $log = '';
 

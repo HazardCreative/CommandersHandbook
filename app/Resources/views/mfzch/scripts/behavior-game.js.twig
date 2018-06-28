@@ -61,6 +61,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 					teamid: team.uuid,
 					gFrames: team.gFrames,
 					gScore: team.gScore
+				},
+				{
+					action: 'log',
+					log: mfzch.game.logEvent(team.name + ' loses a frame', true)
+				},
+				{
+					action: 'log',
+					log: mfzch.game.logScores('short', true)
 				}
 			]);
 
@@ -114,6 +122,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 						teamid: team.uuid,
 						gStations: team.gStations,
 						gScore: team.gScore
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logEvent(team.name + capturedFrom, true)
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logScores('short', true)
 					}
 				]);
 
@@ -160,6 +176,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 						teamid: team.uuid,
 						gStations: team.gStations,
 						gScore: team.gScore
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logEvent(teamauto.name + ' captures a station from ' + team.name, true)
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logScores('short', true)
 					}
 				]);
 
@@ -221,6 +245,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 				teamid: capturedTeam.uuid,
 				gStations: capturedTeam.gStations,
 				gScore: capturedTeam.gScore
+			},
+			{
+				action: 'log',
+				log: mfzch.game.logEvent(capturingTeam.name + capturedFrom, true)
+			},
+			{
+				action: 'log',
+				log: mfzch.game.logScores('short', true)
 			}
 		]);
 
@@ -240,15 +272,16 @@ $(document).on('pagecreate', '#active-game', function(event){
 		var capturingTeam = mfzch.game.findTeamByUUID(capturingTeamid);
 		var capturedTeam = mfzch.game.findTeamByUUID(capturedTeamid);
 
-
+		var logtext = '';
 		mfzch.undo.setState(mfzch.game);
 		if (capturingTeamid == 'nobody') {
 			mfzch.game.unclaimedStations++;
-			mfzch.game.logEvent(capturedTeam.name + ' loses a station which becomes contested');
+			logtext = capturedTeam.name + ' loses a station which becomes contested';
 		} else {
 			capturingTeam.gStations++;
-			mfzch.game.logEvent(capturingTeam.name + ' captures a station from ' + capturedTeam.name);
+			logtext = capturingTeam.name + ' captures a station from ' + capturedTeam.name;
 		}
+		mfzch.game.logEvent(logtext);
 		capturedTeam.gStations--;
 		mfzch.game.updateScores();
 		mfzch.updateActiveTeams(mfzch.game);
@@ -277,6 +310,14 @@ $(document).on('pagecreate', '#active-game', function(event){
 				teamid: capturedTeam.uuid,
 				gStations: capturedTeam.gStations,
 				gScore: capturedTeam.gScore
+			},
+			{
+				action: 'log',
+				log: mfzch.game.logEvent(logtext, true)
+			},
+			{
+				action: 'log',
+				log: mfzch.game.logScores('short', true)
 			}
 		]);
 
@@ -329,6 +370,17 @@ $(document).on('pagecreate', '#active-game', function(event){
 		mfzch.game.logEvent('Round ' + (mfzch.game.round) + ' ends; Doomsday is now '+ mfzch.game.doomsday);
 		mfzch.game.logSeparator();
 
+		mfzch.sendGameUpdate([
+			{
+				action: 'log',
+				log: mfzch.game.logEvent('Round ' + (mfzch.game.round) + ' ends; Doomsday is now '+ mfzch.game.doomsday, true)
+			},
+			{
+				action: 'log',
+				log: mfzch.game.logSeparator(0, true)
+			}
+		]);
+
 		if (mfzch.game.doomsday < 1) {
 			mfzch.game.endGame();
 		} else {
@@ -355,14 +407,41 @@ $(document).on('pagecreate', '#active-game', function(event){
 							mfzch.game.logSeparator();
 							mfzch.game.logEvent('Round '+ mfzch.game.round + ' begins');
 							mfzch.game.logScores();
+
+							mfzch.sendGameUpdate([
+								{
+									action: 'log',
+									log: mfzch.game.logEvent('Doomsday is now '+ mfzch.game.doomsday, true)
+								},
+								{
+									action: 'log',
+									log: mfzch.game.logSeparator(0, true)
+								},
+								{
+									action: 'log',
+									log: mfzch.game.logEvent('Round '+ mfzch.game.round + ' begins', true)
+								},
+								{
+									action: 'log',
+									log: mfzch.game.logScores(false, true)
+								}
+							]);
+
 							mfzch.game.clientmodified = true;
 							mfzch.saveData('game', true);
 						}
 					} else {
 						mfzch.game.logEvent('Doomsday is now 0');
+
+						mfzch.sendGameUpdate([
+							{
+								action: 'log',
+								log: mfzch.game.logEvent('Doomsday is now 0', true)
+							}
+						]);
 						mfzch.game.endGame();
 					}
-				}, 1); // I guess it doesn't fire after it COMPLETELY closes...
+				}, 1); // wait until it COMPLETELY closes...
 			} );
 			$('#ddc-count').popup('open');
 		}
@@ -448,17 +527,20 @@ $(document).on('pagecreate', '#active-game', function(event){
 				var sysType = $(this).attr('data-sys');
 
 				if(frame.removeSystem(sysType)) {
+					var logtext = '';
+
 					if (sysType == 'ssr') {
-						mfzch.game.logEvent(team.name + ' fires an SSR from '+ frame.name);
+						logtext = team.name + ' fires an SSR from '+ frame.name;
 						try {
 							ga('send', 'event', 'Game', 'Action', 'Fired SSR', 0, false);
 						} catch (err) {}
 					} else {
-						mfzch.game.logEvent(team.name + ' loses a system (' + sysType + ') from '+ frame.name);
+						logtext = team.name + ' loses a system (' + sysType + ') from '+ frame.name;
 						try {
 							ga('send', 'event', 'Game', 'Action', 'Destroyed System', 0, false);
 						} catch (err) {}
 					}
+					mfzch.game.logEvent(logtext);
 					mfzch.game.clientmodified = true;
 					mfzch.saveData('game');
 
@@ -473,6 +555,10 @@ $(document).on('pagecreate', '#active-game', function(event){
 							action: 'team-sSystems',
 							teamid: team.uuid,
 							sSystems: team.sSystems
+						},
+						{
+							action: 'log',
+							log: mfzch.game.logEvent(logtext, true)
 						}
 					]);
 
@@ -543,6 +629,10 @@ $(document).on('pagecreate', '#active-game', function(event){
 							action: 'team-sSystems',
 							teamid: team.uuid,
 							sSystems: team.sSystems
+						},
+						{
+							action: 'log',
+							log: mfzch.game.logEvent(team.name + ' loses a frame: '+ frame.name, true)
 						}
 					]);
 
@@ -647,6 +737,10 @@ $(document).on('pagecreate', '#active-game', function(event){
 						teamid: team.uuid,
 						frameid: frame.uuid,
 						frame: frame
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logEvent(team.name + ' activates '+ frame.name, true)
 					}
 				]);
 
@@ -686,6 +780,10 @@ $(document).on('pagecreate', '#active-game', function(event){
 						teamid: team.uuid,
 						frameid: frame.uuid,
 						frame: frame
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logEvent(team.name + ' sets the defense of '+ frame.name + ' to ' + frame.defense, true)
 					}
 				]);
 
@@ -725,6 +823,10 @@ $(document).on('pagecreate', '#active-game', function(event){
 						teamid: team.uuid,
 						frameid: frame.uuid,
 						frame: frame
+					},
+					{
+						action: 'log',
+						log: mfzch.game.logEvent(team.name + ' ' + frame.name + ' receives a spot of ' + frame.spot, true)
 					}
 				]);
 
@@ -772,10 +874,8 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 			if (mfzch.game.shared) {
 				$('.game-link').html('This game is shared. <a href="/game/'+ mfzch.game.uuid+ '/">Link to this game</a>.');
 				$('.game-link').show();
-				$('#endgame-log').hide();
 			} else {
 				$('.game-link').hide();
-				$('#endgame-log').show();
 			}
 
 			if(mfzch.appState.remote.mode) {

@@ -377,33 +377,70 @@ gameModel.prototype = {
 		$('#end-round').hide();
 		mfzch.saveData('game', true);
 	},
-	logEvent: function(eventText) {
-		this.log += timeStamp() + ' - ' + eventText + '\n';
-	},
-	logSeparator: function(style) {
-		if (style == 1) {
-			this.log += '-------------\n';
+	logEvent: function(eventText, returnString) {
+		if (typeof(returnString) === undefined) {
+			returnString = false;
+		}
+
+		var logtext = timeStamp() + ' - ' + eventText + '\n';
+
+		if (returnString) {
+			return logtext;
 		} else {
-			this.log += '=============\n';
+			this.log += logtext;
 		}
 	},
-	logParameters: function(style) {
-		this.log += 'Game Type: '+ this.gameType + '\n';
-		this.log += 'Doomsday is '+ this.doomsday + '\n';
-		this.logSeparator();
-		this.logEvent('Round 1 begins');
+	logSeparator: function(style, returnString) {
+		if (typeof(returnString) === undefined) {
+			returnString = false;
+		}
+
+		var logtext = '';
+		if (style == 1) {
+			logtext += '-------------\n';
+		} else {
+			logtext += '=============\n';
+		}
+
+		if (returnString) {
+			return logtext;
+		} else {
+			this.log += logtext;
+		}
 	},
-	logScores: function(style) {
+	logParameters: function(style, returnString) {
+		if (typeof(returnString) === undefined) {
+			returnString = false;
+		}
+
+		var logtext = '';
+		logtext += 'Game Type: '+ this.gameType + '\n';
+		logtext += 'Doomsday is '+ this.doomsday + '\n';
+		logtext += this.logSeparator(0, true);
+		logtext += this.logEvent('Round 1 begins', true);
+
+		if (returnString) {
+			return logtext;
+		} else {
+			this.log += logtext;
+		}
+	},
+	logScores: function(style, returnString) {
+		if (typeof(returnString) === undefined) {
+			returnString = false;
+		}
+
+		var logtext = '';
 		if (style == 'short') {
 			for (var i in this.teams) {
 				if( parseInt(i) ) {
-					this.log += ' / ';
+					logtext += ' / ';
 				} else {
-					this.log += ' - ';
+					logtext += ' - ';
 				}
-				this.log += this.teams[i].name + ': ' + this.teams[i].gScore;
+				logtext += this.teams[i].name + ': ' + this.teams[i].gScore;
 			}
-			this.log += '\n';
+			logtext += '\n';
 		} else if (style == 'analytics') {
 			var scoreStr = '';
 			for (var i in this.teams) {
@@ -414,12 +451,18 @@ gameModel.prototype = {
 			}
 			return scoreStr;
 		} else {
-			this.logSeparator(1);
-			this.log += '**Scores**\n';
+			logtext += this.logSeparator(1, true);
+			logtext += '**Scores**\n';
 			for (var i in this.teams) {
-				this.log += this.teams[i].name + ': ' + this.teams[i].gScore + ' (' + this.teams[i].gFrames +'f+'+ this.teams[i].gStations + 's &#215; ' + this.teams[i].gPPA + ')'+ '\n';
+				logtext += this.teams[i].name + ': ' + this.teams[i].gScore + ' (' + this.teams[i].gFrames +'f+'+ this.teams[i].gStations + 's &#215; ' + this.teams[i].gPPA + ')'+ '\n';
 			}
-			this.logSeparator(1);
+			logtext += this.logSeparator(1, true);
+		}
+
+		if (returnString) {
+			return logtext;
+		} else {
+			this.log += logtext;
 		}
 	},
 	restoreFromTemplate: function() {
