@@ -1,0 +1,46 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+	<script src="{{ asset('jq/jquery-visibility.min.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+{{ include('mfzch/pages/title.html.twig') }}
+{{ include('mfzch/pages/license.html.twig') }}
+<div data-role="page" id="game-tracking"></div>
+{{ include('mfzch/pages/team_setup.html.twig') }}
+{{ include('mfzch/pages/game-deployment.html.twig') }}
+{{ include('mfzch/pages/active-game.html.twig') }}
+{{ include('mfzch/pages/loadouts.html.twig') }}
+{{ include('mfzch/pages/dice-roller.html.twig') }}
+{{ include('mfzch/pages/damage-roller.html.twig') }}
+{{ include('mfzch/pages/rules-reference.html.twig') }}
+{% if is_granted('IS_AUTHENTICATED_FULLY')
+	and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
+	{{ include('mfzch/pages/strategy.html.twig') }}
+{% endif %}
+{{ include('mfzch/pages/company-analysis.html.twig') }}
+{{ include('mfzch/pages/graph-key.html.twig') }}
+{{ include('mfzch/pages/graph-key-c.html.twig') }}
+{{ include('mfzch/pages/settings.html.twig') }}
+{% endblock %}
+
+{% block footer_scripts %}
+{{ include('mfzch/scripts/generics.js.twig') }}
+{{ include('mfzch/scripts/model-team.js.twig') }}
+{{ include('mfzch/scripts/model-game.js.twig') }}
+{{ include('mfzch/scripts/model-company.js.twig') }}
+{{ include('mfzch/scripts/model-frame.js.twig') }}
+{{ include('mfzch/scripts/model-settings.js.twig') }}
+{{ include('mfzch/scripts/model-appstate.js.twig') }}
+{{ include('mfzch/scripts/mfzch.js.twig') }}
+{{ include('mfzch/scripts/globals.js.twig') }}
+{{ include('mfzch/scripts/behavior-pregame.js.twig') }}
+{{ include('mfzch/scripts/behavior-game.js.twig') }}
+{{ include('mfzch/scripts/behavior-simulator.js.twig') }}
+{{ include('mfzch/scripts/behavior-company.js.twig') }}
+{{ include('mfzch/scripts/behavior-loadouts.js.twig') }}
+{{ include('mfzch/scripts/behavior-settings.js.twig') }}
+{{ include('mfzch/scripts/setup.js.twig') }}
+{{ include('mfzch/scripts/event-tracking.js.twig') }}
+{% endblock %}

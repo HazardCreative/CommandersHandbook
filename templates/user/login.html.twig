@@ -1,0 +1,36 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
+
+<script>
+{{ include('mfzch/scripts/generics.js.twig') }}
+</script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ajaxEnabled = false;
+}
+</script>
+<div data-role="page" id="login">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Log In</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+	<div role="main" class="ui-content">
+		{{ form_start(form) }}
+			{{ form_errors(form) }}
+			{{ form_row(form.email) }}
+			{{ form_row(form.password) }}
+
+			<div>
+				<input type="submit" value="Login" />
+			</div>
+		{{ form_end(form) }}
+	</div>
+</div>
+{% endblock %}

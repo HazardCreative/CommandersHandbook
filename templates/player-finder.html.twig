@@ -1,0 +1,135 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
+
+<script>
+{{ include('mfzch/scripts/generics.js.twig') }}
+</script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="player-finder">
+	<div role="main" class="ui-content" data-ajax="false">
+		<h1>Player Finder</h1>
+		<p>Players in your area</p>
+		<div id="mapid" style="height: 50vh;"></div>
+		<script>
+		$(document).on("pagecontainershow", function(event, ui) {
+			{% if msgphp_user.user and locations %}
+				var mymap = L.map('mapid').setView([{{ locations[0].geo_latitude|e }}, {{ locations[0].geo_longitude|e }}], 11);
+			{% else %}
+				var mymap = L.map('mapid').setView([42.6, -72.6], 9);
+			{% endif %}
+
+			mymap.attributionControl.setPrefix('');
+
+			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				subdomains: 'abcd',
+				minZoom: 8,
+				maxZoom: 15,
+				ext: 'png'
+			});
+
+			Stamen_Terrain.addTo(mymap);
+			L.control.scale().addTo(mymap);
+
+			function getNewPlayers() {
+				var area = mymap.getBounds();
+				var area_latspan = (area._northEast.lat - area._southWest.lat) / 2;
+				var area_lngspan = (area._northEast.lng - area._southWest.lng) / 2;
+				area._northEast.lat = area._northEast.lat + area_latspan;
+				area._northEast.lng = area._northEast.lng + area_lngspan;
+				area._southWest.lat = area._southWest.lat - area_latspan;
+				area._southWest.lng = area._southWest.lng - area_lngspan;
+
+				var mapObj = new Object();
+				mapObj['data'] = JSON.stringify(area);
+				// mymap.getBounds()
+				$.get('/get-players', mapObj)
+				.done(function(result){
+					backgroundgroup.remove();
+					group.remove();
+
+					backgroundgroup = new L.featureGroup();
+					group = new L.featureGroup();
+
+					for (var point in result) {
+						var travelradius = new Array();
+						if (result[point].radius) {
+							travelradius[point] = L.circle( [ result[point].geo_latitude, result[point].geo_longitude ],
+								{
+									radius: result[point].radius * 1609.34,
+									color: result[point].color,
+									opacity: 0.9,
+									fillOpacity: 0,
+									weight: 1
+								})
+							.addTo(backgroundgroup);
+						}
+
+						var marker = L.marker(
+							[result[point].geo_latitude, result[point].geo_longitude ],
+							{icon:
+								L.divIcon({
+									html: getIcon('frame', result[point].color),
+									iconSize: [36, 36],
+									iconAnchor: [21, 18],
+									popupAnchor: [0, -12]
+								})
+							},
+						);
+
+						marker.linkedRadius = travelradius[point];
+
+						marker.bindPopup('<a href="' + result[point].link + '">' + result[point].username + '</a><br />' + result[point].name + '<br />' + result[point].description);
+
+						marker.on('click', function(){
+							if (this.linkedRadius.options.fillOpacity) {
+								this.linkedRadius.setStyle({fillOpacity: 0});
+							} else {
+								this.linkedRadius.setStyle({fillOpacity: 0.2});
+							}
+						});
+
+						marker.addTo(group);
+					}
+
+					backgroundgroup.addTo(mymap);
+					group.addTo(mymap);
+
+					lastLoad = area;
+				});
+			}
+
+			var lastLoad;
+
+			function reloadPoints(e) {
+				currentview = mymap.getBounds();
+
+				if (currentview._northEast.lat > lastLoad._northEast.lat
+					|| currentview._northEast.lng > lastLoad._northEast.lng
+					|| currentview._southWest.lat < lastLoad._southWest.lat
+					|| currentview._southWest.lng < lastLoad._southWest.lng
+					) {
+					getNewPlayers();
+				};
+			}
+
+			var backgroundgroup = new L.featureGroup();
+			var group = new L.featureGroup();
+			getNewPlayers();
+			mymap.on('moveend', reloadPoints);
+		});
+		</script>
+	</div>
+</div>
+{% endblock %}
