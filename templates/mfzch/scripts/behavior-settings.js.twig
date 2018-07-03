@@ -73,11 +73,5 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 			$('#settings-enableenvironmental').slider('refresh');
 
 		{% endif %}
-
-		$('#settings-usage').empty();
-
-		$('#settings-usage').append('<li>Games Played: '+ mfzch.settings.gamesPlayed + '</li>');
-		$('#settings-usage').append('<li>Frames Destroyed: '+ mfzch.settings.framesDestroyed + '</li>');
-		$('#settings-usage').append('<li>Systems Destroyed: '+ mfzch.settings.systemsDestroyed + '</li>');
 	}
 });
