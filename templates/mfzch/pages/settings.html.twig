@@ -9,14 +9,21 @@
 			<h2>Standard options</h2>
 			<div class="ui-field-contain">
 				<label for="settings-enablesplits">Enable Split Systems:</label>
-				<select name="settings-enablesplits" id="settings-enablesplits" data-role="slider">
+				<select name="settings-enablesplits" id="settings-enablesplits" data-role="flipswitch">
 					<option value="off">Off</option>
 					<option value="on">On</option>
 				</select>
 			</div>
 			<div class="ui-field-contain">
-				<label for="settings-compactui">Compact UI:</label>
-				<select name="settings-compactui" id="settings-compactui" data-role="slider">
+				<label for="settings-compactui">Compact Interface:</label>
+				<select name="settings-compactui" id="settings-compactui" data-role="flipswitch">
+					<option value="off">Off</option>
+					<option value="on">On</option>
+				</select>
+			</div>
+			<div class="ui-field-contain">
+				<label for="settings-displayui">Display Mode:</label>
+				<select name="settings-displayui" id="settings-displayui" data-role="flipswitch">
 					<option value="off">Off</option>
 					<option value="on">On</option>
 				</select>
@@ -38,14 +45,14 @@
 		and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
 				<div class="ui-field-contain">
 					<label for="settings-activesync">Server Synchronization:</label>
-					<select name="settings-activesync" id="settings-activesync" data-role="slider">
+					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch">
 						<option value="off">Off</option>
 						<option value="on">On</option>
 					</select>
 				</div>
 				<div class="ui-field-contain">
 					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
-					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="slider">
+					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch">
 						<option value="off">Off</option>
 						<option value="on">On</option>
 					</select>
@@ -54,13 +61,13 @@
 				<p><em>Become a Patreon supporter to enable these options.</em></p>
 				<div class="ui-field-contain">
 					<label for="settings-activesync">Server Synchronization:</label>
-					<select name="settings-activesync" id="settings-activesync" data-role="slider" disabled="disabled">
+					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch" disabled="disabled">
 						<option value="off">Off</option>
 					</select>
 				</div>
 				<div class="ui-field-contain">
 					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
-					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="slider" disabled="disabled">
+					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch" disabled="disabled">
 						<option value="off">Off</option>
 					</select>
 				</div>

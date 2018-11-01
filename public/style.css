@@ -591,6 +591,16 @@ th.stat-type .type-label {
 	margin: 0.25em 0;
 }
 
+.display-ui #active-game .ui-content {
+	font-size: 1.5em;
+}
+
+@media (min-width: 56em) {
+	.display-ui #active-game .ui-content {
+		font-size: 2.5vw;
+	}
+}
+
 /* update notice */
 #update-ready {
 	position: absolute;

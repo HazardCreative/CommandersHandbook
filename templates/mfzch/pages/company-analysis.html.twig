@@ -14,7 +14,7 @@
 				</select>
 			</div>
 		</form>
-		<ul id="company-list">
+		<ul id="company-list" class="company-list">
 			<li>Your device does not support this application or an error has occurred.</li>
 		</ul>
 	</div>
@@ -29,15 +29,38 @@
 				<input name="company-id" id="company-adjust-id" type="hidden">
 
 				<div id="company-adjust-info">
-					<div class="field">
+					<div class="ui-field-contain">
 						<label for="company-name" class="hide-if-compact-ui">Company Name:</label>
 						<input name="company-name" id="company-name" type="text" />
 					</div>
 
-					<div class="field">
+					<div class="ui-field-contain">
 						<label for="company-color" class="hide-if-compact-ui">Color</label>
 						<input name="company-color" id="company-color" type="color" />
 					</div>
+
+					<div class="ui-field-contain">
+						<label for="company-description" class="hide-if-compact-ui">Company description:</label>
+						<textarea name="company-description" id="company-description"></textarea>
+					</div>
+
+					{% if is_granted('IS_AUTHENTICATED_FULLY')
+					and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
+						<div class="ui-field-contain">
+							<label for="company-shared">Shared:</label>
+							<select name="company-shared" id="company-shared" data-role="flipswitch">
+								<option value="off">Off</option>
+								<option value="on">On</option>
+							</select>
+						</div>
+					{% else %}
+						<div class="ui-field-contain">
+							<label for="company-shared">Shared:</label>
+							<select name="company-shared" id="company-shared" data-role="flipswitch" disabled="disabled">
+								<option value="off">Off</option>
+							</select>
+						</div>
+					{% endif %}
 				</div>
 
 				<div id="company-notice" class="ui-body ui-body-c ui-corner-all">-</div>
