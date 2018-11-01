@@ -14,6 +14,14 @@
 if (typeof jQuery != 'undefined') {
 	// enable block-level ajax disable
 	$.mobile.ignoreContentEnabled = true;
+
+	// replace HTML icon placeholders
+	$(document).ready(function(){
+		$('.load-icon').each(function(){
+			var icon = $(this);
+			icon.html(getIcon(icon.data('icontype'), icon.data('iconcolor'), 'game-icon'));
+		});
+	});
 }
 </script>
 <div data-role="page" id="view-profile">
@@ -46,8 +54,8 @@ if (typeof jQuery != 'undefined') {
 				{% endif %}
 			</ul>
 
-
 			{% if locations %}
+				<h2>Locations</h2>
 				<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
 				<script>
 				$(document).on("pagecontainershow", function(event, ui) {
@@ -115,6 +123,71 @@ if (typeof jQuery != 'undefined') {
 				</style>
 			{% endif %}
 
+			{% if companies %}
+				<h2>Shared Companies</h2>
+				<ul class="company-list">
+				{% for company in companies %}
+					<li>
+						<ul data-role="listview" data-inset="true" class="company-frames">
+							<li data-theme="b">
+								<span class="load-icon" data-icontype="company" data-iconcolor="{{ company.hexcolor }}"></span> {{ company.title }}
+							</li>
+							{% if company.description %}
+							<li data-theme="c">
+								{{ company.description }}
+							</li>
+							{% endif %}
+							{% for frame in company.frames %}
+								<li>
+									<span class="lv-wsys-name">{{ frame.name }}</span>
+									<ul class="sys-display in-list">
+										{% for i in 1..frame.rh if frame.rh %}
+											<li data-sys="rh">Rh</li>
+										{% endfor %}
+
+										{% for i in 1..frame.rd if frame.rd %}
+											<li data-sys="rd">Rd</li>
+										{% endfor %}
+
+										{% for i in 1..frame.ra if frame.ra %}
+											<li data-sys="ra">Ra</li>
+										{% endfor %}
+
+										{% for i in 1..frame.y if frame.y %}
+											<li data-sys="y">Y</li>
+										{% endfor %}
+
+										{% for i in 1..frame.b if frame.b %}
+											<li data-sys="b">B</li>
+										{% endfor %}
+
+										{% for i in 1..frame.g if frame.g %}
+											<li data-sys="g">G</li>
+										{% endfor %}
+
+										{% for i in 1..frame.ssr if frame.ssr %}
+											<li data-sys="ssr">SSR</li>
+										{% endfor %}
+
+										{% for i in 1..frame.rhd if frame.rhd %}
+											<li data-sys="rhd">Rhd</li>
+										{% endfor %}
+
+										{% for i in 1..frame.rha if frame.rha %}
+											<li data-sys="rha">Rha</li>
+										{% endfor %}
+
+										{% for i in 1..frame.rda if frame.rda %}
+											<li data-sys="rda">Rda</li>
+										{% endfor %}
+									</ul>
+								</li>
+							{% endfor %}
+						</ul>
+					</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
 		{% else %}
 			<h1>No public profile for this user</h1>
 		{% endif %}

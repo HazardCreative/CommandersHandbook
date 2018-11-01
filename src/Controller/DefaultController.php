@@ -103,10 +103,20 @@ class DefaultController extends Controller {
 
 		$locations = $locations_repo->findByOwner($user->getId());
 
+		$companies_repo = $this->getDoctrine()
+			->getRepository('App:FrameCompany');
+
+		$companies = $companies_repo->findBy([
+			'owner' => $user->getId(),
+			'is_shared' => true,
+			'is_userCompany' => false
+		], ['title' => 'ASC']);
+
 		return $this->render('view-public-profile.html.twig',
 			array(
 				'user' => $user,
-				'locations' => $locations
+				'locations' => $locations,
+				'companies' => $companies
 			)
 		);
 	}

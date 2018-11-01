@@ -225,6 +225,30 @@ class FrameCompany {
     }
 
     /**
+     * Set isShared
+     *
+     * @param boolean $isShared
+     *
+     * @return FrameCompany
+     */
+    public function setIsShared($isShared)
+    {
+        $this->is_shared = $isShared;
+
+        return $this;
+    }
+
+    /**
+     * Get isShared
+     *
+     * @return boolean
+     */
+    public function getIsShared()
+    {
+        return $this->is_shared;
+    }
+
+    /**
      * Set dateCreated
      *
      * @param \DateTime $dateCreated

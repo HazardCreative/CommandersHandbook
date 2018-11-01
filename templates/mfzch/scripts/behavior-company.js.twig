@@ -47,6 +47,13 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 			$('#company-adjust-id').val(companyid);
 			$('#company-name').val(company.name);
 			$('#company-color').val(company.color);
+			$('#company-description').val(company.description);
+			if (company.shared) {
+				$('#company-shared').val('on');
+			} else {
+				$('#company-shared').val('off');
+			}
+			$('#company-shared').flipswitch('refresh');
 
 			$('#company-notice').hide();
 			if (!company.frames.length) {
@@ -101,6 +108,8 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 			company.name = $('#company-name').val();
 			company.clientmodified = true;
 			mfzch.updateCompanyList();
+		} else {
+			$('#company-adjust').popup('close');
 		}
 	});
 
@@ -112,6 +121,36 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 			company.color = $('#company-color').val();
 			company.clientmodified = true;
 			mfzch.updateCompanyList();
+		} else {
+			$('#company-adjust').popup('close');
+		}
+	});
+
+	$(document).on('change', '#company-description', function(){
+		var companyid = $('#company-adjust-id').val();
+		var company = findObjectByUUID(companyid, mfzch.companies);
+
+		if (company) {
+			company.description = $('#company-description').val();
+			company.clientmodified = true;
+		} else {
+			$('#company-adjust').popup('close');
+		}
+	});
+
+	$(document).on('change', '#company-shared', function(){
+		var companyid = $('#company-adjust-id').val();
+		var company = findObjectByUUID(companyid, mfzch.companies);
+
+		if (company) {
+			if ($(this).val() == 'on') {
+				company.shared = true;
+			} else {
+				company.shared = false;
+			}
+			company.clientmodified = true;
+		} else {
+			$('#company-adjust').popup('close');
 		}
 	});
 
@@ -403,7 +442,6 @@ $(document).on('pagecreate', '#company-analysis', function(event){
 		} else {
 			$('#frame-adjust').popup('close');
 		}
-
 	});
 
 	$(document).on('click', '#company-duplicate', function(){
