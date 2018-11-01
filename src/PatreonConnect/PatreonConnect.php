@@ -41,9 +41,53 @@ class PatreonConnect {
 			$access_token = $tokens['access_token'];
 
 			$api_client = new \Patreon\API($access_token);
+
+			//get user data
 			$patreon_data['user_response'] = $api_client->fetch_user();
 
+			if ($patreon_data['user_response']->has('data.id')) {
+				$patreon_data['user_id'] = $patreon_data['user_response']->get('data.id');
+			}
+			if ($patreon_data['user_response']->has('included.0.attributes.amount_cents')) {
+				$patreon_data['pledge']['amt'] = $patreon_data['user_response']->get('included.0.attributes.amount_cents');
+			}
+			if ($patreon_data['user_response']->has('included.0.attributes.declined_since')) {
+				$patreon_data['pledge']['declined_since'] = $patreon_data['user_response']->get('included.0.attributes.declined_since');
+			}
 
+			dump($patreon_data);
+
+			//get campaign data
+//			$patreon_data['campaign'] = $api_client->fetch_campaign();
+
+//			$campaign_id = $patreon_data['campaign']->get('data.0.id');
+
+/*			$all_pledges = [];
+			$cursor = null;
+			while (true) {
+			    $pledges_response = $api_client->fetch_page_of_pledges($campaign_id, 25, $cursor);
+			    // loop over the pledges to get e.g. their amount and user name
+			    foreach ($pledges_response->get('data')->getKeys() as $pledge_data_key) {
+			        $pledge_data = $pledges_response->get('data')->get($pledge_data_key);
+			        array_push($all_pledges, $pledge_data);
+			    }
+			    // get the link to the next page of pledges
+			    if (!$pledges_response->has('links.next')) {
+			        // if there's no next page, we're done!
+			        break;
+			    }
+			    $next_link = $pledges_response->get('links.next');
+			    // otherwise, parse out the cursor param
+			    $next_query_params = explode("?", $next_link)[1];
+			    parse_str($next_query_params, $parsed_next_query_params);
+			    $cursor = $parsed_next_query_params['page']['cursor'];
+			}
+
+
+			dump($all_pledges);
+			dump($cursor);
+			*/
+			/*
 			$patron = $patreon_data['user_response']['data'];
 			$included = $patreon_data['user_response']['included'];
 			$pledge = null;
@@ -55,6 +99,7 @@ class PatreonConnect {
 				}
 			  }
 			}
+			*/
 
 //			$patreon_data['campaign_and_patrons_response'] = $api_client->fetch_campaign_and_patrons();
 //			$patreon_data['campaign_response'] = $api_client->fetch_campaign();
@@ -68,50 +113,8 @@ class PatreonConnect {
 		$data = array();
 		$data['redirect_url'] = $this->redirect_url;
 		$data['patreon_data'] = $patreon_data;
-		$data['patreon_data']['pledge'] = $pledge;
+		// $data['patreon_data']['pledge'] = $pledge;
 
 		return $data;
 	}
 }
-
-/*
-(reference for later)
-
-		if (isset($user_response['data'])) {
-			$user = $user_response['data'];
-			if (isset($user_response['included'])) {
-				$included = $user_response['included'];
-				$pledge = null;
-				$campaign = null;
-				if ($included != null) {
-				  foreach ($included as $obj) {
-					if ($obj["type"] == "pledge" && $obj["relationships"]["creator"]["data"]["id"] == $creator_id) {
-					  $pledge = $obj;
-					  break;
-					}
-				  }
-				  foreach ($included as $obj) {
-					if ($obj["type"] == "campaign" && $obj["relationships"]["creator"]["data"]["id"] == $creator_id) {
-					  $campaign = $obj;
-					  break;
-					}
-				  }
-				}
-			}
-
-			$user_id_map = [];
-			foreach($pledges_page['included'] as $obj) {
-			  if ($obj['type'] == 'user') {
-				$user_id_map[$obj['id']] = $obj;
-			  }
-			}
-			foreach($pledges_page['data'] as $pledge_obj) {
-			  $user_id = $pledge_obj['relationships']['patron']['data']['id'];
-			  $user_obj = $user_id_map[$user_id];
-			  print_r($user_obj);
-			}
-		}
-
-		// use $user, $pledge, and $campaign as desired
-		// $pledges_page = $api_client->fetch_page_of_pledges($campaign_id, 10);
-*/

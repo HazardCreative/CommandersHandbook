@@ -18,15 +18,22 @@ class PatreonController extends Controller {
 	public function patreonGetClientAction(
 			Request $request,
 			PatreonConnect $PatreonConnect,
-			User $user) {
+			User $user = null) {
 
 		$pc = $PatreonConnect;
 		$pc_data = $pc->patreonGetClient($request->query->get('code'));
 
 		$user->setPatreonData($pc_data['patreon_data']);
-		if (isset($pc_data['patreon_data']['user_response']['data']['id'])) {
-			$user->setPatreonId($pc_data['patreon_data']['user_response']['data']['id']);
+
+		if (isset($pc_data['patreon_data']['user_id'])) {
+			$user->setPatreonId($pc_data['patreon_data']['user_id']);
+		}
+
+		if (isset($pc_data['patreon_data']['tokens'])) {
 			$user->setPatreonTokens($pc_data['patreon_data']['tokens']);
+		}
+
+		if (isset($pc_data['patreon_data']['pledge'])) {
 			$user->setPatreonPledges($pc_data['patreon_data']['pledge']);
 		}
 
