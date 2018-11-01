@@ -46,6 +46,11 @@ class FrameCompany {
     /**
      * @ORM\Column(type="boolean")
      */
+    protected $is_userCompany = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
 	protected $is_shared = false;
 
     /**
@@ -201,27 +206,27 @@ class FrameCompany {
     }
 
     /**
-     * Set isShared
+     * Set isUserCompany
      *
-     * @param boolean $isShared
+     * @param boolean $isUserCompany
      *
      * @return FrameCompany
      */
-    public function setIsShared($isShared)
+    public function setIsUserCompany($isUserCompany)
     {
-        $this->is_shared = $isShared;
+        $this->is_userCompany = $isUserCompany;
 
         return $this;
     }
 
     /**
-     * Get isShared
+     * Get isUserCompany
      *
      * @return boolean
      */
-    public function getIsShared()
+    public function getIsUserCompany()
     {
-        return $this->is_shared;
+        return $this->is_userCompany;
     }
 
     /**
