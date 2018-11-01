@@ -60,6 +60,9 @@ $(document).ready(function(){
 			mfzch.game.shared = false;
 		}
 	}
+
+	/* ------ exit game ------ */
+	$("#confirm-exit-game").enhanceWithin().popup();
 });
 
 // notify of available update
@@ -83,6 +86,9 @@ $(document).one('pagebeforecreate', function () {
 	if (mfzch.settings.compactUI) {
 		$('body').addClass('compact-ui');
 	}
+	if (mfzch.settings.displayUI) {
+		$('body').addClass('display-ui');
+	}
 });
 
 $(document).one('pagecreate', function() {
@@ -102,9 +108,8 @@ $(document).one('pagecreate', function() {
 
 
 	/* ------ exit game ------ */
-
 	$("#confirm-exit-game").enhanceWithin().popup();
-	$("#confirm-exit-game").hide();
+//	$("#confirm-exit-game").hide();
 
 	// exit game
 	$(document).on('click', '#exit-game', function(ev){
@@ -135,7 +140,6 @@ $(document).one('pagecreate', function() {
 	$(document).on('click', '#newgame-no', function(){
 		$('#confirm-exit-game').popup('close');
 	});
-
 });
 
 $(document).on("pagecontainerbeforeshow", function(event, ui){
@@ -154,5 +158,4 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 			$('[data-sys-env=true]').hide();
 		}
 	{% endif %}
-
 });

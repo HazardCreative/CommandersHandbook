@@ -13,7 +13,8 @@ function gameModel() {
 	this.unclaimedStations = 0;
 	this.teams = [];
 	this.trackingLevel = 10;
-	this.startTime = new Date();
+	this.startTime = Date.now();
+	this.roundTime = Date.now();
 	this.intendedPlayers = 3;
 	this.blindSetup = false;
 	this.shared = false;
@@ -46,15 +47,6 @@ gameModel.prototype = {
 			return maxRounds;
 		} else {
 			return minRounds + '&#8211;' + maxRounds;
-		}
-	},
-	gameDurationText: function() {
-		var duration = getDuration(this.startTime);
-
-		if (duration.days) {
-			return duration.days + "d " + duration.hours + ":" + duration.minutes + ":" + duration.seconds;
-		} else {
-			return duration.hours + ":" + duration.minutes + ":" + duration.seconds;
 		}
 	},
 	sortByScore: function() {
@@ -242,7 +234,7 @@ gameModel.prototype = {
 		// reset game parameters
 		this.round = 1;
 		this.log = '';
-		this.startTime = new Date();
+		this.startTime = Date.now();
 
 		mfzch.undo.states = [];
 		mfzch.undo.currentState = 0;
@@ -258,6 +250,8 @@ gameModel.prototype = {
 		mfzch.templateGame = JSON.stringify(mfzch.game);
 		mfzch.saveData('templateGame');
 
+		this.startTime = Date.now();
+		this.roundTime = Date.now();
 		this.logEvent('Start Game');
 		this.logParameters();
 		this.logScores();
@@ -355,7 +349,7 @@ gameModel.prototype = {
 				ga('send', 'event', 'Game End', 'Type', this.gameType, 0);
 				ga('send', 'event', 'Game End', 'Track Level', this.trackingLevel, 0);
 
-				ga('send', 'event', 'Game End', 'Duration', this.gameDurationText(), getDuration(this.startTime).rawSeconds);
+				ga('send', 'event', 'Game End', 'Duration', getDurationText(this.startTime), getDuration(this.startTime).rawSeconds);
 
 			} catch (err) {}
 			mfzch.settings.gameEndedOnce = true;
@@ -364,6 +358,7 @@ gameModel.prototype = {
 		this.status = 5;
 		this.logEvent('Game over');
 		this.logScores();
+		this.logEvent('Game Duration: ' + getDurationText(this.startTime));
 		mfzch.updateGameInfo(this);
 
 		var finalScore = '';
@@ -416,6 +411,18 @@ gameModel.prototype = {
 		var logtext = '';
 		logtext += 'Game Type: '+ this.gameType + '\n';
 		logtext += 'Doomsday is '+ this.doomsday + '\n';
+		if (this.trackingLevel > 10) {
+			logtext += this.logSeparator(1, true);
+			logtext += '**Loadouts**\n';
+			for (var i in this.teams) {
+				var team = this.teams[i];
+				logtext += '--\n*' + team.name + '*\n';
+				for (var j in team.cFrames) {
+					var frame = team.cFrames[j];
+					logtext += frame.name + ':' + frame.getSystemText() + '\n';
+				}
+			}
+		}
 		logtext += this.logSeparator(0, true);
 		logtext += this.logEvent('Round 1 begins', true);
 

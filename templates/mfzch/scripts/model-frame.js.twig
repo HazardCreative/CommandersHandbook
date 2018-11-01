@@ -114,6 +114,45 @@ frameModel.prototype = {
 		sysDisplay += '</ul>';
 		return sysDisplay;
 	},
+	getSystemText: function() {
+		var sysDisplay = '';
+
+		for (var i = 0; i < this.rh; i++) {
+			sysDisplay += ' Rh';
+		}
+		for (var i = 0; i < this.rd; i++) {
+			sysDisplay += ' Rd';
+		}
+		for (var i = 0; i < this.ra; i++) {
+			sysDisplay += ' Ra';
+		}
+		for (var i = 0; i < this.rhd; i++) {
+			sysDisplay += ' Rhd';
+		}
+		for (var i = 0; i < this.rha; i++) {
+			sysDisplay += ' Rha';
+		}
+		for (var i = 0; i < this.rda; i++) {
+			sysDisplay += ' Rda';
+		}
+		for (var i = 0; i < this.y; i++) {
+			sysDisplay += ' Y';
+		}
+		for (var i = 0; i < this.b; i++) {
+			sysDisplay += ' B';
+		}
+		for (var i = 0; i < this.g; i++) {
+			sysDisplay += ' G';
+		}
+		for (var i = 0; i < this.e; i++) {
+			sysDisplay += ' E';
+		}
+		for (var i = 0; i < this.ssr; i++) {
+			sysDisplay += ' SSR';
+		}
+
+		return sysDisplay.trim();
+	},
 	getDiceDisplay: function(cssClass) {
 		if(typeof(cssClass) === 'undefined') cssClass = '';
 		var diceDisplay = '<ul class="dice-display ' + cssClass + '">';
@@ -530,7 +569,7 @@ frameModel.prototype = {
 		}
 
 /* *** efficiency (needs to change with active range?) */
-
+/*
 		// efficiency
 		frameStat.eff = [];
 		frameStat.eff.label = '<span data-sys="d">Ef</span>';
@@ -563,7 +602,7 @@ frameModel.prototype = {
 			+ frameStat.y.mean
 			+ frameStat.b.mean
 			+ frameStat.g.mean;
-
+*/
 		return frameStat;
 	},
 	createFrameGraph: function(useActiveRange) {

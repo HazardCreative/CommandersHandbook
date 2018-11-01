@@ -367,19 +367,21 @@ $(document).on('pagecreate', '#active-game', function(event){
 			mfzch.updateActiveTeams(mfzch.game);
 		}
 
-		mfzch.game.logEvent('Round ' + (mfzch.game.round) + ' ends; Doomsday is now '+ mfzch.game.doomsday);
+		mfzch.game.logEvent('Round ' + mfzch.game.round + ' ends (' + getDurationText(mfzch.game.roundTime) + '); Doomsday is now '+ mfzch.game.doomsday);
 		mfzch.game.logSeparator();
 
 		mfzch.sendGameUpdate([
 			{
 				action: 'log',
-				log: mfzch.game.logEvent('Round ' + (mfzch.game.round) + ' ends; Doomsday is now '+ mfzch.game.doomsday, true)
+				log: mfzch.game.logEvent('Round ' + mfzch.game.round + ' ends (' + getDurationText(mfzch.game.roundTime) + '); Doomsday is now '+ mfzch.game.doomsday, true)
 			},
 			{
 				action: 'log',
 				log: mfzch.game.logSeparator(0, true)
 			}
 		]);
+
+		mfzch.game.roundTime = Date.now();
 
 		if (mfzch.game.doomsday < 1) {
 			mfzch.game.endGame();

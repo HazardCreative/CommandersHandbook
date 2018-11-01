@@ -33,23 +33,6 @@ companyModel.prototype = {
 		}
 		return false;
 	},
-/*	getPlayerCounts: function(){
-		var validPlayerCounts = [false, false, false, false, false, false];
-
-		for (var i = 2; i < MAXTEAMS; i++) {
-			if(this.frames.length >= MINSKFRAMES[i]
-				|| this.frames.length >= MINBTFRAMES[i]) {
-				validPlayerCounts[i] = true;
-			}
-
-			if(this.frames.length > MAXSKFRAMES[i]
-				|| this.frames.length > MAXBTFRAMES[i]) {
-				validPlayerCounts[i] = false;
-			}
-		}
-
-		return validPlayerCounts;
-	}, */
 	calcCompanyStat: function() {
 		var frameStats = [];
 		for (var i in this.frames) {

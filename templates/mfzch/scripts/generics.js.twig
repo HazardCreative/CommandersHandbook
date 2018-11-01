@@ -28,9 +28,12 @@ function pad(num, size) {
 }
 
 function timeStamp(now) {
-	if(typeof(datetime)==='undefined') now = new Date();
-	var date = [ now.getFullYear(), now.getMonth() + 1, now.getDate() ];
-	var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+	var dt = new Date();
+	if(typeof(now)!=='undefined')
+		dt.setTime(now);
+
+	var date = [ dt.getFullYear(), dt.getMonth() + 1, dt.getDate() ];
+	var time = [ dt.getHours(), dt.getMinutes(), dt.getSeconds() ];
 	return date[0] + '-' + pad(date[1],2) + '-' + pad(date[2],2) + ' ' + pad(time[0],2) + ':' + pad(time[1],2) + ':' + pad(time[2],2);
 }
 
@@ -38,12 +41,9 @@ function getDuration(then, now) {
 	if(typeof(then)==='undefined')
 		return false;
 	if(typeof(datetime)==='undefined')
-		now = new Date();
+		now = Date.now();
 
-	var then_ms = then.getTime();
-	var now_ms = now.getTime();
-
-	var duration = now_ms - then_ms;
+	var duration = now - then;
 
 	var output = new Object();
 	output['raw'] = duration;
@@ -57,6 +57,21 @@ function getDuration(then, now) {
 	output['days'] = Math.floor(temp/24);
 
 	return output;
+}
+
+function getDurationText(then, now) {
+	if(typeof(then)==='undefined')
+		return false;
+	if(typeof(datetime)==='undefined')
+		now = Date.now();
+
+	var duration = getDuration(then, now);
+
+	if (duration.days) {
+		return duration.days + "d " + pad(duration.hours,2) + ":" + pad(duration.minutes,2) + ":" + pad(duration.seconds,2);
+	} else {
+		return pad(duration.hours,2) + ":" + pad(duration.minutes,2) + ":" + pad(duration.seconds,2);
+	}
 }
 
 function selectText(element) {
@@ -109,27 +124,31 @@ function buildNameArray(targetArray, nameProperty) {
 	return nameArray;
 }
 
+function contrastColor(color) {
+	hex = color.replace(/[^0-9A-F]/gi, '');
+	var bigint = parseInt(hex, 16);
+	var r = (bigint >> 16) & 255;
+	var g = (bigint >> 8) & 255;
+	var b = bigint & 255;
+
+	var brightness = ((r * 299) + (g * 587) + (b * 114)) / 255000;
+
+	// values range from 0 to 1
+	// anything greater than 0.5 should be bright enough for dark text
+	if (brightness >= 0.1) {
+		return "#000000"
+	} else {
+		return "#999"
+	}
+}
+
 function getIcon(iconType, color, cssClass) {
 	if(typeof(iconType)==='undefined') iconType = 'frame';
 	if(typeof(color)==='undefined') {
 		color = '#ffffff';
 		strokeColor = "#000000"
 	} else {
-		hex = color.replace(/[^0-9A-F]/gi, '');
-		var bigint = parseInt(hex, 16);
-		var r = (bigint >> 16) & 255;
-		var g = (bigint >> 8) & 255;
-		var b = bigint & 255;
-
-		var brightness = ((r * 299) + (g * 587) + (b * 114)) / 255000;
-
-		// values range from 0 to 1
-		// anything greater than 0.5 should be bright enough for dark text
-		if (brightness >= 0.1) {
-			strokeColor = "#000000"
-		} else {
-			strokeColor = "#999"
-		}
+		strokeColor = contrastColor(color);
 	}
 	if(typeof(cssClass) === 'undefined') cssClass = '';
 

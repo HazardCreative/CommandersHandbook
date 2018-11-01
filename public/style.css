@@ -546,7 +546,7 @@ th.stat-type .type-label {
 
 /* companies */
 
-#company-list {
+.company-list {
 	padding: 0;
 	list-style: none;
 }
@@ -569,7 +569,7 @@ th.stat-type .type-label {
 	margin-top: 0;
 	margin-bottom: 0;
 }
-#company-list .ui-bar-inherit {
+.company-list .ui-bar-inherit {
 	background-color: #f8f7f1;
 	color: #000;
 	text-shadow: 0 1px 0 #eee;

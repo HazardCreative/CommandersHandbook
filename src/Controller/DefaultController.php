@@ -315,12 +315,13 @@ $user = $users_repo->findOneByUsername($username);
 	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
 	public function manageCompaniesAction(Request $request, User $user) {
-		$user = $this->get('security.token_storage')->getToken()->getUser();
-
 		$companies_repo = $this->getDoctrine()
 			->getRepository('App:FrameCompany');
 
-		$companies = $companies_repo->findByOwner($user->getId());
+		$companies = $companies_repo->findBy([
+			'owner' => $user->getId(),
+			'is_userCompany' => false
+		]);
 
 		return $this->render('manage-companies.html.twig', array(
 			'companies' => $companies
@@ -331,7 +332,7 @@ $user = $users_repo->findOneByUsername($username);
 	 * @Route("/save-data", name="save-data")
 	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function saveDataAction(User $user) {
+	public function saveDataAction(User $user = null) {
 		$success_check = true;
 
 		$auth_checker = $this->get('security.authorization_checker');
@@ -461,13 +462,12 @@ $user = $users_repo->findOneByUsername($username);
 
 	/**
 	 * @Route("/load-data", name="load-data")
+	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function loadDataAction() {
+	public function loadDataAction(User $user = null) {
 		$auth_checker = $this->get('security.authorization_checker');
 
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$user = $this->get('security.token_storage')->getToken()->getUser();
-
 			if (new \DateTime("now") < $user->getEliteExpires()) {
 				$output = array();
 
@@ -476,7 +476,10 @@ $user = $users_repo->findOneByUsername($username);
 						$companies_repo = $this->getDoctrine()
 							->getRepository('App:FrameCompany');
 
-						$companies = $companies_repo->findByOwner($user->getId());
+						$companies = $companies_repo->findBy([
+							'owner' => $user->getId(),
+							'is_userCompany' => false
+						]);
 
 						$response = array(
 							'type' => 'companies',
@@ -550,15 +553,14 @@ $user = $users_repo->findOneByUsername($username);
 
 	/**
 	 * @Route("/delete-data", name="delete-data")
+	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function deleteDataAction() {
+	public function deleteDataAction(User $user = null) {
 		$success_check = true;
 
 		$auth_checker = $this->get('security.authorization_checker');
 
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$user = $this->get('security.token_storage')->getToken()->getUser();
-
 			if (new \DateTime("now") < $user->getEliteExpires()) {
 				$result = [];
 				if ($_REQUEST['companies']) {
@@ -607,8 +609,9 @@ $user = $users_repo->findOneByUsername($username);
 
 	/**
 	 * @Route("/patch-game", name="patch-game")
+	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function patchGameAction() {
+	public function patchGameAction(User $user = null) {
 		$success_check = true;
 
 		$result = [];
@@ -622,17 +625,18 @@ $user = $users_repo->findOneByUsername($username);
 			$game = $game_repo->findOneById($game_dbid);
 
 			if ($game) {
-				// patch allowed by owner or anyone with modify password
+				// patch security
 				$grant = false;
 
+				// patching allowed by game owner
 				$auth_checker = $this->get('security.authorization_checker');
 				if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-					$user = $this->get('security.token_storage')->getToken()->getUser();
 					if ($game->getOwner() == $user->getId()) {
 						$grant = true;
 					}
 				}
 
+				// patching allowed by anyone with modify password
 				if (!$grant
 					&& isset($_REQUEST['password'])
 					&& $game->getModifyPassword() == $_REQUEST['password']) {
@@ -690,8 +694,9 @@ $user = $users_repo->findOneByUsername($username);
 
 	/**
 	 * @Route("/remote-load-game/", name="remote-load-game")
+	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function loadRemoteGameAction() {
+	public function loadRemoteGameAction(User $user = null) {
 		if (isset($_REQUEST['type'])
 			&& $_REQUEST['type'] == 'game') {
 
@@ -707,7 +712,6 @@ $user = $users_repo->findOneByUsername($username);
 				// always give owner rights
 				$auth_checker = $this->get('security.authorization_checker');
 				if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-					$user = $this->get('security.token_storage')->getToken()->getUser();
 					if ($game->getOwner() == $user->getId()) {
 						$grant = 'modify';
 					}
