@@ -784,7 +784,7 @@ var mfzch = {
 						}
 					}
 
-					teamrow += getIcon('frame', team.color, 'game-icon') + frame.name + '</span>';
+					teamrow += getIcon(frame.icon, team.color, 'game-icon') + frame.name + '</span>';
 
 					teamrow += frame.getSystemDisplay(false, true, 'in-list');
 
@@ -1025,7 +1025,7 @@ var mfzch = {
 
 				companyList += '<li data-frameid="' + frame.uuid + '"><a href="#frame-adjust" data-rel="popup" data-position-to="window" data-transition="pop" class="frame-manage">';
 
-				companyList += '<span class="lv-wsys-name">' + getIcon('frame', company.color, 'game-icon') + frame.name + '</span>';
+				companyList += '<span class="lv-wsys-name">' + getIcon(frame.icon, company.color, 'game-icon') + frame.name + '</span>';
 
 				companyList += frame.getSystemDisplay(false, false, 'in-list');
 

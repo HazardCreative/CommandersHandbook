@@ -46,6 +46,16 @@ class User extends BaseUser implements DomainEventHandlerInterface
     public $profile_display_email = false;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    public $profile_color;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    public $profile_icon;
+
+    /**
      * @ORM\Column(type="text", nullable=true)
      */
     public $profile_game_preferences;
@@ -214,6 +224,54 @@ class User extends BaseUser implements DomainEventHandlerInterface
     public function getProfileIsPublic()
     {
         return $this->profile_is_public;
+    }
+
+    /**
+     * Set profileColor
+     *
+     * @param string $profile_color
+     *
+     * @return User
+     */
+    public function setProfileColor($profileColor)
+    {
+        $this->profile_color = $profileColor;
+
+        return $this;
+    }
+
+    /**
+     * Get profileColor
+     *
+     * @return string
+     */
+    public function getProfileColor()
+    {
+        return $this->profile_color;
+    }
+
+    /**
+     * Set profileIcon
+     *
+     * @param string $profile_icon
+     *
+     * @return User
+     */
+    public function setProfileIcon($profileIcon)
+    {
+        $this->profile_icon = $profileIcon;
+
+        return $this;
+    }
+
+    /**
+     * Get profileIcon
+     *
+     * @return string
+     */
+    public function getProfileIcon()
+    {
+        return $this->profile_icon;
     }
 
     /**

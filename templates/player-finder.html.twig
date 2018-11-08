@@ -80,7 +80,7 @@ if (typeof jQuery != 'undefined') {
 							[result[point].geo_latitude, result[point].geo_longitude ],
 							{icon:
 								L.divIcon({
-									html: getIcon('frame', result[point].color),
+									html: getIcon(result[point].icon, result[point].color),
 									iconSize: [36, 36],
 									iconAnchor: [21, 18],
 									popupAnchor: [0, -12]
