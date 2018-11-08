@@ -109,7 +109,7 @@ class DefaultController extends Controller {
 		$companies = $companies_repo->findBy([
 			'owner' => $user->getId(),
 			'is_shared' => true,
-			'is_userCompany' => false
+			'is_user_company' => false
 		], ['title' => 'ASC']);
 
 		return $this->render('view-public-profile.html.twig',
@@ -320,7 +320,7 @@ $user = $users_repo->findOneByUsername($username);
 
 		$companies = $companies_repo->findBy([
 			'owner' => $user->getId(),
-			'is_userCompany' => false
+			'is_user_company' => false
 		]);
 
 		return $this->render('manage-companies.html.twig', array(
@@ -478,7 +478,7 @@ $user = $users_repo->findOneByUsername($username);
 
 						$companies = $companies_repo->findBy([
 							'owner' => $user->getId(),
-							'is_userCompany' => false
+							'is_user_company' => false
 						]);
 
 						$response = array(

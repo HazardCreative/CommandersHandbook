@@ -46,7 +46,7 @@ class FrameCompany {
     /**
      * @ORM\Column(type="boolean")
      */
-    protected $is_userCompany = false;
+    protected $is_user_company = false;
 
     /**
      * @ORM\Column(type="boolean")
@@ -214,7 +214,7 @@ class FrameCompany {
      */
     public function setIsUserCompany($isUserCompany)
     {
-        $this->is_userCompany = $isUserCompany;
+        $this->is_user_company = $isUserCompany;
 
         return $this;
     }
@@ -226,7 +226,7 @@ class FrameCompany {
      */
     public function getIsUserCompany()
     {
-        return $this->is_userCompany;
+        return $this->is_user_company;
     }
 
     /**
