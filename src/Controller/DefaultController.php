@@ -242,12 +242,6 @@ $user = $users_repo->findOneByUsername($username);
 			$data = json_decode($_REQUEST['data']);
 
 			// Get closest
-
-			$locations_repo = $this->getDoctrine()
-				->getRepository('App:Location');
-
-			$locations = $locations_repo->findByOwner($user->getId());
-
 			$query = $this->getDoctrine()->getEntityManager()
 				->createQuery(
 					'SELECT l
@@ -257,9 +251,9 @@ $user = $users_repo->findOneByUsername($username);
 					AND l.geo_longitude > :longmin
 					AND l.geo_longitude < :longmax'
 				)->setParameter('latmin', $data->_southWest->lat)
-				->setParameter('latmax', $data->_northEast->lat +1)
-				->setParameter('longmin', $data->_southWest->lng -1)
-				->setParameter('longmax', $data->_northEast->lng +1);
+				->setParameter('latmax', $data->_northEast->lat)
+				->setParameter('longmin', $data->_southWest->lng)
+				->setParameter('longmax', $data->_northEast->lng);
 
 			$queryResult = $query->getResult();
 
@@ -278,10 +272,28 @@ $user = $users_repo->findOneByUsername($username);
 					$loc['username'] = $userObj->getUsername();
 					$loc['link'] = $this->generateUrl('view-profile-public', array('username' => $userObj->getUsername()));
 
-					if ($userObj->getId() == $user->getId()) {
-						$loc['color'] = '#eeeeee';
+					$loc['test1'] = $userObj->getEmail();
+					$loc['test2'] = $userObj->getProfileDisplayEmail();
+					$loc['test3'] = $userObj->getEmail();
+					if ($userObj->getProfileDisplayEmail()) {
+						$loc['test4'] = $userObj->getEmail();
+						// $loc['e-mail'] = $userObj->getEmail() ?? 'none';
+					}
+
+					if (new \DateTime("now") < $userObj->getEliteExpires()) {
+						$loc['icon'] = $userObj->getProfileIcon() ?? 'frame';
+
+						if ($userObj->getId() == $user->getId()) {
+							$loc['color'] = $userObj->getProfileColor() ?? '#eeeeee';
+						} else {
+							$loc['color'] = $userObj->getProfileColor() ?? '#be1e2d';
+						}
 					} else {
-						$loc['color'] = '#be1e2d';
+						if ($userObj->getId() == $user->getId()) {
+							$loc['color'] = '#eeeeee';
+						} else {
+							$loc['color'] = '#be1e2d';
+						}
 					}
 
 					$locOutput[] = $loc;
