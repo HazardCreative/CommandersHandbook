@@ -12,6 +12,7 @@
 	<li><a href="/#company-analysis">Company Structure</a></li>
 
 	{% if is_granted('IS_AUTHENTICATED_FULLY') %}
-		<li><a href="/command-network" data-ajax="false">Commander's Network</a></li>
+		<li><a href="/command-network" data-ajax="false">Commander Profile</a></li>
+		<li><a href="{{ path('player-finder') }}" data-ajax="false">Locate Commanders</a></li>
 	{% endif %}
 </ul>

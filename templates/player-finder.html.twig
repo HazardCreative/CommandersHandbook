@@ -13,14 +13,17 @@
 <script>
 if (typeof jQuery != 'undefined') {
 	// enable block-level ajax disable
-	$.mobile.ignoreContentEnabled = true;
+	$.mobile.ajaxEnabled = false;
 }
 </script>
 <div data-role="page" id="player-finder">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Locate Commanders</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+
 	<div role="main" class="ui-content" data-ajax="false">
-		<h1>Player Finder</h1>
-		<p>Players in your area</p>
-		<div id="mapid" style="height: 50vh;"></div>
+		<div id="mapid"></div>
 		<script>
 		$(document).on("pagecontainershow", function(event, ui) {
 			{% if msgphp_user.user and locations %}
@@ -34,7 +37,7 @@ if (typeof jQuery != 'undefined') {
 			var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
 				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 				subdomains: 'abcd',
-				minZoom: 8,
+				minZoom: 7,
 				maxZoom: 15,
 				ext: 'png'
 			});

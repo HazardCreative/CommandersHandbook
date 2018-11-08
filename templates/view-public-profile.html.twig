@@ -13,7 +13,7 @@
 <script>
 if (typeof jQuery != 'undefined') {
 	// enable block-level ajax disable
-	$.mobile.ignoreContentEnabled = true;
+	$.mobile.ajaxEnabled = false;
 
 	// replace HTML icon placeholders
 	$(document).ready(function(){
@@ -25,171 +25,204 @@ if (typeof jQuery != 'undefined') {
 }
 </script>
 <div data-role="page" id="view-profile">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		{% if user and user.profile_is_public %}
+			<h1>View Profile</h1>
+		{% else %}
+			<h1>No Profile</h1>
+		{% endif %}
+
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+
 	<div role="main" class="ui-content" data-ajax="false">
 		{% if user and user.profile_is_public %}
-			<h1>Profile for {{ user.username|e }}</h1>
-			<ul>
+			<h1>{{ user.username|e }}</h1>
+
+			<p>
 				{% if user.profile_realname %}
-					<li>Real name: {{ user.profile_realname|e }}</li>
-				{% endif %}
-				{% if user.profile_display_email %}
-					<li>{{ user.email|e }}</li>
+					{{ user.profile_realname|e }} |
 				{% endif %}
 				{% if date(user.elite_expires) > date() %}
-					<li>Elite User</li>
+					Elite User
 				{% else %}
-					<li>Regular User</li>
+					Regular User
 				{% endif %}
+			</p>
 
-				{% if user.profile_game_preferences %}
-					<li>Game Preferences: {{ user.profile_game_preferences }}</li>
-				{% endif %}
+			<a href="mailto:{{ user.email|e }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-mail">Send E-mail</a>
 
-				{% if user.profile_materials %}
-					<li>Materials: {{ user.profile_materials }}</li>
-				{% endif %}
+			{% if user.profile_game_preferences %}
+				<div class="ui-corner-all profile-panel">
+					<div class="ui-bar ui-bar-a">
+						<h2>Game Preferences</h2>
+					</div>
+					<div class="ui-body ui-body-a">
+						{{ user.profile_game_preferences }}
+					</div>
+				</div>
+			{% endif %}
 
-				{% if user.profile_experience %}
-					<li>Experience: {{ user.profile_experience }}</li>
-				{% endif %}
-			</ul>
+			{% if user.profile_materials %}
+				<div class="ui-corner-all profile-panel">
+					<div class="ui-bar ui-bar-a">
+						<h2>Materials</h2>
+					</div>
+					<div class="ui-body ui-body-a">
+						{{ user.profile_materials }}
+					</div>
+				</div>
+			{% endif %}
+
+			{% if user.profile_experience %}
+				<div class="ui-corner-all profile-panel">
+					<div class="ui-bar ui-bar-a">
+						<h2>Experience</h2>
+					</div>
+					<div class="ui-body ui-body-a">
+						{{ user.profile_experience }}
+					</div>
+				</div>
+			{% endif %}
 
 			{% if locations %}
-				<h2>Locations</h2>
-				<div id="mapid" style="max-width: 40em; height: 30em; margin: 0 auto;"></div>
-				<script>
-				$(document).on("pagecontainershow", function(event, ui) {
+				<div class="ui-corner-all profile-panel">
+					<div class="ui-bar ui-bar-a">
+						<h2>Locations</h2>
+					</div>
+					<div class="ui-body ui-body-a">
+						<div id="mapid"></div>
+						<script>
+						$(document).on("pagecontainershow", function(event, ui) {
 
 
-					var mymap = L.map('mapid').setView([{{locations[0].geo_latitude}}, {{locations[0].geo_longitude}}], 4);
+							var mymap = L.map('mapid').setView([{{locations[0].geo_latitude}}, {{locations[0].geo_longitude}}], 4);
 
-					mymap.attributionControl.setPrefix('');
+							mymap.attributionControl.setPrefix('');
 
-					var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
-						attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-						subdomains: 'abcd',
-						minZoom: 0,
-						maxZoom: 18,
-						ext: 'png'
-					});
+							var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+								attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+								subdomains: 'abcd',
+								minZoom: 0,
+								maxZoom: 18,
+								ext: 'png'
+							});
 
-					Stamen_Terrain.addTo(mymap);
-					L.control.scale().addTo(mymap);
+							Stamen_Terrain.addTo(mymap);
+							L.control.scale().addTo(mymap);
 
-					var userIcon = L.divIcon({
-						html: getIcon('frame', '#be1e2d'),
-						iconSize: [36, 36]
-					});
+							var userIcon = L.divIcon({
+								html: getIcon('{{ user.profile_icon ?? "frame" }}', '{{ user.profile_color ?? "#be1e2d" }}'),
+								iconSize: [36, 36]
+							});
 
-					backgroundgroup = new L.featureGroup();
+							backgroundgroup = new L.featureGroup();
 
-					{% for point in locations %}
-						{% if point.radius %}
-						L.circle( [ {{point.geo_latitude}} , {{point.geo_longitude}} ],
-							{
-								radius: {{point.radius}} * 1609.34,
-								color: '#be1e2d',
-								opacity: 0.9,
-								weight: 1
-							})
-						.addTo(backgroundgroup);
-						{% endif %}
-					{% endfor %}
+							{% for point in locations %}
+								{% if point.radius %}
+								L.circle( [ {{point.geo_latitude}} , {{point.geo_longitude}} ],
+									{
+										radius: {{point.radius}} * 1609.34,
+										color: '{{ user.profile_color ?? "#be1e2d" }}',
+										opacity: 0.9,
+										weight: 1
+									})
+								.addTo(backgroundgroup);
+								{% endif %}
+							{% endfor %}
 
-					backgroundgroup.addTo(mymap);
+							backgroundgroup.addTo(mymap);
 
-					group = new L.featureGroup();
+							group = new L.featureGroup();
 
-					{% for point in locations %}
-						L.marker( [ {{point.geo_latitude}} , {{point.geo_longitude}} ], {icon: userIcon})
-						.bindPopup( '{{point.name}}' )
-						.addTo(group);
-					{% endfor %}
+							{% for point in locations %}
+								L.marker( [ {{point.geo_latitude}} , {{point.geo_longitude}} ], {icon: userIcon})
+								.bindPopup( '{{point.name}}' )
+								.addTo(group);
+							{% endfor %}
 
-					group.addTo(mymap);
+							group.addTo(mymap);
 
-					mymap.fitBounds(backgroundgroup.getBounds());
-				});
-				</script>
-				<style>
-					#mapid .frame-icon {
-						width: 3em;
-						height: 3em;
-					}
-					#mapid .leaflet-div-icon {
-						background: transparent;
-						border: none;
-					}
-				</style>
+							mymap.fitBounds(backgroundgroup.getBounds());
+						});
+						</script>
+					</div>
+				</div>
 			{% endif %}
 
 			{% if companies %}
-				<h2>Shared Companies</h2>
-				<ul class="company-list">
-				{% for company in companies %}
-					<li>
-						<ul data-role="listview" data-inset="true" class="company-frames">
-							<li data-theme="b">
-								<span class="load-icon" data-icontype="company" data-iconcolor="{{ company.hexcolor }}"></span> {{ company.title }}
+				<div class="ui-corner-all profile-panel">
+					<div class="ui-bar ui-bar-a">
+						<h2>Shared Companies</h2>
+					</div>
+					<div class="ui-body ui-body-a">
+						<ul class="company-list">
+						{% for company in companies %}
+							<li>
+								<ul data-role="listview" data-inset="true" class="company-frames">
+									<li data-theme="b">
+										<span class="load-icon" data-icontype="company" data-iconcolor="{{ company.hexcolor }}"></span> {{ company.title }}
+									</li>
+									{% if company.description %}
+									<li data-theme="c">
+										{{ company.description }}
+									</li>
+									{% endif %}
+									{% for frame in company.frames %}
+										<li>
+											<span class="lv-wsys-name">{{ frame.name }}</span>
+											<ul class="sys-display in-list">
+												{% for i in 1..frame.rh if frame.rh %}
+													<li data-sys="rh">Rh</li>
+												{% endfor %}
+
+												{% for i in 1..frame.rd if frame.rd %}
+													<li data-sys="rd">Rd</li>
+												{% endfor %}
+
+												{% for i in 1..frame.ra if frame.ra %}
+													<li data-sys="ra">Ra</li>
+												{% endfor %}
+
+												{% for i in 1..frame.y if frame.y %}
+													<li data-sys="y">Y</li>
+												{% endfor %}
+
+												{% for i in 1..frame.b if frame.b %}
+													<li data-sys="b">B</li>
+												{% endfor %}
+
+												{% for i in 1..frame.g if frame.g %}
+													<li data-sys="g">G</li>
+												{% endfor %}
+
+												{% for i in 1..frame.ssr if frame.ssr %}
+													<li data-sys="ssr">SSR</li>
+												{% endfor %}
+
+												{% for i in 1..frame.rhd if frame.rhd %}
+													<li data-sys="rhd">Rhd</li>
+												{% endfor %}
+
+												{% for i in 1..frame.rha if frame.rha %}
+													<li data-sys="rha">Rha</li>
+												{% endfor %}
+
+												{% for i in 1..frame.rda if frame.rda %}
+													<li data-sys="rda">Rda</li>
+												{% endfor %}
+											</ul>
+										</li>
+									{% endfor %}
+								</ul>
 							</li>
-							{% if company.description %}
-							<li data-theme="c">
-								{{ company.description }}
-							</li>
-							{% endif %}
-							{% for frame in company.frames %}
-								<li>
-									<span class="lv-wsys-name">{{ frame.name }}</span>
-									<ul class="sys-display in-list">
-										{% for i in 1..frame.rh if frame.rh %}
-											<li data-sys="rh">Rh</li>
-										{% endfor %}
-
-										{% for i in 1..frame.rd if frame.rd %}
-											<li data-sys="rd">Rd</li>
-										{% endfor %}
-
-										{% for i in 1..frame.ra if frame.ra %}
-											<li data-sys="ra">Ra</li>
-										{% endfor %}
-
-										{% for i in 1..frame.y if frame.y %}
-											<li data-sys="y">Y</li>
-										{% endfor %}
-
-										{% for i in 1..frame.b if frame.b %}
-											<li data-sys="b">B</li>
-										{% endfor %}
-
-										{% for i in 1..frame.g if frame.g %}
-											<li data-sys="g">G</li>
-										{% endfor %}
-
-										{% for i in 1..frame.ssr if frame.ssr %}
-											<li data-sys="ssr">SSR</li>
-										{% endfor %}
-
-										{% for i in 1..frame.rhd if frame.rhd %}
-											<li data-sys="rhd">Rhd</li>
-										{% endfor %}
-
-										{% for i in 1..frame.rha if frame.rha %}
-											<li data-sys="rha">Rha</li>
-										{% endfor %}
-
-										{% for i in 1..frame.rda if frame.rda %}
-											<li data-sys="rda">Rda</li>
-										{% endfor %}
-									</ul>
-								</li>
-							{% endfor %}
+						{% endfor %}
 						</ul>
-					</li>
-				{% endfor %}
-				</ul>
+					</div>
+				</div>
 			{% endif %}
 		{% else %}
-			<h1>No public profile for this user</h1>
+			<p>There is no public profile available to view.</p>
 		{% endif %}
 	</div>
 </div>

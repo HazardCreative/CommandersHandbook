@@ -18,130 +18,172 @@ if (typeof jQuery != 'undefined') {
 </script>
 <div data-role="page" id="command-home">
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
-		<h1>Commander's Network</h1>
+		<h1>Commander Profile</h1>
 		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
 	</div>
 
 	<div role="main" class="ui-content" data-ajax="false">
 
 		{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-			<h1>Commander's Network</h1>
-			<p>Logged in as {{ msgphp_user.user.username|e }} ({{ msgphp_user.user.email|e }}) | <a href="{{ path('logout') }}" rel="external">Logout</a></p>
+			<p>Welcome, {{ msgphp_user.user.username|e }}.</p>
 
-			<ul>
-				<li>Real name: {{ msgphp_user.user.profile_realname|e }}</li>
-				<li>{{ msgphp_user.user.email|e }}</li>
-				{% if date(msgphp_user.user.elite_expires) > date() %}
-					<li>Elite User (through {{ msgphp_user.user.elite_expires|date("Y-m-d") }})</li>
-				{% else %}
-					<li>Regular User
-						{% if date(msgphp_user.user.elite_expires) > date('-2years') %}
-							(expired {{ msgphp_user.user.elite_expires|date("Y-m-d") }})
+			<div class="ui-corner-all profile-panel">
+				<div class="ui-bar ui-bar-a">
+					<h2>Profile</h2>
+				</div>
+				<div class="ui-body ui-body-a">
+					<ul>
+						<li>{{ msgphp_user.user.profile_realname|e }}</li>
+						<li>{{ msgphp_user.user.email|e }}</li>
+						<li>Profile is public: {% if msgphp_user.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
+						<li>E-mail is public: {% if msgphp_user.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
+					</ul>
+
+					{% if msgphp_user.user.profile_is_public %}
+						<a href="{{ path('view-profile-public', {username: msgphp_user.user.username}) }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-action">View My Public Profile</a>
+					{% endif %}
+
+					<button class="edit-profile ui-btn ui-corner-all ui-btn-icon-left ui-icon-edit">Edit Profile</button>
+				</div>
+			</div>
+
+			<div class="ui-corner-all profile-panel">
+				<div class="ui-bar ui-bar-a">
+					<h2>Elite</h2>
+				</div>
+				<div class="ui-body ui-body-a">
+					<ul>
+						{% if date(msgphp_user.user.elite_expires) > date() %}
+							<li>Elite User (through {{ msgphp_user.user.elite_expires|date("Y-m-d") }})</li>
+						{% else %}
+							<li>Regular User
+								{% if date(msgphp_user.user.elite_expires) > date('-2years') %}
+									(Elite expired {{ msgphp_user.user.elite_expires|date("Y-m-d") }})
+								{% endif %}
+							</li>
 						{% endif %}
-					</li>
-				{% endif %}
-				{# <li>Last login: {{ msgphp_user.user.lastLogin()|date("Y-m-d H:i:s") }}</li> #}
-				<li>Display Profile: {% if msgphp_user.user.profile_is_public %}Yes{% else %}No{% endif %}</li>
-				<li>Display E-mail: {% if msgphp_user.user.profile_display_email %}Yes{% else %}No{% endif %}</li>
-				<li>Patreon ID: {% if msgphp_user.user.patreon_id %}{{ msgphp_user.user.patreon_id }} &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Update Patreon Account</a>{% else %}None &#8212; <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}">Connect Patreon Account</a>{% endif %}</li>
 
-				<li>Game Preferences: {{ msgphp_user.user.profile_game_preferences|e }}</li>
-				<li>Materials: {{ msgphp_user.user.profile_materials|e }}</li>
-				<li>Experience: {{ msgphp_user.user.profile_experience|e }}</li>
-			</ul>
+						<li>Patreon ID: {% if msgphp_user.user.patreon_id %}
+								{{ msgphp_user.user.patreon_id }}
+							{% else %}
+								None
+							{% endif %}</li>
+					</ul>
 
-			<button class="edit-profile ui-btn ui-btn-inline ui-corner-all ui-btn-icon-left ui-icon-edit">Edit Profile</button>
+					{% if msgphp_user.user.patreon_id %}
+						<a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-recycle">Update Patreon Account</a>
+						<button class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-delete">Remove Patreon Account</button>
+					{% else %}
+						<a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-cloud">Connect Patreon Account</a>
+					{% endif %}
+				</div>
+			</div>
 
+			<div class="ui-corner-all profile-panel">
+				<div class="ui-bar ui-bar-a">
+					<h2>Locations</h2>
+				</div>
+				<div class="ui-body ui-body-a">
+					{% if msgphp_user.user.profile_is_public %}
+						{% if locations %}
+						<ul class="profile-locations">
+							{% for location in locations %}
+								<li>
+									<div class="location-map">
+										<div id="map_{{location.id}}" class="ui-corner-all"></div>
+									</div>
+									<div class="location-info">
+										<div class="loc-info-main">
+											<h3>{{location.name|e}}</h3>
+											<p>{{location.description|e}}</p>
 
-			{% if locations %}
-			<ul>
-				{% for location in locations %}
-					<li style="overflow: hidden">
-						<div id="map_{{location.id}}" style="height: 12em; width:12em; float: left;"></div>
-						<h3>{{location.name|e}}</h3>
-						<p>{{location.description|e}}</p>
-						<p><a href="edit-location/{{location.id}}" class="ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-edit ui-mini">Edit</a> <a href="remove-location/{{location.id}}" class="ui-btn ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-delete ui-mini">Remove</a></p>
+											<script>
+											$(document).on("pagecontainershow", function(event, ui) {
+												var mymap = L.map('map_{{location.id}}', {
+														zoomControl: false,
+														attributionControl: false,
+														boxZoom: false,
+														doubleClickZoom: false,
+														scrollWheelZoom: false,
+														touchZoom: false,
+														keyboard: false,
+														dragging: false
+													}).setView([
+														{{ location.geo_latitude }},
+														{{ location.geo_longitude }}
+													], 11);
 
-						<script>
-						$(document).on("pagecontainershow", function(event, ui) {
-							var mymap = L.map('map_{{location.id}}', {
-									zoomControl: false,
-									attributionControl: false,
-									boxZoom: false,
-									doubleClickZoom: false,
-									scrollWheelZoom: false,
-									touchZoom: false,
-									keyboard: false,
-									dragging: false
-								}).setView([
-									{{ location.geo_latitude }},
-									{{ location.geo_longitude }}
-								], 11);
+												var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+													attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+													subdomains: 'abcd',
+													minZoom: 0,
+													maxZoom: 15,
+													ext: 'png'
+												});
 
-							var Stamen_Terrain = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
-								attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-								subdomains: 'abcd',
-								minZoom: 0,
-								maxZoom: 15,
-								ext: 'png'
-							});
+												Stamen_Terrain.addTo(mymap);
 
-							Stamen_Terrain.addTo(mymap);
+												var group = new L.featureGroup();
 
-							var group = new L.featureGroup();
+												if (!isNaN({{ location.radius }})) {
+													L.circle( [ {{ location.geo_latitude }}, {{ location.geo_longitude }} ],
+														{
+															radius: {{ location.radius }} * 1609.34,
+															color: '{{ msgphp_user.user.profile_color ?? "#880000" }}',
+															opacity: 0.9,
+															fillOpacity: 0.1,
+															weight: 1
+														}
+													).addTo(group);
+												}
 
-							if (!isNaN({{ location.radius }})) {
-								L.circle( [ {{ location.geo_latitude }}, {{ location.geo_longitude }} ],
-									{
-										radius: {{ location.radius }} * 1609.34,
-										color: '#880000',
-										opacity: 0.9,
-										fillOpacity: 0.1,
-										weight: 1
-									}
-								).addTo(group);
-							}
+												L.marker(
+													[
+														{{ location.geo_latitude }},
+														{{ location.geo_longitude }}
+													],
+													{icon:
+														L.divIcon({
+															html: getIcon('{{ msgphp_user.user.profile_icon ?? "frame" }}', '{{ msgphp_user.user.profile_color ?? "#880000" }}'),
+															iconSize: [36, 36],
+															iconAnchor: [21, 18],
+															popupAnchor: [0, -12]
+														})
+													},
+												).addTo(group);
 
-							L.marker(
-								[
-									{{ location.geo_latitude }},
-									{{ location.geo_longitude }}
-								],
-								{icon:
-									L.divIcon({
-										html: getIcon('frame', '#880000'),
-										iconSize: [36, 36],
-										iconAnchor: [21, 18],
-										popupAnchor: [0, -12]
-									})
-								},
-							).addTo(group);
+												group.addTo(mymap);
 
-							group.addTo(mymap);
+												mymap.fitBounds(group.getBounds());
+											});
+											</script>
+										</div>
+										<div class="location-actions">
+											<a href="edit-location/{{location.id}}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-edit ui-mini">Edit</a>
+											<a href="remove-location/{{location.id}}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-delete ui-mini">Remove</a>
+										</div>
+									</div>
+								</li>
+							{% endfor %}
+						</ul>
+						{% else %}
+							<p>No locations defined.</p>
+						{% endif %}
 
-							mymap.fitBounds(group.getBounds());
-						});
-						</script>
-					</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-
-			{% if under_max_locations %}
-				<a href="edit-location/new" class="add-location ui-btn ui-btn-inline ui-corner-all ui-btn-icon-left ui-icon-plus">Add Location</a>
-			{% endif %}
-
-			<ul data-role="listview" data-inset="true" class="nav-listview">
-				<li data-role="list-divider">Commanders</li>
-				<li><a href="{{ path('view-profile-public', {username: msgphp_user.user.username}) }}">View My Public Profile</a></li>
-				<li><a href="{{ path('player-finder') }}">Locate Commanders</a></li>
-			</ul>
+						{% if under_max_locations %}
+							<a href="edit-location/new" class="add-location ui-btn ui-corner-all ui-btn-icon-left ui-icon-plus">Add Location</a>
+						{% endif %}
+					{% else %}
+						<p>Locations are only visible on public profiles.</p>
+					{% endif %}
+				</div>
+			</div>
 
 		{% else %}
 			<p>The commander's network requires users to log in.</p>
 			<p>Registration is free and open to all.</p>
 
-			<p><a href="{{ path('fos_user_security_login') }}" rel="external">Log in</a> or <a href="{{ path('fos_user_registration_register') }}" rel="external">Register</a></p>
+			<p><a href="{{ path('login') }}" rel="external">Log in</a> or <a href="{{ path('register') }}" rel="external">Register</a></p>
 		{% endif %}
 	</div>
 

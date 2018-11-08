@@ -621,3 +621,112 @@ th.stat-type .type-label {
 	background: transparent;
 	border: none;
 }
+
+#mapid {
+	height: 30em;
+	margin: 0 auto;
+}
+
+#mapid .frame-icon {
+	width: 3em;
+	height: 3em;
+}
+
+#mapid .leaflet-div-icon {
+	background: transparent;
+	border: none;
+}
+
+#player-finder #mapid {
+	height: calc(100vh - 6.7em);
+}
+
+/* Profile */
+.profile-panel {
+	margin: 1em 0;
+}
+
+.profile-panel>.ui-bar {
+	-webkit-border-top-left-radius: inherit;
+	border-top-left-radius: inherit;
+	-webkit-border-top-right-radius: inherit;
+	border-top-right-radius: inherit;
+}
+
+.profile-panel>.ui-body {
+	border-top-width: 0;
+	-webkit-border-bottom-left-radius: inherit;
+	border-bottom-left-radius: inherit;
+	-webkit-border-bottom-right-radius: inherit;
+	border-bottom-right-radius: inherit;
+}
+
+.profile-locations {
+	margin: 1em 0;
+	padding: 0;
+	list-style: none;
+}
+
+.profile-locations li {
+	margin: 1em 0;
+	padding: 0;
+	display: flex;
+}
+
+.location-map {
+	height: 10em;
+	width: 10em;
+	flex: 0 0 10em;
+	max-width: 100%;
+}
+
+.location-map div {
+	height: 100%;
+	width: 100%;
+}
+
+.location-info {
+	flex: 1 1 auto;
+	margin-left: 1em;
+	display: flex;
+}
+
+.loc-info-main {
+	flex: 1 1 auto;
+}
+
+.loc-info-main h3 {
+	margin-top: 0;
+}
+
+.location-actions {
+	width: 7em;
+	margin-left: 1em;
+}
+
+@media (max-width: 36em) {
+	.location-info {
+		flex-wrap: wrap;
+	}
+	.loc-info-main {
+		width: 100%;
+	}
+	.location-actions {
+		width: 100%;
+		margin: 0;
+	}
+}
+
+@media (max-width: 25em) {
+	.profile-locations li {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	.location-map {
+		margin-bottom: 1em;
+	}
+	.location-info {
+		margin: 0;
+		width: 100%;
+	}
+}
