@@ -61,25 +61,44 @@ $(document).ready(function(){
 		}
 	}
 
-	/* ------ exit game ------ */
+	// exit game
 	$("#confirm-exit-game").enhanceWithin().popup();
+
+	// add to home screen
+	$(document).on('click', '.a2hs', function(){
+		$('.a2hs').hide();
+		deferredPrompt.prompt();
+		deferredPrompt.userChoice
+		.then((choiceResult) => {
+			if (choiceResult.outcome === 'accepted') {
+				try {
+					ga('send', 'event', 'App', 'Add to Home', '', 1, true);
+				} catch (err) {}
+			}
+			deferredPrompt = null;
+		});
+	});
+});
+
+// add to home screen
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+	e.preventDefault();
+	deferredPrompt = e;
+	$('.a2hs').show();
 });
 
 // notify of available update
-$(window.applicationCache).on('updateready', function(e) {
-	if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-		$('#update-ready').slideDown();
-	}
-
-	$(document).on('click', '#do-update', function(){
-		window.applicationCache.swapCache();
-		window.location.reload();
-	});
-
-	$(document).on('click', '#no-update', function(){
-		$('#update-ready').slideUp();
-	});
+/*
+$(document).on('click', '#do-update', function(){
+	window.applicationCache.swapCache();
+	window.location.reload();
 });
+
+$(document).on('click', '#no-update', function(){
+	$('#update-ready').slideUp();
+});
+*/
 
 // Load the side-panel var to the DOM / page
 $(document).one('pagebeforecreate', function () {
