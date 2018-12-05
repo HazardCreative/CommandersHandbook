@@ -25,11 +25,12 @@ if (typeof jQuery != 'undefined') {
 	<div role="main" class="ui-content" data-ajax="false">
 		<div id="mapid"></div>
 		<script>
+		var mymap;
 		$(document).on("pagecontainershow", function(event, ui) {
 			{% if msgphp_user.user and locations %}
-				var mymap = L.map('mapid').setView([{{ locations[0].geo_latitude|e }}, {{ locations[0].geo_longitude|e }}], 11);
+				mymap = L.map('mapid').setView([{{ locations[0].geo_latitude|e }}, {{ locations[0].geo_longitude|e }}], 11);
 			{% else %}
-				var mymap = L.map('mapid').setView([42.6, -72.6], 9);
+				mymap = L.map('mapid').setView([42.6, -72.6], 9);
 			{% endif %}
 
 			mymap.attributionControl.setPrefix('');
@@ -93,7 +94,24 @@ if (typeof jQuery != 'undefined') {
 
 						marker.linkedRadius = travelradius[point];
 
-						marker.bindPopup('<a href="' + result[point].link + '">' + result[point].username + '</a><br />' + result[point].name + '<br />' + result[point].description);
+						var popupContent = '<h2>' + result[point].username;
+						if (result[point].name) {
+							popupContent += ' (' + result[point].name + ')';
+						}
+						popupContent += '</h2>';
+
+						popupContent += '<p>';
+						popupContent += '<a class="button" href="' + result[point].link + '">View Profile</a><br />';
+						if (result[point].email) {
+							popupContent += '<a class="button" href="mailto:' + result[point].email + '">Send E-mail</a>'
+						}
+						popupContent += '</p>';
+
+						if (result[point].description) {
+							popupContent += '<p>' + result[point].description + '</p>';
+						}
+
+						marker.bindPopup(popupContent);
 
 						marker.on('click', function(){
 							if (this.linkedRadius.options.fillOpacity) {
@@ -135,4 +153,19 @@ if (typeof jQuery != 'undefined') {
 		</script>
 	</div>
 </div>
+{% endblock %}
+
+{% block footer_scripts %}
+
+	if (navigator.geolocation) {
+		$('#player-finder>div[data-role="header"]').append('<a href="#" id="locate-me" class="ui-btn-right ui-btn ui-btn-a ui-icon-location ui-btn-icon-left ui-btn-inline ui-corner-all ui-mini" data-role="button" role="button">Center Here</a>');
+
+		$(document).on("click", "#locate-me", function(){
+			mymap.locate({
+				setView: true,
+				maximumAge: 300000, // location result can be 5 minutes old
+			});
+		});
+	}
+
 {% endblock %}
