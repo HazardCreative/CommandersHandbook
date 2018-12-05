@@ -1,0 +1,21 @@
+{
+  "short_name": "Handbook",
+  "name": "MFZ:RA Commander's Handbook",
+  "icons": [
+    {
+      "src": "img/bigchub-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/bigchub-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/?utm_source=app",
+  "background_color": "#ebe5d6",
+  "display": "standalone",
+  "theme_color": "#be1e2d"
+}
+
