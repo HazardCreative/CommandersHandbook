@@ -262,6 +262,8 @@ $user = $users_repo->findOneByUsername($username);
 				$userObj = $this->getDoctrine()->getRepository('App:User\User')->find($location->getOwner());
 
 				if ($userObj->getProfileIsPublic() ) {
+					$loc = [];
+
 					$loc['geo_latitude'] = $location->getGeoLatitude();
 					$loc['geo_longitude'] = $location->getGeoLongitude();
 					$loc['radius'] = $location->getRadius();
@@ -272,12 +274,8 @@ $user = $users_repo->findOneByUsername($username);
 					$loc['username'] = $userObj->getUsername();
 					$loc['link'] = $this->generateUrl('view-profile-public', array('username' => $userObj->getUsername()));
 
-					$loc['test1'] = $userObj->getEmail();
-					$loc['test2'] = $userObj->getProfileDisplayEmail();
-					$loc['test3'] = $userObj->getEmail();
 					if ($userObj->getProfileDisplayEmail()) {
-						$loc['test4'] = $userObj->getEmail();
-						// $loc['e-mail'] = $userObj->getEmail() ?? 'none';
+						$loc['email'] = $userObj->getEmail() ?? 'none';
 					}
 
 					if (new \DateTime("now") < $userObj->getEliteExpires()) {

@@ -396,6 +396,11 @@ ul.reason li {
 	border-radius: 0.5em;
 }
 
+[data-die=dmg] {
+	background: #333;
+	color: #fff;
+}
+
 .sys-display {
 	padding: 0;
 	min-height: 2.5em;
@@ -420,6 +425,13 @@ ul.reason li {
 	padding: 0;
 	min-height: 2.5em;
 	white-space: normal;
+}
+
+.text-inline {
+	font-size: 0.75em;
+	margin: -0.25em 0.125em;
+	display: inline-block;
+	vertical-align: baseline;
 }
 
 /* die roller */
@@ -599,6 +611,11 @@ th.stat-type .type-label {
 	.display-ui #active-game .ui-content {
 		font-size: 2.5vw;
 	}
+}
+
+/* Add to home */
+.a2hs {
+	display: none;
 }
 
 /* update notice */
