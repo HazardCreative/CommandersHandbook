@@ -185,7 +185,7 @@ function isOnline() {
 }
 
 function hostReachable(hostserver) {
-	if(typeof(hostserver)==='undefined') hostserver = window.location.hostname;
+	if(typeof(hostserver)==='undefined') hostserver = window.location.hostname+(window.location.port ? ':'+window.location.port: '');
 
   // Handle IE and more capable browsers
   var xhr = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
