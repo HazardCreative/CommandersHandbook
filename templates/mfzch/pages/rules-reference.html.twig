@@ -160,25 +160,26 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>White d6</td>
+					<td><span data-sys="w" class="text-inline">W</span> White d6</td>
 					<td>Wild</td>
 				</tr>
 				<tr>
-					<td>Red d6 &#38; d8</td>
+					<td><span data-sys="rd" class="text-inline">R</span> Red d6 &#38; d8</td>
 					<td>Attack</td>
 				</tr>
 				<tr>
-					<td>Yellow d6</td>
+					<td><span data-sys="y" class="text-inline">Y</span> Yellow d6</td>
 					<td>Spotting</td>
 				</tr>
 				<tr>
-					<td>Green d6 &#38; d8</td>
-					<td>Movement</td>
-				</tr>
-				<tr>
-					<td>Blue d6</td>
+					<td><span data-sys="b" class="text-inline">B</span>Blue d6</td>
 					<td>Defense</td>
 				</tr>
+				<tr>
+					<td><span data-sys="g" class="text-inline">G</span>Green d6 &#38; d8</td>
+					<td>Movement</td>
+				</tr>
+
 			</tbody>
 		</table>
 	</div>
@@ -261,116 +262,29 @@
 
 		<p>There are 6 types of systems. A frame may not have more than two systems of the same type.</p>
 
-		<h3>Defense</h3>
-		<table class="ref-table">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Dice Added</th>
-					<th>Effect</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>0</td>
-					<td>None</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>1</td>
-					<td>1 blue d6</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>2</td>
-					<td>2 blue d6</td>
-					<td>When providing cover to another frame, this frame does not take damage</td>
-				</tr>
-			</tbody>
-		</table>
-		<p>Examples: armor, shield, camouflage, ECM</p>
-
-		<h3>Movement</h3>
-		<table class="ref-table">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Dice Added</th>
-					<th>Effect</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>0</td>
-					<td>None</td>
-					<td>Frame must navigate around cover (unless sprinting applies)</td>
-				</tr>
-				<tr>
-					<td>1</td>
-					<td>1 green d6</td>
-					<td>May move through or stand atop cover</td>
-				</tr>
-				<tr>
-					<td>2</td>
-					<td>2 green d6</td>
-					<td>May move through or stand atop cover</td>
-				</tr>
-			</tbody>
-		</table>
-		<p>Examples: jump-jets, wings, wheels, quad-legs</p>
-
-		<h3>Spotting</h3>
-		<table class="ref-table">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Dice Added</th>
-					<th>Effect</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>0</td>
-					<td>None</td>
-					<td>May spot one target within direct-fire or hand-to-hand range that is not in cover</td>
-				</tr>
-				<tr>
-					<td>1</td>
-					<td>1 yellow d6</td>
-					<td>May spot one target within direct-fire or hand-to-hand range (including those in cover)</td>
-				</tr>
-				<tr>
-					<td>2</td>
-					<td>2 yellow d6</td>
-					<td>May spot one target anywhere</td>
-				</tr>
-			</tbody>
-		</table>
-		<p>Examples: radio, targeting laser, spotlights, rifle scope</p>
-
 		<h3>Hand-to-hand weapons</h3>
 		<table class="ref-table">
 			<thead>
 				<tr>
-					<th>#</th>
+					<th>Systems</th>
 					<th>Dice Added</th>
 					<th>Effect</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>0</td>
+					<td>None</td>
 					<td>None</td>
 					<td></td>
 				</tr>
 				<tr>
-					<td>1</td>
-					<td>2 red d6</td>
+					<td><span data-sys="rh">Rh</span></td>
+					<td><span data-die="r6">R6</span> <span data-die="r6">R6</span></td>
 					<td>Usable only at hand-to-hand range (1 unit)</td>
 				</tr>
 				<tr>
-					<td>2</td>
-					<td>2 red d6 and 1 red d8</td>
+					<td><span data-sys="rh">Rh</span> <span data-sys="rh">Rh</span></td>
+					<td><span data-die="r6">R6</span> <span data-die="r6">R6</span> <span data-die="r8">R8</span></td>
 					<td>Usable only at hand-to-hand range (1 unit)</td>
 				</tr>
 			</tbody>
@@ -381,25 +295,25 @@
 		<table class="ref-table">
 			<thead>
 				<tr>
-					<th>#</th>
+					<th>Systems</th>
 					<th>Dice Added</th>
 					<th>Effect</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>0</td>
+					<td>None</td>
 					<td>None</td>
 					<td>Frame may only attack in direct-fire range if using a single-shot rocket</td>
 				</tr>
 				<tr>
-					<td>1</td>
-					<td>2 red d6</td>
+					<td><span data-sys="rd">Rd</span></td>
+					<td><span data-die="r6">R6</span> <span data-die="r6">R6</span></td>
 					<td>Usable only at direct-fire range (between 1 unit and 1 ruler)</td>
 				</tr>
 				<tr>
-					<td>2</td>
-					<td>2 red d6 and 1 red d8</td>
+					<td><span data-sys="rd">Rd</span> <span data-sys="rd">Rd</span></td>
+					<td><span data-die="r6">R6</span> <span data-die="r6">R6</span> <span data-die="r8">R8</span></td>
 					<td>Usable only at direct-fire range (between 1 unit and 1 ruler)</td>
 				</tr>
 			</tbody>
@@ -410,30 +324,117 @@
 		<table class="ref-table">
 			<thead>
 				<tr>
-					<th>#</th>
+					<th>Systems</th>
 					<th>Dice Added</th>
 					<th>Effect</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>0</td>
+					<td>None</td>
 					<td>None</td>
 					<td>Frame may not attack at artillery range</td>
 				</tr>
 				<tr>
-					<td>1</td>
-					<td>2 red d6</td>
+					<td><span data-sys="ra">Ra</span></td>
+					<td><span data-die="r6">R6</span> <span data-die="r6">R6</span></td>
 					<td>Usable only at artillery range (beyond 1 ruler)</td>
 				</tr>
 				<tr>
-					<td>2</td>
-					<td>2 red d6 and 1 red d8</td>
+					<td><span data-sys="ra">Ra</span> <span data-sys="ra">Ra</span></td>
+					<td><span data-die="r6">R6</span> <span data-die="r6">R6</span> <span data-die="r8">R8</span></td>
 					<td>Usable only at artillery range (beyond 1 ruler)</td>
 				</tr>
 			</tbody>
 		</table>
 		<p>Examples: mortar, sniper rifle, railgun</p>
+
+		<h3>Spotting</h3>
+		<table class="ref-table">
+			<thead>
+				<tr>
+					<th>Systems</th>
+					<th>Dice Added</th>
+					<th>Effect</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>None</td>
+					<td>None</td>
+					<td>May spot one target within direct-fire or hand-to-hand range that is not in cover</td>
+				</tr>
+				<tr>
+					<td><span data-sys="y">Y</span></td>
+					<td><span data-die="y6">Y6</span></td>
+					<td>May spot one target within direct-fire or hand-to-hand range (including those in cover)</td>
+				</tr>
+				<tr>
+					<td><span data-sys="y">Y</span> <span data-sys="y">Y</span></td>
+					<td><span data-die="y6">Y6</span> <span data-die="y6">Y6</span></td>
+					<td>May spot one target anywhere</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>Examples: radio, targeting laser, spotlights, rifle scope</p>
+
+		<h3>Defense</h3>
+		<table class="ref-table">
+			<thead>
+				<tr>
+					<th>Systems</th>
+					<th>Dice Added</th>
+					<th>Effect</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>None</td>
+					<td>None</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><span data-sys="b">B</span></td>
+					<td><span data-die="b6">B6</span></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><span data-sys="b">B</span> <span data-sys="b">B</span></td>
+					<td><span data-die="b6">B6</span> <span data-die="b6">B6</span></td>
+					<td>When providing cover to another frame, this frame does not take damage</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>Examples: armor, shield, camouflage, ECM</p>
+
+		<h3>Movement</h3>
+		<table class="ref-table">
+			<thead>
+				<tr>
+					<th>Systems</th>
+					<th>Dice Added</th>
+					<th>Effect</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>None</td>
+					<td>None</td>
+					<td>Frame must navigate around cover (unless sprinting applies)</td>
+				</tr>
+				<tr>
+					<td><span data-sys="g">G</span></td>
+					<td><span data-die="g6">G6</span></td>
+					<td>May move through or stand atop cover</td>
+				</tr>
+				<tr>
+					<td><span data-sys="g">G</span> <span data-sys="g">G</span></td>
+					<td><span data-die="g6">G6</span> <span data-die="g6">G6</span></td>
+					<td>May move through or stand atop cover</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>Examples: jump-jets, wings, wheels, quad-legs</p>
 
 		<h2>Single Shot Rockets</h2>
 		<p>Before the game, add 3 single-shot rockets (SSR) to your company. Attach them to your frames in any configuration: All three on a single frame, one frame with two and one frame with one, or three frames with one each.</p>
@@ -441,13 +442,15 @@
 		<table class="ref-table">
 			<thead>
 				<tr>
+					<th>Systems</th>
 					<th>Dice Added</th>
 					<th>Effect</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>1 red d8 when used</td>
+					<td><span data-sys="ssr">SSR</span></td>
+					<td><span data-die="r8">R8</span> when used</td>
 					<td>Usable only at direct-fire range<br />
 					Single-shot; discard after use</td>
 				</tr>
@@ -458,7 +461,24 @@
 		<p>Using an SSR allows a frame to attack at direct-fire range even if it does not carry a direct-fire weapon. A single frame can carry all three of these, if you so choose. SSRs do not count as systems and cannot be destroyed. Any SSRs remaining on a frame when it is destroyed are not usable or recoverable.</p>
 
 		<h2>Sprinting</h2>
-		<p>Any frame that has no ranged weapons systems (direct-fire or artillery) receieves an additional d8 to its dice pool. Sprinting provides the benfit of moving through or standing atop cover. This is not a system and cannot be destroyed. A frame that has had all of its ranged weapon systems destroyed gains this benefit for its next turn. SSRs do not prevent sprinting since they do not count as systems.</p>
+		<p>Any frame that has no ranged weapons systems (direct-fire or artillery) receieves an additional d8 to its dice pool. This is not a system and cannot be destroyed. A frame that has had all of its ranged weapon systems destroyed gains this benefit for its next turn. SSRs do not prevent sprinting since they do not count as systems.</p>
+
+		<table class="ref-table">
+			<thead>
+				<tr>
+					<th>Systems</th>
+					<th>Dice Added</th>
+					<th>Effect</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>No <span data-sys="rd">Rd</span>/<span data-sys="ra">Ra</span></td>
+					<td><span data-die="g8">G8</span></td>
+					<td>May move through or stand atop cover</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 <div data-role="page" id="ref_prep_ranges">
@@ -468,9 +488,9 @@
 	<div role="main" class="ui-content">
 		<p>Ranges map directly to the ruler and its units.</p>
 		<ul>
-			<li>Hand-to-hand: up to 1 unit</li>
-			<li>Direct-fire: beyond 1 unit, but inside 1 ruler length</li>
-			<li>Artillery: beyond 1 ruler length</li>
+			<li><span data-sys="rh" class="text-inline">Rh</span> Hand-to-hand: up to 1 unit</li>
+			<li><span data-sys="rd" class="text-inline">Rd</span> Direct-fire: beyond 1 unit, but inside 1 ruler length</li>
+			<li><span data-sys="ra" class="text-inline">Ra</span> Artillery: beyond 1 ruler length</li>
 		</ul>
 
 		<p>Ranges are exclusive. For example, artillery may only be used on targets beyond one ruler length. If there is a question about whether an object is in a given range, consider the object to be in range.</p>
@@ -967,17 +987,27 @@
 		<h1>Example Dice Assignment</h1>
 	</div>
 	<div role="main" class="ui-content">
-		<p>A frame with the loadout of
-		<span class="sys-display"><span data-sys="w">W</span><span data-sys="w">W</span><span data-sys="rh">Rd</span><span data-sys="b">B</span><span data-sys="g">G</span></span> rolls:</p>
-		<ul class="roll-display "><li data-die="w6" data-type="w">3</li><li data-die="w6" data-type="w">5</li><li data-die="r6" data-type="r">3</li><li data-die="r6" data-type="r">5</li><li data-die="b6" data-type="b">4</li><li data-die="g6" data-type="g">2</li></ul>
+		<p>The example frame has the following loadout:</p>
+		<ul class="sys-display"><li data-sys="w">W</li><li data-sys="w">W</li><li data-sys="rh">Rd</li><li data-sys="b">B</li><li data-sys="g">G</li></li></ul>
+		<p>This frame rolls:</p>
+		<ul class="roll-display"><li data-die="w6" data-type="w">3</li><li data-die="w6" data-type="w">5</li><li data-die="r6" data-type="r">3</li><li data-die="r6" data-type="r">5</li><li data-die="b6" data-type="b">4</li><li data-die="g6" data-type="g">2</li></ul>
 
-		<p>First, the player must assign defense. The player can choose either the blue <span data-die="b6" data-type="b">4</span> or one of the whites <span data-die="w6" data-type="w">3</span><span data-die="w6" data-type="w">5</span>. The player chooses the <span data-die="b6" data-type="b">4</span>. It is assigned to defense and placed on the table near the frame.</p>
+		<p>First, the player must assign defense. The player can choose either the blue <span data-die="b6" data-type="b" class="text-inline">4</span> or one of the whites <span data-die="w6" data-type="w" class="text-inline">3</span><span data-die="w6" data-type="w" class="text-inline">5</span>. The player chooses the <span data-die="b6" data-type="b" class="text-inline">4</span>. It is assigned to defense and placed on the table near the frame.</p>
 
-		<p>Next, the player can choose to attack or move. The player chooses to move first, and must choose a die for its movement: the green <span data-die="g6" data-type="g">2</span> or one of the whites <span data-die="w6" data-type="w">3</span><span data-die="w6" data-type="w">5</span>. The player needs to move to get in range of its target, and chooses the <span data-die="w6" data-type="w">5</span>. It can now move up to 5 ruler units. The <span data-die="w6" data-type="w">5</span> has been assigned and cannot be used for additional actions. The green <span data-die="g6" data-type="g">2</span> can be discarded now because it is only usable for movement.</p>
+		<p>The player&#8217;s pool is now:</p>
+		<ul class="roll-display"><li data-die="w6" data-type="w">3</li><li data-die="w6" data-type="w">5</li><li data-die="r6" data-type="r">3</li><li data-die="r6" data-type="r">5</li><li data-die="g6" data-type="g">2</li></ul>
 
-		<p>The player now makes an attack and can choose red <span data-die="r6" data-type="r">3</span> or <span data-die="r6" data-type="r">5</span>, or white <span data-die="w6" data-type="w">3</span>. The player chooses <span data-die="r6" data-type="r">5</span>. The red <span data-die="r6" data-type="r">3</span> can be discarded.</p>
+		<p>Next, the player can choose to attack or move. The player chooses to move first, and must choose a die for its movement: the green <span data-die="g6" data-type="g" class="text-inline">2</span> or one of the whites <span data-die="w6" data-type="w" class="text-inline">3</span><span data-die="w6" data-type="w" class="text-inline">5</span>. The player needs to move to get in range of its target, and chooses the <span data-die="w6" data-type="w" class="text-inline">5</span>. It can now move up to 5 ruler units. The <span data-die="w6" data-type="w" class="text-inline">5</span> has been assigned and cannot be used for additional actions. The green <span data-die="g6" data-type="g" class="text-inline">2</span> can be discarded now because it is only usable for movement.</p>
 
-		<p>Finally, the player may choose a spot. The frame does not have a spot (yellow) system, so only the white <span data-die="w6" data-type="w">3</span> is available to be assigned. The player is not required to use it.</p>
+		<p>The player&#8217;s pool is now:</p>
+		<ul class="roll-display"><li data-die="w6" data-type="w">3</li><li data-die="r6" data-type="r">3</li><li data-die="r6" data-type="r">5</li></ul>
+
+		<p>The player now makes an attack and can choose red <span data-die="r6" data-type="r" class="text-inline">3</span> or <span data-die="r6" data-type="r" class="text-inline">5</span>, or white <span data-die="w6" data-type="w" class="text-inline">3</span>. The player chooses <span data-die="r6" data-type="r" class="text-inline">5</span>. The red <span data-die="r6" data-type="r" class="text-inline">3</span> can be discarded.</p>
+
+		<p>The player&#8217;s pool is now:</p>
+		<ul class="roll-display"><li data-die="w6" data-type="w">3</li></ul>
+
+		<p>Finally, the player may choose a spot. The frame does not have a spot (yellow) system, so only the white <span data-die="w6" data-type="w" class="text-inline">3</span> is available to be assigned. The player is not required to use it.</p>
 
 		<p>The turn is over, and any remaining dice are now discarded.</p>
 	</div>
@@ -989,15 +1019,15 @@
 	<div role="main" class="ui-content">
 		<p>One of Joshua&#8217;s frames is coming under attack by ranged fire. It has already been spotted by one Sebastian&#8217;s frames and now one of Vincent&#8217;s frames is firing. Luckily, it is in cover.</p>
 		<ul>
-			<li>Joshua&#8217;s defense: 6</li>
-			<li>Vincent&#8217;s attack: 4</li>
-			<li>Sebastian&#8217;s spot: 5</li>
-			<li>4 + 5 - 6 = 3 damage dice</li>
-			<li>Vincent rolls damage dice: 1, 4, 5</li>
-			<li>The hit chart for a target in cover is used; the 1 has no effect</li>
-			<li>The 4 is resolved next, hitting the cover</li>
+			<li>Joshua&#8217;s defense: <span data-die="b6" class="text-inline">6</span></li>
+			<li>Vincent&#8217;s attack: <span data-die="r6" class="text-inline">4</span></li>
+			<li>Sebastian&#8217;s spot: <span data-die="y6" class="text-inline">5</span></li>
+			<li><span data-die="r6" class="text-inline">4</span> + <span data-die="y6" class="text-inline">5</span> - <span data-die="b6" class="text-inline">6</span> = 3 damage dice</li>
+			<li>Vincent rolls damage dice: <span data-die="dmg" class="text-inline">1</span>, <span data-die="dmg" class="text-inline">4</span>, <span data-die="dmg" class="text-inline">5</span></li>
+			<li>The hit chart for a target in cover is used; the <span data-die="dmg" class="text-inline">1</span> has no effect</li>
+			<li>The <span data-die="dmg" class="text-inline">4</span> is resolved next, hitting the cover</li>
 			<li>Vincent removes 6 bricks, which is enough that this terrain can no longer be used as cover</li>
-			<li>The hit chart for a target outside of cover is now used; the 5 damages Joshua&#8217;s frame</li>
+			<li>The hit chart for a target outside of cover is now used; the <span data-die="dmg" class="text-inline">5</span> damages Joshua&#8217;s frame</li>
 			<li>Joshua must choose a system to remove from his frame</li>
 		</ul>
 	</div>
@@ -1012,6 +1042,34 @@
 		<p>A weapon system may be split between two ranges. For the purpose of frame construction, a split-range system counts as two half-systems, one of each type. You still may not exceed more than two total systems of each type.</p>
 		<p>Each half of the split-range system provides one red d6 in the appropriate range. If you use any split-range systems, you cannot gain the red d8 for having a second full system.</p>
 		<p>When a split-range system is destroyed, you lose the entire system.</p>
+
+		<h3>Split-range weapons</h3>
+		<table class="ref-table">
+			<thead>
+				<tr>
+					<th>Systems</th>
+					<th>Dice Added</th>
+					<th>Effect</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><span data-sys="rhd">Rhd</span></td>
+					<td><span data-die="r6">R6</span></td>
+					<td>Usable at hand-to-hand or direct-fire range</td>
+				</tr>
+				<tr>
+					<td><span data-sys="rha">Rha</span></td>
+					<td><span data-die="r6">R6</span></td>
+					<td>Usable at hand-to-hand or artillery range</td>
+				</tr>
+				<tr>
+					<td><span data-sys="rda">Rda</span></td>
+					<td><span data-die="r6">R6</span></td>
+					<td>Usable at direct-fire or artillery range</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 <div data-role="page" id="ref_optional_elevation">
@@ -1038,6 +1096,24 @@
 		<p>When you set up the field, designate areas as hazardous. Indicate this in some meaningful way on the field. A differently colored or textured ground surface is common, but you can also use a determined radius from designated terrain. When you actiavte a frame that is inside a hazard area, you must reduce your dice pool by one white die.</p>
 
 		<p>During company construction, you may choose an environmental system as part of any frame&#8217;s loadout. This is a system like any other and counts for all purposes such as loadout maximums, scoring, and damage. If a frame has an environmental system when it activates, it is not affected by a hazard when rolling (does not lose a white die).</p>
+
+		<h3>Environment</h3>
+		<table class="ref-table">
+			<thead>
+				<tr>
+					<th>Systems</th>
+					<th>Dice Added</th>
+					<th>Effect</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><span data-sys="e">E</span></td>
+					<td>None</td>
+					<td>Prevents loss of <span data-sys="w" class="text-inline">W</span> in hazard area</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 <div data-role="page" id="ref_optional_per-frame-initiative">
@@ -1107,23 +1183,23 @@
 	<div role="main" class="ui-content">
 		<div class="ui-body ui-body-a ui-corner-all">
 			<h2>Hand-to-hand:</h2>
-			<img src="{{ asset('img/MFZ-Hit-h2h.svg') }}">
+			<img src="{{ asset('img/Hit-h2h.svg') }}">
 		</div>
 		<div class="ui-body ui-body-a ui-corner-all">
 			<h2>Direct-fire or artillery; target not in cover:</h2>
-			<img src="{{ asset('img/MFZ-Hit-range.svg') }}">
+			<img src="{{ asset('img/Hit-range.svg') }}">
 		</div>
 		<div class="ui-body ui-body-a ui-corner-all">
 			<h2>Direct-fire or artillery; target in cover:</h2>
-			<img src="{{ asset('img/MFZ-Hit-cover.svg') }}">
+			<img src="{{ asset('img/Hit-cover.svg') }}">
 		</div>
 		<div class="ui-body ui-body-a ui-corner-all">
 			<h2>Direct-fire or artillery; target covered by a frame:</h2>
-			<img src="{{ asset('img/MFZ-Hit-frame.svg') }}">
+			<img src="{{ asset('img/Hit-frame.svg') }}">
 		</div>
 		<div class="ui-body ui-body-a ui-corner-all">
 			<h2>Targeting cover (any range):</h2>
-			<img src="{{ asset('img/MFZ-Hit-terrain.svg') }}">
+			<img src="{{ asset('img/Hit-terrain.svg') }}">
 		</div>
 	</div>
 </div>
