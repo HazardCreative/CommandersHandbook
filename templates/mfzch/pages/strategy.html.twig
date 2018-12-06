@@ -110,6 +110,6 @@
 
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
 	{% if date(msgphp_user.user.elite_expires) > date() %}
-		{% include 'strategy-content.html.twig' %}
+		{% include 'strategy-content.html.twig' ignore missing %}
 	{% endif %}
 {% endif %}
