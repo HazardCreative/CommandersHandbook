@@ -381,10 +381,9 @@ class User extends BaseUser implements DomainEventHandlerInterface
         if ($pledge['attributes']['last_charge_status'] == "Paid"
             && $pledge['attributes']['currently_entitled_amount_cents']) {
 
-            $old_expires = $this->getEliteExpires();
-            $new_expires = date_create($pledge['attributes']['last_charge_date'])->modify('15th day of next month 00:00:00');
-            $expires = max($old_expires, $new_expires);
-            $this->setEliteExpires($expires);
+            $old_expires = $this->elite_expires;
+            $new_expires = date_create($pledge['attributes']['last_charge_date'])->modify('first day of next month 00:00:00')->modify('+14 days');
+            $this->elite_expires = max($old_expires, $new_expires);
         }
     }
 
@@ -395,8 +394,10 @@ class User extends BaseUser implements DomainEventHandlerInterface
      */
     public function eliteStatusNeedsRefreshed()
     {
-        if ($this.getPatreonId() &&
-            new \DateTime("now") > $user->getEliteExpires()->modify('1st day of month 00:00:00')) {
+        $checkdate = clone $this->elite_expires;
+        $checkdate->modify('First day of this month 00:00:00');
+        if ($this->patreon_id &&
+            new \DateTime("now") > $checkdate) {
             return true;
         }
 

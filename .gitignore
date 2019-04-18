@@ -1,4 +1,5 @@
 /templates/mfzch/pages/strategy-content.html.twig
+/config/packages/services.yaml
 
 ###> symfony/framework-bundle ###
 /.env

@@ -31,12 +31,12 @@ class PatreonController extends Controller {
 			$patron = $pc->getUser($pc_tokens['access_token']);
 
 			if ($patron) {
-				if (isset($patron['id'])) {
+				if (isset($patron['data']['id'])) {
 					$user->setPatreonData($patron['data']);
-				}
-
-				if (isset($patron['id'])) {
-					$user->setPatreonId($patron['id']);
+					$user->setPatreonId($patron['data']['id']);
+				} else {
+					// no ID
+					$errors[] = 'Patreon did not provide a user ID.';
 				}
 
 				if (isset($patron['included'][0])) {
@@ -94,7 +94,7 @@ class PatreonController extends Controller {
 		if (isset($pc_tokens['access_token']) && $pc_tokens['access_token']) {
 			$patron = $pc->getUser($pc_tokens['access_token']);
 
-			if ($patron['errors']) {
+			if (isset($patron['errors'])) {
 				$pc_tokens = $pc->refreshTokens($pc_tokens['refresh_token']);
 
 				if (isset($pc_tokens['access_token']) && $pc_tokens['access_token']) {
@@ -161,7 +161,7 @@ class PatreonController extends Controller {
 		$em->persist($user);
 		$em->flush();
 
-		return $this->redirectToRoute('/command-network');
+		return $this->redirectToRoute('command-home');
 	}
 
 }

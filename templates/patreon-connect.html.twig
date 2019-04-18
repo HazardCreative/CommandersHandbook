@@ -1,6 +1,12 @@
 {% extends 'main.html.twig' %}
 
 {% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ajaxEnabled = false;
+}
+</script>
 <div data-role="page" id="main-page">
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Patreon Connect</h1>
@@ -27,6 +33,8 @@
 					<li>Blind setup</li>
 					<li>Expanded storage limits</li>
 				</ul>
+
+				<p><a href="{{ path('command-home') }}" class="ui-btn ui-corner-all ui-btn-icon-right ui-icon-arrow-r">Return to Commander Profile</a></p>
 			</div>
 		</div>
 
@@ -41,14 +49,17 @@
 					{% else %}
 						<li>Regular User
 							{% if date(msgphp_user.user.elite_expires) > date('-2years') %}
-								(expired {{ msgphp_user.user.elite_expires|date("Y-m-d") }})
+								(Elite expired {{ msgphp_user.user.elite_expires|date("Y-m-d") }})
 							{% endif %}
 						</li>
 					{% endif %}
-					<li>Patreon ID: {% if msgphp_user.user.patreon_id %}{{ msgphp_user.user.patreon_id }}</li>
-				</ul>
 
-				<p><a href="{{ patreonLoginURL }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-cloud">Update Patreon Account</a></p>
+					{% if msgphp_user.user.patreon_id %}
+						<li>Patreon User: <a href="{{ msgphp_user.user.patreon_data['attributes']['url'] }}"> {{ msgphp_user.user.patreon_data['attributes']['vanity'] }}</a></li>
+						<li>Patreon Name: {{ msgphp_user.user.patreon_data['attributes']['full_name'] }}</li>
+						<li>Patreon ID: {{ msgphp_user.user.patreon_id }}</li>
+					{% endif %}
+				</ul>
 			</div>
 		</div>
 	</div>

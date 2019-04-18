@@ -63,11 +63,11 @@ if (typeof jQuery != 'undefined') {
 							</li>
 						{% endif %}
 
-						<li>Patreon ID: {% if msgphp_user.user.patreon_id %}
-								{{ msgphp_user.user.patreon_id }}
-							{% else %}
-								None
-							{% endif %}</li>
+						{% if msgphp_user.user.patreon_id %}
+							<li>Patreon User: <a href="{{ msgphp_user.user.patreon_data['attributes']['url'] }}"> {{ msgphp_user.user.patreon_data['attributes']['vanity'] }}</a></li>
+							<li>Patreon Name: {{ msgphp_user.user.patreon_data['attributes']['full_name'] }}</li>
+							<li>Patreon ID: {{ msgphp_user.user.patreon_id }}</li>
+						{% endif %}
 					</ul>
 
 					{% if msgphp_user.user.patreon_id %}

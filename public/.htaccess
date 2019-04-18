@@ -5,12 +5,11 @@
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
-AddType text/cache-manifest .manifest
+<IfModule mod_rewrite.c>
+RewriteCond %{HTTP_HOST} !^www\.
+RewriteCond %{HTTP_HOST} !placedev\.com$ [NC]
+RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
 
-<Files cache.manifest>
-#   ExpiresActive On
-#   ExpiresDefault "access"
-#   FileETag None
-#   Header unset ETag
-#   Header set Cache-Control "no-cache, private"
-</Files>
+RewriteCond %{HTTPS} !on
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>

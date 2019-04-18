@@ -29,8 +29,8 @@ class DefaultController extends Controller {
 			if ($user->getUsername()) {
 				// user is returning
 
-				if($user->eliteStatusNeedsRefreshed(), ){
-					return $this->redirectToRoute('/patreon-update');
+				if($user->eliteStatusNeedsRefreshed()){
+					return $this->redirectToRoute('patreon-update');
 				} else {
 					return $this->render('mfzch/mfzch.html.twig');
 				}

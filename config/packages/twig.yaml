@@ -3,6 +3,6 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     globals:
-        buildver: 2018062800
-        buildstring: v2018.06.28
+        buildver: 2019041800
+        buildstring: v2019.04.18
         patreon_client_id: "%patreon_client_id%"

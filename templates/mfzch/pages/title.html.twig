@@ -10,7 +10,7 @@
 
 				{% if date(msgphp_user.user.elite_expires) > date() %}
 					<p>Elite User (through {{ msgphp_user.user.elite_expires|date("Y-m-d") }})</p>
-					{% if date(msgphp_user.user.elite_expires) <= date('1day') %}
+					{% if date(msgphp_user.user.elite_expires) <= date('+15days') %}
 						<p>Warning: Elite status expires soon.</p>
 					{% endif %}
 				{% else %}
@@ -25,7 +25,7 @@
 			{% endif %}
 		</div>
 
-		{% if errors %}
+		{% if errors is defined and errors|length %}
 		<div role="main" class="ui-content" data-ajax="false">
 			<div class="ui-corner-all profile-panel">
 				<div class="ui-bar ui-bar-a">
@@ -38,7 +38,7 @@
 						{% endfor %}
 					</ul>
 
-					<p>We're sorry it didn't work out. Let us know if we can help.</p>
+					<p>We're sorry it didn't work out. Let us know if we can help. If you no longer want to be Elite, you may <a href="/remove-patreon">Remove Patreon</a> from your account.</p>
 				</div>
 			</div>
 		</div>

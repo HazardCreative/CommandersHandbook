@@ -1,6 +1,12 @@
 {% extends 'main.html.twig' %}
 
 {% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ajaxEnabled = false;
+}
+</script>
 <div data-role="page" id="main-page">
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Patreon Connect</h1>
