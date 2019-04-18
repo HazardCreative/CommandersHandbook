@@ -15,6 +15,7 @@ use App\Entity\FrameCompany;
 use App\Entity\RAGame;
 use App\Entity\Location;
 use App\Entity\User\User;
+use App\PatreonConnect\PatreonConnect;
 
 class DefaultController extends Controller {
 	/**
@@ -26,8 +27,16 @@ class DefaultController extends Controller {
 
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			if ($user->getUsername()) {
-				return $this->render('mfzch/mfzch.html.twig');
+				// user is returning
+
+				if($user->eliteStatusNeedsRefreshed(), ){
+					return $this->redirectToRoute('/patreon-update');
+				} else {
+					return $this->render('mfzch/mfzch.html.twig');
+				}
 			} else {
+				// user does not have a username, so is a new user
+
 				$locations_repo = $this->getDoctrine()
 					->getRepository('App:Location');
 
@@ -68,7 +77,10 @@ class DefaultController extends Controller {
 	 * @Route("/command-network", name="command-home")
 	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function commandNetworkAction(User $user) {
+	public function commandNetworkAction(
+			PatreonConnect $PatreonConnect,
+			User $user) {
+
 		$locations_repo = $this->getDoctrine()
 			->getRepository('App:Location');
 
@@ -80,11 +92,14 @@ class DefaultController extends Controller {
 
 		$under_max_locations = (count($locations) < 3);
 
+		$patreon = $PatreonConnect;
+
 		return $this->render('mfzch/pages/command-home.html.twig',
 			array(
 				'locations' => $locations,
 				'under_max_locations' => $under_max_locations,
-				'form' => $form->createView()
+				'form' => $form->createView(),
+				'patreonLoginURL' => $patreon->getLoginURL()
 			)
 		);
 	}
@@ -125,7 +140,10 @@ class DefaultController extends Controller {
 	 * @Route("/edit-profile", name="edit-profile")
 	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function editProfileAction(Request $request, User $user) {
+	public function editProfileAction(
+			Request $request,
+			User $user) {
+
 		$form = $this->createForm(EditProfileType::class, $user);
 
 		$form->handleRequest($request);

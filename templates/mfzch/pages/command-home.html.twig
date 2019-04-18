@@ -71,10 +71,10 @@ if (typeof jQuery != 'undefined') {
 					</ul>
 
 					{% if msgphp_user.user.patreon_id %}
-						<a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-recycle">Update Patreon Account</a>
-						<button class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-delete">Remove Patreon Account</button>
+						<a href="{{ patreonLoginURL }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-recycle">Update Patreon Account</a>
+						<a href="{{ path('remove-patreon') }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-delete">Remove Patreon Account</a>
 					{% else %}
-						<a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id={{ patreon_client_id }}&redirect_uri={{ url('patreon-test') }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-cloud">Connect Patreon Account</a>
+						<a href="{{ patreonLoginURL }}" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-cloud">Connect Patreon Account</a>
 					{% endif %}
 				</div>
 			</div>

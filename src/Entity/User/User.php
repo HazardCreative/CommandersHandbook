@@ -370,4 +370,36 @@ class User extends BaseUser implements DomainEventHandlerInterface
         return $this->patreon_data;
     }
 
+    /**
+     * Update Elite Status
+     *
+     */
+    public function updateEliteStatus()
+    {
+        $pledge = $this->patreon_pledges;
+
+        if ($pledge['attributes']['last_charge_status'] == "Paid"
+            && $pledge['attributes']['currently_entitled_amount_cents']) {
+
+            $old_expires = $this->getEliteExpires();
+            $new_expires = date_create($pledge['attributes']['last_charge_date'])->modify('15th day of next month 00:00:00');
+            $expires = max($old_expires, $new_expires);
+            $this->setEliteExpires($expires);
+        }
+    }
+
+    /**
+     * Check if Elite status needs refreshed
+     *
+     * @return boolean
+     */
+    public function eliteStatusNeedsRefreshed()
+    {
+        if ($this.getPatreonId() &&
+            new \DateTime("now") > $user->getEliteExpires()->modify('1st day of month 00:00:00')) {
+            return true;
+        }
+
+        return false;
+    }
 }

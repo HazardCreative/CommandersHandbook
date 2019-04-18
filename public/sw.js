@@ -1,5 +1,5 @@
-var CACHE_NAME = 'mfzch-cache';
-var urlsToCache = [
+var STATIC_CACHE = 'mfzch-static';
+var STATIC_CACHE_URLS = [
 	'/',
 	'/jq/jquery-1.11.1.min.js',
 	'/jq/jquery.mobile-1.4.5.min.js',
@@ -28,34 +28,17 @@ var urlsToCache = [
 self.addEventListener('install', function(event) {
 	// Pre-cache resources
 	event.waitUntil(
-		caches.open(CACHE_NAME)
+		caches.open(STATIC_CACHE)
 			.then(function(cache) {
-				return cache.addAll(urlsToCache);
+				return cache.addAll(STATIC_CACHE_URLS);
 			})
 	);
 });
 
 self.addEventListener('fetch', function(evt) {
-  evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
-    return fromCache(evt.request);
-  }));
+	evt.respondWith(
+		fetch(evt.request).catch(function() {
+			return caches.match(evt.request);
+		})
+	);
 });
-
-function fromNetwork(request, timeout) {
-  return new Promise(function (fulfill, reject) {
-    var timeoutId = setTimeout(reject, timeout);
-
-    fetch(request).then(function (response) {
-      clearTimeout(timeoutId);
-      fulfill(response);
-    }, reject);
-  });
-}
-
-function fromCache(request) {
-  return caches.open(CACHE_NAME).then(function (cache) {
-    return cache.match(request).then(function (matching) {
-      return matching || Promise.reject('no-match');
-    });
-  });
-}
