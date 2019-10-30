@@ -1,3 +1,61 @@
+// set default state
+mfzch.appState.isElite = false;
+mfzch.appState.eliteExpires = 0;
+
+mfzch.disableElite(); // *** internal elite check
+
+var appState = new Promise(function(resolve, reject) {
+	if (isOnline()) {
+		$.post('/state')
+		.done(function(result) {
+			resolve(result);
+		})
+		.fail(function() {
+			reject(Error('State retrieval failed'));
+		})
+	} else {
+		reject(Error('State retrieval failed (offline)'));
+	}
+});
+
+function handleState(data) {
+	// successful state
+	console.log(data); // ***
+
+	var eliteExpires = new Date(data.user.elite_expires.date);
+	var now = new Date();
+
+	mfzch.appState.eliteExpires = eliteExpires.toISOString();
+
+	if (eliteExpires > now) {
+		mfzch.appState.isElite = true;
+		mfzch.enableElite();
+	} else {
+		mfzch.appState.isElite = false;
+		mfzch.disableElite();
+	}
+
+	/*
+	if (data.remotegame) { // ***
+		mfzch.appState.remote = {
+			mode: true,
+			connection: true,
+			id: '{{ gameid }}', // ***
+			password: '',
+			granted: false
+		}
+	}
+	*/
+}
+
+appState.then(function(result) {
+	handleState(result);
+}, function() {
+	// server offline
+	// ***
+});
+
+
 // main vars
 mfzch.game = mfzch.restoreLocalData('game');
 mfzch.templateGame = mfzch.restoreLocalData('templateGame'); // game state before reset
@@ -19,11 +77,6 @@ $(document).on('submit', 'form', function(event){ // kill all HTML form submits
 });
 
 $(document).ready(function(){
-	try {
-		window.applicationCache.update();
-	} catch (err) {
-		// fail silent
-	}
 	$('#version').html(PUBLICBUILDSTRING);
 
 	if(mfzch.settings.buildVersion < BUILDVERSION) {
@@ -168,13 +221,11 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		$('[data-sys-split=true]').hide();
 	}
 
-	{% if is_granted('IS_AUTHENTICATED_FULLY')
-		and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
-
+	if (mfzch.appState.isElite) {
 		if(mfzch.settings.enableEnvironmental) {
 			$('[data-sys-env=true]').show();
 		} else {
 			$('[data-sys-env=true]').hide();
 		}
-	{% endif %}
+	}
 });

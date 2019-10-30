@@ -76,7 +76,8 @@ $(document).on('pageshow', '[data-role=page], [data-role=dialog]', function (eve
 */
 if ('serviceWorker' in navigator) {
 	window.addEventListener('load', function() {
-		navigator.serviceWorker.register('{{ asset("sw.js") }}').then(function(registration) {
+		navigator.serviceWorker.register('{{ asset("sw.js") }}')
+		.then(function(registration) {
 			// Registration was successful
 			console.log('ServiceWorker registration successful with scope: ', registration.scope);
 		}, function(err) {
@@ -85,13 +86,8 @@ if ('serviceWorker' in navigator) {
 		});
 	});
 }
-
-if (typeof jQuery != 'undefined') {
-	{% block footer_scripts %}
-	{% endblock %}
-}
-
 </script>
-
+{% block footer_scripts %}
+{% endblock %}
 </body>
 </html>

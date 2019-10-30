@@ -20,44 +20,61 @@ use App\PatreonConnect\PatreonConnect;
 class DefaultController extends Controller {
 	/**
 	 * @Route("/", name="homepage")
-	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
 	public function indexAction(User $user = null) {
+		return $this->render('mfzch/mfzch.html.twig');
+	}
+
+	/**
+	 * @Route("/state", name="state")
+	 * @ParamConverter("user", converter="msgphp.current_user")
+	 */
+	public function stateAction(User $user = null) {
 		$auth_checker = $this->get('security.authorization_checker');
+
+		$state = array();
 
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			if ($user->getUsername()) {
 				// user is returning
+				$state['user'] = $user;
 
-				if($user->eliteStatusNeedsRefreshed()){
-					return $this->redirectToRoute('patreon-update');
-				} else {
-					return $this->render('mfzch/mfzch.html.twig');
+				if ($user->eliteStatusNeedsRefreshed()) {
+					$state['patreon_refresh_needed'] = true;
+					// *** MUST ACT ON THIS AND SEND USER TO /patreon-update ***
 				}
+
 			} else {
 				// user does not have a username, so is a new user
+				$state['user'] = 'new_user';
 
-				$locations_repo = $this->getDoctrine()
-					->getRepository('App:Location');
+				// *** MUST ACT ON THIS AND SEND USER TO /onboard ***
+			}
+		}
 
-				$locations = $locations_repo->findByOwner($user->getId());
+		return new JsonResponse($state);
+	}
 
+	/**
+	 * @Route("/onboard", name="new-user")
+	 */
+	public function onboardAction($gameid) {
+		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+			if ($user->getUsername()) {
+				return $this->redirectToRoute('homepage');
+			} else {
 				$form = $this->createForm(EditProfileType::class, $user, array(
 					'action' => $this->generateUrl('edit-profile')
 				));
 
-				$under_max_locations = (count($locations) < 3);
-
 				return $this->render('mfzch/pages/command-home-new.html.twig',
 					array(
 						'locations' => $locations,
-						'under_max_locations' => $under_max_locations,
+						'under_max_locations' => true,
 						'form' => $form->createView()
 					)
 				);
 			}
-		} else {
-			return $this->render('mfzch/mfzch.html.twig');
 		}
 	}
 

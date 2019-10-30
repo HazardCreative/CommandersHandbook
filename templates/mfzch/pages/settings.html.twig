@@ -41,38 +41,19 @@
 			-->
 
 			<h2>Elite options</h2>
-			{% if is_granted('IS_AUTHENTICATED_FULLY')
-		and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
+				<p data-elite-visible="false"><em>Become a Patreon supporter to enable these options.</em></p>
 				<div class="ui-field-contain">
 					<label for="settings-activesync">Server Synchronization:</label>
-					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch">
-						<option value="off">Off</option>
-						<option value="on">On</option>
-					</select>
-				</div>
-				<div class="ui-field-contain">
-					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
-					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch">
-						<option value="off">Off</option>
-						<option value="on">On</option>
-					</select>
-				</div>
-			{% else %}
-				<p><em>Become a Patreon supporter to enable these options.</em></p>
-				<div class="ui-field-contain">
-					<label for="settings-activesync">Server Synchronization:</label>
-					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch" disabled="disabled">
+					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch" data-elite="true" disabled="disabled">
 						<option value="off">Off</option>
 					</select>
 				</div>
 				<div class="ui-field-contain">
 					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
-					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch" disabled="disabled">
+					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch" data-elite="true" disabled="disabled">
 						<option value="off">Off</option>
 					</select>
 				</div>
-
-			{% endif %}
 		</form>
 	</div>
 </div>

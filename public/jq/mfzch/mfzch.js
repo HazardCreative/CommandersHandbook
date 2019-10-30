@@ -462,6 +462,34 @@ var mfzch = {
 		});
 	},
 
+	/* elite */
+	enableElite: function() {
+		MAXCOMPANIES = 25;
+		MAXTEAMS = 9;
+		MAXFRAMES = 9;
+		MAXSTATIONS = 9;
+		MAXUNCLAIMEDSTATIONS = 9;
+		MAXLOADOUTS = 50;
+		MAXDOOMSDAY = 20;
+
+		$('[data-elite-visible="true"]').show();
+		$('[data-elite-visible="false"]').hide();
+		$('[data-elite="true"]').prop('disabled', false);
+	},
+	disableElite: function() {
+		MAXCOMPANIES = 5;
+		MAXTEAMS = 5;
+		MAXFRAMES = 8;
+		MAXSTATIONS = 3;
+		MAXUNCLAIMEDSTATIONS = 1;
+		MAXLOADOUTS = 10;
+		MAXDOOMSDAY = 11;
+
+		$('[data-elite-visible="false"]').show();
+		$('[data-elite-visible="true"]').hide();
+		$('[data-elite="true"]').prop('disabled', true);
+	},
+
 	/* undo/redo */
 
 	undo: {

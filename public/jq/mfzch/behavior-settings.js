@@ -66,23 +66,18 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		}
 		$('#settings-compactui').flipswitch('refresh');
 
-		{% if is_granted('IS_AUTHENTICATED_FULLY')
-			and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
+		if (mfzch.settings.activeSync) {
+			$('#settings-activesync').val('on');
+		} else {
+			$('#settings-activesync').val('off');
+		}
+		$('#settings-activesync').flipswitch('refresh');
 
-			if (mfzch.settings.activeSync) {
-				$('#settings-activesync').val('on');
-			} else {
-				$('#settings-activesync').val('off');
-			}
-			$('#settings-activesync').flipswitch('refresh');
-
-			if (mfzch.settings.enableEnvironmental) {
-				$('#settings-enableenvironmental').val('on');
-			} else {
-				$('#settings-enableenvironmental').val('off');
-			}
-			$('#settings-enableenvironmental').flipswitch('refresh');
-
-		{% endif %}
+		if (mfzch.settings.enableEnvironmental) {
+			$('#settings-enableenvironmental').val('on');
+		} else {
+			$('#settings-enableenvironmental').val('off');
+		}
+		$('#settings-enableenvironmental').flipswitch('refresh');
 	}
 });

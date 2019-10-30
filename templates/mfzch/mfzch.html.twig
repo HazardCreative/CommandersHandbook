@@ -23,21 +23,24 @@
 {% endblock %}
 
 {% block footer_scripts %}
-{{ include('mfzch/scripts/generics.js.twig') }}
-{{ include('mfzch/scripts/model-team.js.twig') }}
-{{ include('mfzch/scripts/model-game.js.twig') }}
-{{ include('mfzch/scripts/model-company.js.twig') }}
-{{ include('mfzch/scripts/model-frame.js.twig') }}
-{{ include('mfzch/scripts/model-settings.js.twig') }}
-{{ include('mfzch/scripts/model-appstate.js.twig') }}
-{{ include('mfzch/scripts/mfzch.js.twig') }}
+<script src="{{ asset('jq/mfzch/generics.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-team.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-game.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-company.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-frame.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-settings.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-appstate.js') }}"></script>
+<script src="{{ asset('jq/mfzch/mfzch.js') }}"></script>
+<script type="text/javascript">
 {{ include('mfzch/scripts/globals.js.twig') }}
-{{ include('mfzch/scripts/behavior-pregame.js.twig') }}
-{{ include('mfzch/scripts/behavior-game.js.twig') }}
-{{ include('mfzch/scripts/behavior-simulator.js.twig') }}
-{{ include('mfzch/scripts/behavior-company.js.twig') }}
-{{ include('mfzch/scripts/behavior-loadouts.js.twig') }}
-{{ include('mfzch/scripts/behavior-settings.js.twig') }}
-{{ include('mfzch/scripts/setup.js.twig') }}
-{{ include('mfzch/scripts/event-tracking.js.twig') }}
+</script>
+<script src="{{ asset('jq/mfzch/behavior-pregame.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-game.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-simulator.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-company.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-loadouts.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-settings.js') }}"></script>
+<script src="{{ asset('jq/mfzch/setup.js') }}"></script>
+<script src="{{ asset('jq/mfzch/event-tracking.js') }}"></script>
+
 {% endblock %}
