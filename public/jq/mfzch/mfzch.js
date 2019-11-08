@@ -89,6 +89,7 @@ var mfzch = {
 			|| dataType == 'companies'
 			|| dataType == 'loadouts'
 			|| dataType == 'settings'
+			|| dataType == 'appState'
 		) {
 			if (!supportsLocalStorage()) { return false; }
 			if (dataType == 'templateGame') {
@@ -159,6 +160,12 @@ var mfzch = {
 					restoredSettings[i] = loadedData[i];
 				}
 				return restoredSettings;
+			} else if (dataType == 'appState') {
+				var restoredState = new appStateModel();
+				for (var i in loadedData) {
+					restoredState[i] = loadedData[i];
+				}
+				return restoredState;
 			} else {
 				return false;
 			}
@@ -178,6 +185,8 @@ var mfzch = {
 				return [];
 			} else if (dataType == 'settings') {
 				return new settingsModel();
+			} else if (dataType == 'appState') {
+				return new appStateModel();
 			} else {
 				return false;
 			}
@@ -203,7 +212,7 @@ var mfzch = {
 				//	|| dataType == 'loadouts'
 				//	|| dataType == 'settings'
 				) {
-				if (mfzch.settings.activeSync && isOnline()) {
+				if (mfzch.settings.activeSync && mfzch.checkOnline()) {
 					var postdata = new Object();
 
 					var data = this[dataType]
@@ -248,7 +257,7 @@ var mfzch = {
 				return false;
 			}
 
-			if (mfzch.settings.activeSync && isOnline()) {
+			if (mfzch.settings.activeSync && mfzch.checkOnline()) {
 				var postdata = new Object();
 				postdata['type'] = dataType;
 
@@ -374,7 +383,7 @@ var mfzch = {
 		return result;
 	},
 	sendGameUpdate: function(patch) {
-		if (mfzch.settings.activeSync && isOnline()) {
+		if (mfzch.settings.activeSync && mfzch.checkOnline()) {
 			if (patch) {
 				$.post('/patch-game', {
 					game_dbid: this.game.dbid,
@@ -390,8 +399,49 @@ var mfzch = {
 		return false;
 	},
 
-	/* remote */
+	/* online connections */
+	checkOnline:function() {
+		var status = isOnline();
+		this.appState.isOnline = status;
+		if (status) {
+			this.enableOnline();
+			return true;
+		} else {
+			this.disableOnline();
+			return false;
+		}
+	},
+	enableOnline:function() {
+		$('[data-online-visible="true"]').show();
+		$('[data-online-visible="false"]').hide();
+	},
+	disableOnline:function() {
+		$('[data-online-visible="true"]').hide();
+		$('[data-online-visible="false"]').show();
+	},
 
+	/* registered */
+	checkRegistered:function() {
+		if (this.appState.user) {
+			this.enableRegistered();
+			return true;
+		} else {
+			this.disableRegistered();
+			return false;
+		}
+	},
+	enableRegistered:function() {
+		$('[data-registered-visible="true"]').show();
+		$('[data-registered-visible="false"]').hide();
+		$('.registered-username').html(this.appState.user.username);
+	},
+	disableRegistered:function() {
+		$('[data-registered-visible="true"]').hide();
+		$('[data-registered-visible="false"]').show();
+		$('.registered-username').html('Commander');
+	},
+
+	/* remote */
 	loadRemoteGame: function(callback) {
 		var remoteLoadResult = new Object();
 		remoteLoadResult.loaded = false;
@@ -463,6 +513,32 @@ var mfzch = {
 	},
 
 	/* elite */
+	checkElite: function() {
+		if (this.checkRegistered()) {
+			var eliteExpires = new Date(this.appState.eliteExpires);
+			this.appState.eliteExpiresFormatted = eliteExpires.getFullYear() + '-' + pad(eliteExpires.getMonth(), 2) + '-' + pad(eliteExpires.getDate(), 2);
+			var now = new Date();
+
+			if (eliteExpires > now) {
+				this.appState.isElite = true;
+				this.enableElite();
+
+				var soon = new Date();
+				soon.setDate(soon.getDate() + 15);
+				if (eliteExpires > soon) {
+					$('[data-elite-expires-soon]').show();
+				} else {
+					$('[data-elite-expires-soon]').hide();
+				}
+			} else {
+				this.appState.isElite = false;
+				this.disableElite();
+			}
+		} else {
+			this.appState.isElite = false;
+			this.disableElite();
+		}
+	},
 	enableElite: function() {
 		MAXCOMPANIES = 25;
 		MAXTEAMS = 9;
@@ -475,6 +551,7 @@ var mfzch = {
 		$('[data-elite-visible="true"]').show();
 		$('[data-elite-visible="false"]').hide();
 		$('[data-elite="true"]').prop('disabled', false);
+		$('.user-elite-expires').html(this.appState.eliteExpiresFormatted);
 	},
 	disableElite: function() {
 		MAXCOMPANIES = 5;
@@ -488,6 +565,7 @@ var mfzch = {
 		$('[data-elite-visible="false"]').show();
 		$('[data-elite-visible="true"]').hide();
 		$('[data-elite="true"]').prop('disabled', true);
+		$('.user-elite-expires').html(this.appState.eliteExpiresFormatted);
 	},
 
 	/* undo/redo */

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
 use App\Form\EditProfileType;
 use App\Form\EditLocationType;
 use App\Entity\FrameCompany;
@@ -29,7 +30,7 @@ class DefaultController extends Controller {
 	 * @Route("/state", name="state")
 	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function stateAction(User $user = null) {
+	public function stateAction(Request $request, User $user = null) {
 		$auth_checker = $this->get('security.authorization_checker');
 
 		$state = array();
@@ -41,14 +42,17 @@ class DefaultController extends Controller {
 
 				if ($user->eliteStatusNeedsRefreshed()) {
 					$state['patreon_refresh_needed'] = true;
-					// *** MUST ACT ON THIS AND SEND USER TO /patreon-update ***
+					return $this->redirectToRoute('patreon-update');
+				}
+
+				if (isset($_REQUEST['gameid']) && $_REQUEST['gameid']) {
+					$state['gameid'] = json_decode($_REQUEST['gameid']);
 				}
 
 			} else {
 				// user does not have a username, so is a new user
 				$state['user'] = 'new_user';
-
-				// *** MUST ACT ON THIS AND SEND USER TO /onboard ***
+				return $this->redirectToRoute('new-user');
 			}
 		}
 
@@ -76,18 +80,6 @@ class DefaultController extends Controller {
 				);
 			}
 		}
-	}
-
-	/**
-	 * @Route("/game/{gameid}/", name="remote-game")
-	 */
-	public function remoteGameAction($gameid) {
-		return $this->render('mfzch/mfzch.html.twig',
-			array(
-				'remotegame' => true,
-				'gameid' => $gameid
-			)
-		);
 	}
 
 	/**

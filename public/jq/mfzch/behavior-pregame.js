@@ -912,7 +912,7 @@ $(document).on("pagecontainerbeforeshow", function(event, ui){
 		}
 
 		if (mfzch.game.shared) {
-			$('.game-link').html('This game is shared. <a href="/game/'+ mfzch.game.uuid+ '/">Link to this game</a>.');
+			$('.game-link').html('This game is shared. <a href="/?game='+ encodeURIComponent(mfzch.game.uuid)+ '">Link to this game</a>.');
 			$('.game-link').show();
 		} else {
 			$('.game-link').hide();

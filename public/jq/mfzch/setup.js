@@ -1,60 +1,65 @@
 // set default state
-mfzch.appState.isElite = false;
-mfzch.appState.eliteExpires = 0;
+mfzch.appState = mfzch.restoreLocalData('appState');
 
-mfzch.disableElite(); // *** internal elite check
+mfzch.checkElite();
 
 var appState = new Promise(function(resolve, reject) {
-	if (isOnline()) {
-		$.post('/state')
+	var stateVars = {};
+
+	var urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.has('game')) {
+		stateVars.gameid = urlParams.get('game');
+	}
+
+	if (mfzch.checkOnline()) {
+		$.post('/state', stateVars)
 		.done(function(result) {
 			resolve(result);
 		})
 		.fail(function() {
-			reject(Error('State retrieval failed'));
+			reject(Error('State retrieval failed: no response from server'));
 		})
 	} else {
-		reject(Error('State retrieval failed (offline)'));
+		reject(Error('State retrieval failed: no connection'));
 	}
 });
 
 function handleState(data) {
-	// successful state
-	console.log(data); // ***
+	if (data.user) {
+		mfzch.appState.user = data.user;
 
-	var eliteExpires = new Date(data.user.elite_expires.date);
-	var now = new Date();
-
-	mfzch.appState.eliteExpires = eliteExpires.toISOString();
-
-	if (eliteExpires > now) {
-		mfzch.appState.isElite = true;
-		mfzch.enableElite();
-	} else {
-		mfzch.appState.isElite = false;
-		mfzch.disableElite();
+		if (data.user.elite_expires.date) {
+			mfzch.appState.eliteExpires = data.user.elite_expires.date;
+			mfzch.checkElite();
+		}
 	}
 
-	/*
-	if (data.remotegame) { // ***
+	if (data.gameid) {
 		mfzch.appState.remote = {
 			mode: true,
 			connection: true,
-			id: '{{ gameid }}', // ***
+			id: data.gameid,
 			password: '',
 			granted: false
 		}
 	}
-	*/
 }
 
 appState.then(function(result) {
+	// server provided state
 	handleState(result);
+	mfzch.saveLocalData('appState');
 }, function() {
-	// server offline
-	// ***
+	// server is unreachable
+	mfzch.disableOnline();
+	mfzch.remote = {
+		mode: false,
+		connection: false,
+		id: false,
+		password: false,
+		granted: false
+	};
 });
-
 
 // main vars
 mfzch.game = mfzch.restoreLocalData('game');

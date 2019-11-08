@@ -5,24 +5,27 @@
 			<h2>Commander&#8217;s Handbook</h2>
 			<p><small>Tools and Resources for MFZ:RA</small></p>
 
-			{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-				<p>Logged in as {{ msgphp_user.user.username|e }} ({{ msgphp_user.user.email|e }}) | <a href="{{ path('logout') }}" rel="external">Logout</a></p>
+			<div data-registered-visible="true">
+				<p>Logged in as <span class="registered-username">(nobody)</span> ({{ msgphp_user.user.email|e }}) | <a href="{{ path('logout') }}" rel="external">Logout</a></p>
 
-				{% if date(msgphp_user.user.elite_expires) > date() %}
-					<p>Elite User (through {{ msgphp_user.user.elite_expires|date("Y-m-d") }})</p>
-					{% if date(msgphp_user.user.elite_expires) <= date('+15days') %}
-						<p>Warning: Elite status expires soon.</p>
-					{% endif %}
-				{% else %}
-					<p>Regular User
-						{% if date(msgphp_user.user.elite_expires) > date('-2years') %}
-							(expired {{ msgphp_user.user.elite_expires|date("Y-m-d") }})
-						{% endif %}
-					</p>
-				{% endif %}
-			{% else %}
-				<p><a href="{{ path('login') }}" rel="external">Log in</a> or <a href="{{ path('register') }}" rel="external">Register</a></p>
-			{% endif %}
+				<div data-elite-visible="true">
+					<p>Elite User (through <span class="user-elite-expires"></span>)</p>
+					<p data-elite-expires-soon="true">Warning: Elite status expires soon.</p>
+				</div>
+
+				<div data-elite-visible="false">
+					<p>Regular User (expired <span class="user-elite-expires"></span>)
+				</div>
+			</div>
+
+			<div data-registered-visible="false">
+				<div data-online-visible="true">
+					<p><a href="{{ path('login') }}" rel="external">Log in</a> or <a href="{{ path('register') }}" rel="external">Register</a></p>
+				</div>
+				<div data-online-visible="false">
+					<p>Connect to the internet to Log in or Register.</p>
+				</div>
+			</div>
 		</div>
 
 		{% if errors is defined and errors|length %}

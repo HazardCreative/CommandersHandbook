@@ -10,16 +10,16 @@ var STATIC_CACHE_URLS = [
 	'/jq/mfzch/model-company.js',
 	'/jq/mfzch/model-frame.js',
 	'/jq/mfzch/model-settings.js',
-//	'/jq/mfzch/model-appstate.js',
-//	'/jq/mfzch/mfzch.js',
-//	'/jq/mfzch/globals.js',
+	'/jq/mfzch/model-appstate.js',
+	'/jq/mfzch/mfzch.js',
+	'/jq/mfzch/globals.js',
 	'/jq/mfzch/behavior-pregame.js',
 	'/jq/mfzch/behavior-game.js',
 	'/jq/mfzch/behavior-simulator.js',
 	'/jq/mfzch/behavior-company.js',
 	'/jq/mfzch/behavior-loadouts.js',
-//	'/jq/mfzch/behavior-settings.js',
-//	'/jq/mfzch/setup.js',
+	'/jq/mfzch/behavior-settings.js',
+	'/jq/mfzch/setup.js',
 	'/jq/mfzch/event-tracking.js',
 	'/style.css',
 	'/img/MFZRA-logo.svg',
@@ -59,14 +59,18 @@ self.addEventListener('fetch', function(event) {
 		// for homepage
 		if (/^\/$/.test(requestURL.pathname)) {
 			event.respondWith(
-				// ??
+				// use cache, falling back to network
+				caches.match(event.request).then(function(response) {
+					return response || fetch(event.request);
+				})
 			);
 			return;
 		}
 
 		if (/^\/state$/.test(requestURL.pathname)) {
 			event.respondWith(
-				// network or fail?
+				// network or fail
+				fetch(event.request)
 			);
 			return;
 		}

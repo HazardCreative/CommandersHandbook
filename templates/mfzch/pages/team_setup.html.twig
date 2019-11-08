@@ -57,49 +57,33 @@
 			</li>
 
 			<li data-role="list-divider"><h3>Elite Options</h3></li>
-			{% if is_granted('IS_AUTHENTICATED_FULLY')
-				and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
 
-				<li class="ui-field-contain">
-					<label for="game-blind-setup">Blind setup: <a href="#blind-setup-info" data-rel="popup" class="item-help">?</a></label>
-					<select name="game-blind-setup" id="game-blind-setup" data-role="flipswitch">
-						<option value="off">Off</option>
-						<option value="on">On</option>
-					</select>
-				</li>
-				<li class="ui-field-contain">
-					<label for="game-view-access">Sharing:</label>
-					<select name="game-view-access" id="game-view-access" data-role="flipswitch">
-						<option value="off">Off</option>
-						<option value="on">On</option>
-					</select>
-				</li>
+			<li data-elite-visible="false"><em>Become a Patreon supporter to enable these options.</em></li>
 
-				<li class="game-online-form" data-role="list-divider"><h3>Online Options</h3></li>
-				<li class="game-online-form ui-field-contain">
-					<label for="game-viewpassword">Password to View</label>
-					<input name="game-viewpassword" id="game-viewpassword" value="" type="password" autocomplete="off" placeholder="(None)"/>
-				</li>
-				<li class="game-online-form ui-field-contain">
-					<label for="game-modifypassword">Password to Modify</label>
-					<input name="game-modifypassword" id="game-modifypassword" value="" type="password" autocomplete="off" placeholder="(None)"/>
-				</li>
-			{% else %}
-				<li><em>Become a Patreon supporter to enable these options.</em></li>
-				<li class="ui-field-contain">
-					<label for="game-blind-setup">Blind setup: <a href="#blind-setup-info" data-rel="popup" class="item-help">?</a></label>
-					<select name="game-blind-setup" id="game-blind-setup" data-role="flipswitch" disabled="disabled">
-						<option value="off">Off</option>
-					</select>
-				</li>
-				<li class="ui-field-contain">
-					<label for="game-view-access" class="hide-if-compact-ui">Visibility:</label>
-					<select name="game-view-access" id="game-view-access" data-role="flipswitch" disabled="disabled">
-						<option value="off">Off</option>
-					</select>
-				</li>
-			{% endif %}
+			<li class="ui-field-contain">
+				<label for="game-blind-setup">Blind setup: <a href="#blind-setup-info" data-rel="popup" class="item-help">?</a></label>
+				<select name="game-blind-setup" id="game-blind-setup" data-role="flipswitch" data-elite="true">
+					<option value="off">Off</option>
+					<option value="on">On</option>
+				</select>
+			</li>
+			<li class="ui-field-contain">
+				<label for="game-view-access">Sharing:</label>
+				<select name="game-view-access" id="game-view-access" data-role="flipswitch" data-elite="true">
+					<option value="off">Off</option>
+					<option value="on">On</option>
+				</select>
+			</li>
 
+			<li data-online-visible="true" class="game-online-form" data-role="list-divider"><h3>Online Options</h3></li>
+			<li data-online-visible="true" class="game-online-form ui-field-contain">
+				<label for="game-viewpassword">Password to View</label>
+				<input name="game-viewpassword" id="game-viewpassword" value="" type="password" autocomplete="off" placeholder="(None)" data-elite="true"/>
+			</li>
+			<li data-online-visible="true" class="game-online-form ui-field-contain">
+				<label for="game-modifypassword">Password to Modify</label>
+				<input name="game-modifypassword" id="game-modifypassword" value="" type="password" autocomplete="off" placeholder="(None)" data-elite="true"/>
+			</li>
 		</ul>
 
 		<a href="#" class="ui-btn ui-btn-b ui-icon-carat-r ui-btn-icon-right ui-corner-all" id="create-game" data-transition="slide">Create Game</a>

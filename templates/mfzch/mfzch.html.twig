@@ -23,6 +23,10 @@
 {% endblock %}
 
 {% block footer_scripts %}
+<script type="text/javascript">
+	var BUILDVERSION = {{ buildver }};
+	var PUBLICBUILDSTRING = '{{ buildstring|e('js') }}';
+</script>
 <script src="{{ asset('jq/mfzch/generics.js') }}"></script>
 <script src="{{ asset('jq/mfzch/model-team.js') }}"></script>
 <script src="{{ asset('jq/mfzch/model-game.js') }}"></script>
@@ -31,9 +35,7 @@
 <script src="{{ asset('jq/mfzch/model-settings.js') }}"></script>
 <script src="{{ asset('jq/mfzch/model-appstate.js') }}"></script>
 <script src="{{ asset('jq/mfzch/mfzch.js') }}"></script>
-<script type="text/javascript">
-{{ include('mfzch/scripts/globals.js.twig') }}
-</script>
+<script src="{{ asset('jq/mfzch/globals.js') }}"></script>
 <script src="{{ asset('jq/mfzch/behavior-pregame.js') }}"></script>
 <script src="{{ asset('jq/mfzch/behavior-game.js') }}"></script>
 <script src="{{ asset('jq/mfzch/behavior-simulator.js') }}"></script>

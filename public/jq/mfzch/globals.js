@@ -22,9 +22,6 @@ var MAXUNCLAIMEDSTATIONS = 1;
 var MAXLOADOUTS = 10;
 var MAXDOOMSDAY = 11;
 
-var BUILDVERSION = {{ buildver }};
-var PUBLICBUILDSTRING = '{{ buildstring|e('js') }}';
-
 var FRAMELOADS = [
 	{
 		type: 'h2h',

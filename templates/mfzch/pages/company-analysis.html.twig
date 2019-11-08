@@ -44,23 +44,13 @@
 						<textarea name="company-description" id="company-description"></textarea>
 					</div>
 
-					{% if is_granted('IS_AUTHENTICATED_FULLY')
-					and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
-						<div class="ui-field-contain">
-							<label for="company-shared">Shared:</label>
-							<select name="company-shared" id="company-shared" data-role="flipswitch">
-								<option value="off">Off</option>
-								<option value="on">On</option>
-							</select>
-						</div>
-					{% else %}
-						<div class="ui-field-contain">
-							<label for="company-shared">Shared:</label>
-							<select name="company-shared" id="company-shared" data-role="flipswitch" disabled="disabled">
-								<option value="off">Off</option>
-							</select>
-						</div>
-					{% endif %}
+					<div class="ui-field-contain">
+						<label for="company-shared">Shared:</label>
+						<select name="company-shared" id="company-shared" data-role="flipswitch" data-elite="true">
+							<option value="off">Off</option>
+							<option value="on">On</option>
+						</select>
+					</div>
 				</div>
 
 				<div id="company-notice" class="ui-body ui-body-c ui-corner-all">-</div>
@@ -89,19 +79,16 @@
 					<label for="frame-name" class="hide-if-compact-ui">Frame Name:</label>
 					<input name="frame-name" id="frame-name" type="text" />
 
-					{% if is_granted('IS_AUTHENTICATED_FULLY')
-					and "now"|date('Y-m-d') < msgphp_user.user.elite_expires|date('Y-m-d') %}
-						<div class="ui-field-contain">
-							<label for="frame-icon">Icon:</label>
-							<select name="frame-icon" id="frame-icon" data-role="selectmenu">
-								<option value="frame">Chub (default)</option>
-								<option value="chub-alt">Chub (rifle)</option>
-								<option value="commissar">Commissar</option>
-								<option value="hi-leg">Hi-leg</option>
-								<option value="scrambler">Scrambler</option>
-							</select>
-						</div>
-					{% endif %}
+					<div class="ui-field-contain">
+						<label for="frame-icon">Icon:</label>
+						<select name="frame-icon" id="frame-icon" data-role="selectmenu" data-elite="true">
+							<option value="frame">Chub (default)</option>
+							<option value="chub-alt">Chub (rifle)</option>
+							<option value="commissar">Commissar</option>
+							<option value="hi-leg">Hi-leg</option>
+							<option value="scrambler">Scrambler</option>
+						</select>
+					</div>
 				</div>
 
 				<div class="addbox">
