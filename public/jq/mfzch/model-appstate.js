@@ -3,6 +3,7 @@ function appStateModel() {
 	this.isOnline = false;
 	this.isElite = false;
 	this.eliteExpires = 0;
+	this.eliteExpiresFormatted = null;
 
 	this.remote = {
 		refresh: 8000,

@@ -383,7 +383,7 @@ var mfzch = {
 		return result;
 	},
 	sendGameUpdate: function(patch) {
-		if (mfzch.settings.activeSync && mfzch.checkOnline()) {
+		if (mfzch.settings.activeSync && mfzch.checkOnline() && mfzch.checkRegistered()) {
 			if (patch) {
 				$.post('/patch-game', {
 					game_dbid: this.game.dbid,

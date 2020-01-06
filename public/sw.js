@@ -76,13 +76,6 @@ self.addEventListener('fetch', function(event) {
 		}
 	}
 
-	event.respondWith(
-		// by default, use cache, falling back to network
-		caches.match(event.request).then(function(response) {
-			return response || fetch(event.request);
-		})
-	);
-
 	// fall back to 'content unavailable' page
 	event.respondWith(
 		// Try the cache
@@ -91,6 +84,7 @@ self.addEventListener('fetch', function(event) {
 			return response || fetch(event.request);
 		}).catch(function() {
 			// If both fail, show a generic fallback:
+			/* *** develop this *** */
 			return caches.match('/offline.html');
 			// However, in reality you'd have many different
 			// fallbacks, depending on URL & headers.
