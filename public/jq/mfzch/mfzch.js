@@ -404,10 +404,10 @@ var mfzch = {
 		var status = isOnline();
 		this.appState.isOnline = status;
 		if (status) {
-			this.enableOnline();
+			mfzch.enableOnline();
 			return true;
 		} else {
-			this.disableOnline();
+			mfzch.disableOnline();
 			return false;
 		}
 	},

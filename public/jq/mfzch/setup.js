@@ -1,3 +1,8 @@
+window.addEventListener("load", () => {
+	window.addEventListener('online',  mfzch.checkOnline);
+	window.addEventListener('offline', mfzch.checkOnline);
+});
+
 // set default state
 mfzch.appState = mfzch.restoreLocalData('appState');
 
@@ -59,7 +64,7 @@ appState.then(function(result) {
 		password: false,
 		granted: false
 	};
-});
+}).catch(error => console.log(error.message));
 
 // main vars
 mfzch.game = mfzch.restoreLocalData('game');

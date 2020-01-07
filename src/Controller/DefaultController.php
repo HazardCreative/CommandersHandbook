@@ -27,6 +27,13 @@ class DefaultController extends Controller {
 	}
 
 	/**
+	 * @Route("/offline", name="offline")
+	 */
+	public function offlineAction() {
+		return $this->render('mfzch/offline.html.twig');
+	}
+
+	/**
 	 * @Route("/state", name="state")
 	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */

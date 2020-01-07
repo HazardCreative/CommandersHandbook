@@ -13,9 +13,10 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/?utm_source=app",
+  "start_url": "/",
   "background_color": "#ebe5d6",
   "display": "standalone",
-  "theme_color": "#be1e2d"
+  "theme_color": "#be1e2d",
+  "scope": "/"
 }
 

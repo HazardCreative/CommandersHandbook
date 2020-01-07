@@ -178,7 +178,8 @@ function isOnline() {
 	}
 
 	if (navigator.onLine) {
-		return hostReachable();
+		return true;
+		// return hostReachable(); // also test if server is available (currently blocking)
 	}
 
 	return false;
