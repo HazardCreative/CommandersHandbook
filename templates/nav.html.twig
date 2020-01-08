@@ -7,11 +7,11 @@
 	<li><a href="/#company-analysis">Company Structure</a></li>
 </ul>
 
-{% if is_granted('IS_AUTHENTICATED_FULLY') %}
-<ul data-role="listview" data-inset="true" class="nav-listview" id="online-nav">
-	<li><a href="{{ path('command-home') }}" data-ajax="false">Commander Profile</a></li>
-	<li><a href="{{ path('player-finder') }}" data-ajax="false">Locate Commanders</a></li>
-</ul>
-{% endif %}
+<div  data-registered-visible="true">
+	<ul data-role="listview" data-inset="true" class="nav-listview" id="online-nav">
+		<li><a href="{{ path('command-home') }}" data-ajax="false">Commander Profile</a></li>
+		<li><a href="{{ path('player-finder') }}" data-ajax="false">Locate Commanders</a></li>
+	</ul>
+</div>
 
 <button class="a2hs ui-btn ui-corner-all ui-btn-a">Install on This Device</button>

@@ -30,13 +30,25 @@ var appState = new Promise(function(resolve, reject) {
 });
 
 function handleState(data) {
+	// can assume user is online here
+	if (data.new_user) {
+		window.location.href = '/onboard';
+	}
+
 	if (data.user) {
 		mfzch.appState.user = data.user;
+
+		if (data.patreon_refresh_needed && window.location.href.toString().split(window.location.host)[1] == '/') {
+			window.location.href = '/patreon-update';
+		}
 
 		if (data.user.elite_expires.date) {
 			mfzch.appState.eliteExpires = data.user.elite_expires.date;
 			mfzch.checkElite();
 		}
+	} else {
+		mfzch.appState.user = null;
+		mfzch.checkElite();
 	}
 
 	if (data.gameid) {

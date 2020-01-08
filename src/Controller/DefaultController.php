@@ -49,7 +49,6 @@ class DefaultController extends Controller {
 
 				if ($user->eliteStatusNeedsRefreshed()) {
 					$state['patreon_refresh_needed'] = true;
-					return $this->redirectToRoute('patreon-update');
 				}
 
 				if (isset($_REQUEST['gameid']) && $_REQUEST['gameid']) {
@@ -58,8 +57,7 @@ class DefaultController extends Controller {
 
 			} else {
 				// user does not have a username, so is a new user
-				$state['user'] = 'new_user';
-				return $this->redirectToRoute('new-user');
+				$state['new_user'] = true;
 			}
 		}
 

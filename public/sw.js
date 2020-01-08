@@ -50,9 +50,6 @@ var STATIC_CACHE_URLS = [
 ];
 
 self.addEventListener('install', function(event) {
-	// at least temporarily... ***
-	self.skipWaiting();
-
 	// cache resources
 	event.waitUntil(
 		caches.open(STATIC_CACHE)
@@ -65,23 +62,13 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {
 	var requestURL = new URL(event.request.url);
 
-	event.respondWith(
-		caches.match(event.request, {ignoreSearch: true})
-		.then(function(response) {
-			return response || fetch(event.request);
-		})
-		.catch(function() {
-			return caches.match('/offline');
-		})
-	);
-
-	/*
 	if (requestURL.origin == location.origin) {
 		// for homepage
 		if (/^\/[^\/]*$/.test(requestURL.pathname)) {
 			event.respondWith(
 				// use cache, falling back to network
-				caches.match(event.request).then(function(response) {
+				caches.match(event.request, {ignoreSearch: true})
+				.then(function(response) {
 					return response || fetch(event.request);
 				})
 			);
@@ -96,21 +83,16 @@ self.addEventListener('fetch', function(event) {
 			// fall back to 'content unavailable' page
 			event.respondWith(
 				// Try the cache
-				caches.match(event.request).then(function(response) {
+				caches.match(event.request, {ignoreSearch: true})
+				.then(function(response) {
 					// Fall back to network
 					return response || fetch(event.request);
 				}).catch(function() {
 					// If both fail, show a generic fallback:
-					/* *** develop this ***
-					return caches.match('/offline.html');
-					// However, in reality you'd have many different
-					// fallbacks, depending on URL & headers.
-					// Eg, a fallback silhouette image for avatars.
+					return caches.match('/offline');
 				})
 			);
 		}
 	}
-	*/
-
 });
 
