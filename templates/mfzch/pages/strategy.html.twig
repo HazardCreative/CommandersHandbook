@@ -1,0 +1,114 @@
+<div data-role="page" id="tactics-and-strategy">
+ 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Tactics and Strategy</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+ 	<div role="main" class="ui-content">
+ 		<div data-elite-visible="true">
+ 			<p>Welcome, <span class="registered-username">Commander</span>. Your <em>Elite</em> status grants you access to this privileged information. Use it well, and keep it protected from opposing commanders.</p>
+
+ 			<div data-role="collapsible-set" data-expanded-icon="carat-d" data-collapsed-icon="carat-r">
+ 				<div data-role="collapsible">
+ 					<h3>Strategy</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_strategy_overview">Overview</a></li>
+ 						<li><a href="#stg_strategy_development">Strategy Development</a></li>
+ 						<li><a href="#stg_strategy_examples">Example Strategic Approaches</a></li>
+ 						<li><a href="#stg_strategy_opening">Opening Position Considerations</a></li>
+ 				</ul>
+ 				</div>
+ 				<div data-role="collapsible">
+ 					<h3>Company Preparation</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_preparation_supporting">Supporting Company Strategy</a></li>
+ 						<li><a href="#stg_preparation_frames">Frame Setup: Capabilities</a></li>
+ 						<li><a href="#stg_preparation_efficiency">Frame Setup: Efficiency</a></li>
+ 						<li><a href="#stg_preparation_groups">Tactical Groups</a></li>
+ 						<li><a href="#stg_preparation_synergy">Company Synergy</a></li>
+ 					</ul>
+ 				</div>
+ 				<div data-role="collapsible">
+ 					<h3>Using Terrain</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_terrain">Cover</a></li>
+ 					</ul>
+ 				</div>
+ 				<div data-role="collapsible">
+ 					<h3>Deployment Tactics</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_deployment_general">General Deployment</a></li>
+ 						<li><a href="#stg_deployment_defense">Defensive Deployment</a></li>
+ 						<li><a href="#stg_deployment_offense">Offensive Deployment</a></li>
+ 					</ul>
+ 				</div>
+ 				<div data-role="collapsible">
+ 					<h3>Field Tactics</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_combat_general">Combat Tactics</a></li>
+ 						<li><a href="#stg_combat_formations">Formations</a></li>
+ 						<li><a href="#stg_combat_alliances">Alliances</a></li>
+ 						<li><a href="#stg_combat_offense">Offense</a></li>
+ 						<li><a href="#stg_combat_defense">Defense</a></li>
+ 						<li><a href="#stg_combat_secondary">Secondary</a></li>
+ 					</ul>
+ 				</div>
+ 				<div data-role="collapsible">
+ 					<h3>Debriefing</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_debreifing_collection">Collect Data</a></li>
+ 						<li><a href="#stg_debreifing_analysis">Analysis</a></li>
+ 						<li><a href="#stg_debreifing_insights">Develop Insights</a></li>
+ 					</ul>
+ 				</div>
+ 				<!--
+ 				<div data-role="collapsible">
+ 					<h3>Optional Rules</h3>
+ 					<ul data-role="listview" data-theme="b">
+ 						<li><a href="#stg_optional">7: </a></li>
+ 					</ul>
+ 				</div>
+ 				-->
+ 			</div>
+ 		</div>
+
+		<p>This document presents a variety of strategic and tactical information to plan your approach and coordinate your company. Each commander and opponent is different, so the strategies and tactics you use will need to be adjusted to each situation. Rather than use that as an excuse to simply take each battle as it comes, a well-rounded commander will have a repertoire of tactics to draw from for a shifting strategic approach. The mark of a good commander is knowing when to employ which strategy and how to carry it out.</p>
+
+		<p>This is an advanced document that assumes a thorough understanding of the established <a href="/#rules-reference">rules of engagement</a>. New commanders will need to familiarize themselves with these before the concepts presented in this document can be understood.</p>
+
+		<div data-elite-visible="false">
+			<p><strong>Attention: this information is privileged and available only to commanders with <em>Elite</em> status.</strong></p>
+
+			<p>Your status could not be verified.</p>
+
+			<div data-online-visible="true">
+				<div data-registered-visible="false">
+					<p>You must <a href="{{ path('register') }}" rel="external">register</a> to become Elite. If you are already Elite, please <a href="{{ path('login') }}" rel="external">log in</a>.</p>
+				</div>
+
+				<div data-registered-visible="true">
+					<p><a href="/command-network" data-ajax="false">Become Elite</a></p>
+				</div>
+			</div>
+
+			<div data-online-visible="false">
+				<p>You are offline. An online connection is required to become Elite or verify existing elite status.</p>
+			</div>
+
+			<h2>Contents</h2>
+			<ul>
+				<li>Strategy</li>
+				<li>Company Preparation</li>
+				<li>Using Terrain</li>
+				<li>Deployment Tactics</li>
+				<li>Field Tactics</li>
+				<li>Analysis and Insight</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+	{% if date(msgphp_user.user.elite_expires) > date() %}
+		{% include 'strategy-content.html.twig' ignore missing %}
+	{% endif %}
+{% endif %}

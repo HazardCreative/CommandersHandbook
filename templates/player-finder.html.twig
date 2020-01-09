@@ -1,0 +1,168 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
+<script src="{{ asset('jq/mfzch/generics.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ajaxEnabled = false;
+}
+</script>
+<div data-role="page" id="player-finder">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Locate Commanders</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+
+	<div role="main" class="ui-content" data-ajax="false">
+		<div id="mapid"></div>
+		<script>
+		var mymap;
+		$(document).on("pagecontainershow", function(event, ui) {
+			{% if msgphp_user.user and locations %}
+				mymap = L.map('mapid').setView([{{ locations[0].geo_latitude|e }}, {{ locations[0].geo_longitude|e }}], 11);
+			{% else %}
+				mymap = L.map('mapid').setView([42.6, -72.6], 9);
+			{% endif %}
+
+			mymap.attributionControl.setPrefix('');
+
+			var Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				subdomains: 'abcd',
+				minZoom: 7,
+				maxZoom: 15,
+				ext: 'png'
+			});
+
+			Stamen_Terrain.addTo(mymap);
+			L.control.scale().addTo(mymap);
+
+			function getNewPlayers() {
+				var area = mymap.getBounds();
+				var area_latspan = (area._northEast.lat - area._southWest.lat) / 2;
+				var area_lngspan = (area._northEast.lng - area._southWest.lng) / 2;
+				area._northEast.lat = area._northEast.lat + area_latspan;
+				area._northEast.lng = area._northEast.lng + area_lngspan;
+				area._southWest.lat = area._southWest.lat - area_latspan;
+				area._southWest.lng = area._southWest.lng - area_lngspan;
+
+				var mapObj = new Object();
+				mapObj['data'] = JSON.stringify(area);
+				// mymap.getBounds()
+				$.get('/get-players', mapObj)
+				.done(function(result){
+					backgroundgroup.remove();
+					group.remove();
+
+					backgroundgroup = new L.featureGroup();
+					group = new L.featureGroup();
+
+					for (var point in result) {
+						var travelradius = new Array();
+						if (result[point].radius) {
+							travelradius[point] = L.circle( [ result[point].geo_latitude, result[point].geo_longitude ],
+								{
+									radius: result[point].radius * 1609.34,
+									color: result[point].color,
+									opacity: 0.9,
+									fillOpacity: 0,
+									weight: 1
+								})
+							.addTo(backgroundgroup);
+						}
+
+						var marker = L.marker(
+							[result[point].geo_latitude, result[point].geo_longitude ],
+							{icon:
+								L.divIcon({
+									html: getIcon(result[point].icon, result[point].color),
+									iconSize: [36, 36],
+									iconAnchor: [21, 18],
+									popupAnchor: [0, -12]
+								})
+							},
+						);
+
+						marker.linkedRadius = travelradius[point];
+
+						var popupContent = '<h2>' + result[point].username;
+						if (result[point].name) {
+							popupContent += ' (' + result[point].name + ')';
+						}
+						popupContent += '</h2>';
+
+						popupContent += '<p>';
+						popupContent += '<a class="button" href="' + result[point].link + '">View Profile</a><br />';
+						if (result[point].email) {
+							popupContent += '<a class="button" href="mailto:' + result[point].email + '">Send E-mail</a>'
+						}
+						popupContent += '</p>';
+
+						if (result[point].description) {
+							popupContent += '<p>' + result[point].description + '</p>';
+						}
+
+						marker.bindPopup(popupContent);
+
+						marker.on('click', function(){
+							if (this.linkedRadius.options.fillOpacity) {
+								this.linkedRadius.setStyle({fillOpacity: 0});
+							} else {
+								this.linkedRadius.setStyle({fillOpacity: 0.2});
+							}
+						});
+
+						marker.addTo(group);
+					}
+
+					backgroundgroup.addTo(mymap);
+					group.addTo(mymap);
+
+					lastLoad = area;
+				});
+			}
+
+			var lastLoad;
+
+			function reloadPoints(e) {
+				currentview = mymap.getBounds();
+
+				if (currentview._northEast.lat > lastLoad._northEast.lat
+					|| currentview._northEast.lng > lastLoad._northEast.lng
+					|| currentview._southWest.lat < lastLoad._southWest.lat
+					|| currentview._southWest.lng < lastLoad._southWest.lng
+					) {
+					getNewPlayers();
+				};
+			}
+
+			var backgroundgroup = new L.featureGroup();
+			var group = new L.featureGroup();
+			getNewPlayers();
+			mymap.on('moveend', reloadPoints);
+		});
+		</script>
+	</div>
+</div>
+{% endblock %}
+
+{% block footer_scripts %}
+
+	if (navigator.geolocation) {
+		$('#player-finder>div[data-role="header"]').append('<a href="#" id="locate-me" class="ui-btn-right ui-btn ui-btn-a ui-icon-location ui-btn-icon-left ui-btn-inline ui-corner-all ui-mini" data-role="button" role="button">Center Here</a>');
+
+		$(document).on("click", "#locate-me", function(){
+			mymap.locate({
+				setView: true,
+				maximumAge: 300000, // location result can be 5 minutes old
+			});
+		});
+	}
+
+{% endblock %}

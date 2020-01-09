@@ -1,0 +1,48 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+	<script src="{{ asset('jq/jquery-visibility.min.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+{{ include('mfzch/pages/title.html.twig') }}
+{{ include('mfzch/pages/license.html.twig') }}
+<div data-role="page" id="game-tracking"></div>
+{{ include('mfzch/pages/team_setup.html.twig') }}
+{{ include('mfzch/pages/game-deployment.html.twig') }}
+{{ include('mfzch/pages/active-game.html.twig') }}
+{{ include('mfzch/pages/loadouts.html.twig') }}
+{{ include('mfzch/pages/dice-roller.html.twig') }}
+{{ include('mfzch/pages/damage-roller.html.twig') }}
+{{ include('mfzch/pages/rules-reference.html.twig') }}
+{{ include('mfzch/pages/strategy.html.twig') }}
+{{ include('mfzch/pages/company-analysis.html.twig') }}
+{{ include('mfzch/pages/graph-key.html.twig') }}
+{{ include('mfzch/pages/graph-key-c.html.twig') }}
+{{ include('mfzch/pages/settings.html.twig') }}
+{% endblock %}
+
+{% block footer_scripts %}
+<script type="text/javascript">
+	var BUILDVERSION = {{ buildver }};
+	var PUBLICBUILDSTRING = '{{ buildstring|e('js') }}';
+</script>
+<script src="{{ asset('jq/mfzch/generics.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-team.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-game.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-company.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-frame.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-settings.js') }}"></script>
+<script src="{{ asset('jq/mfzch/model-appstate.js') }}"></script>
+<script src="{{ asset('jq/mfzch/mfzch.js') }}"></script>
+<script src="{{ asset('jq/mfzch/globals.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-pregame.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-game.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-simulator.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-company.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-loadouts.js') }}"></script>
+<script src="{{ asset('jq/mfzch/behavior-settings.js') }}"></script>
+<script src="{{ asset('jq/mfzch/setup.js') }}"></script>
+<script src="{{ asset('jq/mfzch/event-tracking.js') }}"></script>
+
+{% endblock %}

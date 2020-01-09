@@ -1,0 +1,13 @@
+/templates/mfzch/pages/strategy-content.html.twig
+/config/packages/services.yaml
+
+###> symfony/framework-bundle ###
+/.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###

@@ -1,0 +1,90 @@
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content">
+		<div id="home-title">
+			<img src="{{ asset('img/MFZRA-logo.svg') }}" alt="Mobile Frame Zero: Rapid Attack" title="" />
+			<h2>Commander&#8217;s Handbook</h2>
+			<p><small>Tools and Resources for MFZ:RA</small></p>
+
+			<div data-registered-visible="true">
+				<p>Logged in as <span class="registered-username">(none)</span> | <a href="{{ path('logout') }}" rel="external">Logout</a></p>
+
+				<div data-elite-visible="true">
+					<p>Elite User (through <span class="user-elite-expires"></span>)</p>
+					<p data-elite-expires-soon="true">Warning: Elite status expires soon.</p>
+				</div>
+
+				<div data-elite-visible="false">
+					<p>Regular User (expired <span class="user-elite-expires"></span>)
+				</div>
+			</div>
+
+			<div data-registered-visible="false">
+				<div data-online-visible="true">
+					<p><a href="{{ path('login') }}" rel="external">Log in</a> or <a href="{{ path('register') }}" rel="external">Register</a></p>
+				</div>
+				<div data-online-visible="false">
+					<p>Connect to the internet to Log in or Register.</p>
+				</div>
+			</div>
+		</div>
+
+		{% if errors is defined and errors|length %}
+		<div role="main" class="ui-content" data-ajax="false">
+			<div class="ui-corner-all profile-panel">
+				<div class="ui-bar ui-bar-a">
+					<h2>There was an error.</h2>
+				</div>
+				<div class="ui-body ui-body-a">
+					<ul>
+						{% for err in errors %}
+						<li>{{ err }}</li>
+						{% endfor %}
+					</ul>
+
+					<p>We're sorry it didn't work out. Let us know if we can help. If you no longer want to be Elite, you may <a href="/remove-patreon">Remove Patreon</a> from your account.</p>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+		<div id="main-nav">
+			{% include 'nav.html.twig' %}
+		</div>
+		<p class="legal">By using this app, you agree to its <a href="#license">license terms</a>.</p>
+	</div>
+
+	<div data-role="footer" data-position="fixed" data-tap-toggle="false">
+		<h4 id="version">-</h4>
+		<a href="#settings" class="ui-btn ui-btn-left ui-btn-c ui-icon-gear ui-btn-icon-notext ui-corner-all">Preferences</a>
+		<a href="#license" class="ui-btn ui-btn-right ui-btn-c ui-icon-info ui-btn-icon-notext ui-corner-all">General Information</a>
+	</div>
+</div>
+
+<!-- Generic Items -->
+
+<div data-role="popup" id="confirm-exit-game" data-overlay-theme="b" data-theme="b" data-dismissible="false" data-transition="pop" data-history="false">
+	<div data-role="header">
+		<h1>Exit Game</h1>
+	</div>
+
+	<div role="main" class="ui-content">
+		<p class="local">Exiting will abandon the current game and create a new one. Scores and the game log will no longer be available.</p>
+
+		<p class="remote">Exiting will disconnect from this remote game and create a new one. Scores and the game log will no longer be available.</p>
+
+		<p><strong>Do you wish to exit this game?</strong></p>
+
+		<p><a href="#" id="newgame-yes" class="ui-btn ui-btn-a ui-corner-all ui-icon-alert ui-btn-icon-left">Yes</a> <a href="#" id="newgame-no" class="ui-btn ui-corner-all ui-icon-back ui-btn-icon-left">No</a></p>
+	</div>
+</div>
+
+<div data-role="page" id="no-elite">
+ 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Elite Required</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+ 	<div role="main" class="ui-content">
+		<p><em>Elite</em> status is required to access this feature.</p>
+		<p>Become an <em>Elite</em> member by <a href="https://www.patreon.com/hazardcreative">supporting this project on Patreon</a>.</p>
+	</div>
+</div>

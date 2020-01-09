@@ -1,0 +1,59 @@
+<div data-role="page" id="settings">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Preferences</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+
+	<div role="main" class="ui-content">
+		<form>
+			<h2>Standard options</h2>
+			<div class="ui-field-contain">
+				<label for="settings-enablesplits">Enable Split Systems:</label>
+				<select name="settings-enablesplits" id="settings-enablesplits" data-role="flipswitch">
+					<option value="off">Off</option>
+					<option value="on">On</option>
+				</select>
+			</div>
+			<div class="ui-field-contain">
+				<label for="settings-compactui">Compact Interface:</label>
+				<select name="settings-compactui" id="settings-compactui" data-role="flipswitch">
+					<option value="off">Off</option>
+					<option value="on">On</option>
+				</select>
+			</div>
+			<div class="ui-field-contain">
+				<label for="settings-displayui">Display Mode:</label>
+				<select name="settings-displayui" id="settings-displayui" data-role="flipswitch">
+					<option value="off">Off</option>
+					<option value="on">On</option>
+				</select>
+			</div>
+			<!--
+			<div class="ui-field-contain">
+				<fieldset data-role="controlgroup">
+					<legend>Attack Graph Type:</legend>
+					<input name="settings-attackgraph" id="settings-attackgraph-1" value="off" checked="checked" type="radio">
+					<label for="settings-attackgraph-1">Damage Output</label>
+					<input name="settings-attackgraph" id="settings-attackgraph-2" value="on" type="radio">
+					<label for="settings-attackgraph-2">Range Independent</label>
+				</fieldset>
+			</div>
+			-->
+
+			<h2>Elite options</h2>
+				<p data-elite-visible="false"><em>Become a Patreon supporter to enable these options.</em></p>
+				<div class="ui-field-contain">
+					<label for="settings-activesync">Server Synchronization:</label>
+					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch" data-elite="true" disabled="disabled">
+						<option value="off">Off</option>
+					</select>
+				</div>
+				<div class="ui-field-contain">
+					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
+					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch" data-elite="true" disabled="disabled">
+						<option value="off">Off</option>
+					</select>
+				</div>
+		</form>
+	</div>
+</div>

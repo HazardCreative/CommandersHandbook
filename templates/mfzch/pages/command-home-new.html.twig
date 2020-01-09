@@ -1,0 +1,30 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<script src="{{ asset('jq/mfzch/generics.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ajaxEnabled = false;
+}
+</script>
+<div data-role="page" id="command-home">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Commander's Network</h1>
+		<a href="{{ path('logout') }}" id="exit-game" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Logout</a>
+	</div>
+
+	<div role="main" class="ui-content" data-ajax="false">
+		<h1>Welcome, Commander.</h1>
+
+		<p>Take a moment to tell us about yourself. We'll need a username to refer to you by, but everything else is optional. If you wish to be part of the player community, information you provide here will be publicly visible. You may change or delete this information at any time, except for your username.</p>
+
+		{{ form_start(form) }}
+		{{ form_widget(form) }}
+		{{ form_end(form) }}
+	</div>
+</div>
+{% endblock %}

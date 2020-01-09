@@ -1,0 +1,67 @@
+{% extends 'main.html.twig' %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ajaxEnabled = false;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div data-role="header" data-position="fixed" data-tap-toggle="false">
+		<h1>Patreon Connect</h1>
+		<a href="#nav-panel" class="ui-btn-left ui-btn ui-corner-all ui-btn-icon-notext ui-icon-bars">Navigation</a>
+	</div>
+
+	<div role="main" class="ui-content" data-ajax="false">
+		<div class="ui-corner-all profile-panel">
+			<div class="ui-bar ui-bar-a">
+				<h2>Joining the Elite</h2>
+			</div>
+			<div class="ui-body ui-body-a">
+				<p><strong>Thank you for becoming an Elite!</strong></p>
+
+				<p>Your support enables further development of this app and recognizes the hard work that went into its development. Please enjoy the additional content and features now available to you.</p>
+
+				<ul>
+					<li>Tactics and Strategy Guide</li>
+					<li>Online game sharing</li>
+					<li>Company Sharing</li>
+					<li>Cloud data storage</li>
+					<li>Environmental Systems</li>
+					<li>Custom Game Parameters</li>
+					<li>Blind setup</li>
+					<li>Expanded storage limits</li>
+				</ul>
+
+				<p><a href="{{ path('command-home') }}" class="ui-btn ui-corner-all ui-btn-icon-right ui-icon-arrow-r">Return to Commander Profile</a></p>
+			</div>
+		</div>
+
+		<div class="ui-corner-all profile-panel">
+			<div class="ui-bar ui-bar-a">
+				<h2>Details</h2>
+			</div>
+			<div class="ui-body ui-body-a">
+				<ul>
+					{% if date(msgphp_user.user.elite_expires) > date() %}
+						<li>Elite User (through {{ msgphp_user.user.elite_expires|date("Y-m-d") }})</li>
+					{% else %}
+						<li>Regular User
+							{% if date(msgphp_user.user.elite_expires) > date('-2years') %}
+								(Elite expired {{ msgphp_user.user.elite_expires|date("Y-m-d") }})
+							{% endif %}
+						</li>
+					{% endif %}
+
+					{% if msgphp_user.user.patreon_id %}
+						<li>Patreon User: <a href="{{ msgphp_user.user.patreon_data['attributes']['url'] }}"> {{ msgphp_user.user.patreon_data['attributes']['vanity'] }}</a></li>
+						<li>Patreon Name: {{ msgphp_user.user.patreon_data['attributes']['full_name'] }}</li>
+						<li>Patreon ID: {{ msgphp_user.user.patreon_id }}</li>
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

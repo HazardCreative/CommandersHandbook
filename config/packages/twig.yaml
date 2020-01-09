@@ -1,0 +1,8 @@
+twig:
+    paths: ['%kernel.project_dir%/templates']
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    globals:
+        buildver: 2020010700
+        buildstring: v2020.01.07
+        patreon_client_id: "%patreon_client_id%"

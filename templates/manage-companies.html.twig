@@ -1,0 +1,22 @@
+{% extends 'main.html.twig' %}
+
+{% block htmlhead %}
+<script src="{{ asset('jq/mfzch/generics.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+<script>
+if (typeof jQuery != 'undefined') {
+	// enable block-level ajax disable
+	$.mobile.ignoreContentEnabled = true;
+}
+</script>
+<div data-role="page" id="main-page">
+	<div role="main" class="ui-content" data-ajax="false">
+		<h1>Manage Companies</h1>
+
+		<p>Own companies</p>
+		{{ dump(companies) }}
+	</div>
+</div>
+{% endblock %}
