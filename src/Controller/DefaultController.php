@@ -66,8 +66,11 @@ class DefaultController extends Controller {
 
 	/**
 	 * @Route("/onboard", name="new-user")
+	 * @ParamConverter("user", converter="msgphp.current_user")
 	 */
-	public function onboardAction($gameid) {
+	public function onboardAction(User $user = null) {
+		$auth_checker = $this->get('security.authorization_checker');
+
 		if ($auth_checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			if ($user->getUsername()) {
 				return $this->redirectToRoute('homepage');
@@ -78,12 +81,14 @@ class DefaultController extends Controller {
 
 				return $this->render('mfzch/pages/command-home-new.html.twig',
 					array(
-						'locations' => $locations,
+						'locations' => null,
 						'under_max_locations' => true,
 						'form' => $form->createView()
 					)
 				);
 			}
+		} else {
+			return $this->redirectToRoute('homepage');
 		}
 	}
 
