@@ -8,21 +8,21 @@
 		<form>
 			<h2>Standard options</h2>
 			<div class="ui-field-contain">
-				<label for="settings-enablesplits">Enable Split Systems:</label>
+				<label for="settings-enablesplits">Enable Split Systems</label>
 				<select name="settings-enablesplits" id="settings-enablesplits" data-role="flipswitch">
 					<option value="off">Off</option>
 					<option value="on">On</option>
 				</select>
 			</div>
 			<div class="ui-field-contain">
-				<label for="settings-compactui">Compact Interface:</label>
+				<label for="settings-compactui">Compact Interface</label>
 				<select name="settings-compactui" id="settings-compactui" data-role="flipswitch">
 					<option value="off">Off</option>
 					<option value="on">On</option>
 				</select>
 			</div>
 			<div class="ui-field-contain">
-				<label for="settings-displayui">Display Mode:</label>
+				<label for="settings-displayui">Oversize Display Mode</label>
 				<select name="settings-displayui" id="settings-displayui" data-role="flipswitch">
 					<option value="off">Off</option>
 					<option value="on">On</option>
@@ -41,17 +41,26 @@
 			-->
 
 			<h2>Elite options</h2>
-				<p data-elite-visible="false"><em>Become a Patreon supporter to enable these options.</em></p>
-				<div class="ui-field-contain">
-					<label for="settings-activesync">Server Synchronization:</label>
+				<div data-elite-visible="false">
+
+					<p>Become a Patreon supporter to enable additional options:</p>
+					<ul>
+						<li>Server Synchronization</li>
+						<li>Environmental Systems</li>
+					</ul>
+				</div>
+				<div class="ui-field-contain" data-elite-visible="true">
+					<label for="settings-activesync">Server Synchronization</label>
 					<select name="settings-activesync" id="settings-activesync" data-role="flipswitch" data-elite="true" disabled="disabled">
 						<option value="off">Off</option>
+						<option value="on">On</option>
 					</select>
 				</div>
-				<div class="ui-field-contain">
-					<label for="settings-enableenvironmental">Enable Environmental Systems:</label>
+				<div class="ui-field-contain" data-elite-visible="true">
+					<label for="settings-enableenvironmental">Enable Environmental Systems</label>
 					<select name="settings-enableenvironmental" id="settings-enableenvironmental" data-role="flipswitch" data-elite="true" disabled="disabled">
 						<option value="off">Off</option>
+						<option value="on">On</option>
 					</select>
 				</div>
 		</form>
